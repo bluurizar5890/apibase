@@ -1020,12 +1020,42 @@ const MenuAccesosRol = [
   }
 ];
 
+const Estados = [
+  {
+    estadoId: 1,
+    descripcion: "Activo"
+  },
+  {
+    estadoId: 2,
+    descripcion: "Inactivo"
+  },
+  {
+    estadoId: 3,
+    descripcion: "Eliminado"
+  }
+];
 
+const Sequelize = require('sequelize');
+//const { Estado } = require('./db');
+// const cargarData = async () => {
+//   // await Estado.bulkCreate(Estados);
+
+//   Estado.bulkCreate(Estados, {
+//     returning: true
+//   }).then((data2) => {
+//      console.log({ data2 });
+//   })
+//     .catch(error => {
+//       console.log({ error });
+//     });
+
+// }
 
 module.exports = {
   Departamentos,
   Municipios,
   Menus,
   MenuAccesos,
-  MenuAccesosRol
+  MenuAccesosRol,
+  Estados
 }

@@ -39,6 +39,7 @@ const UsuarioModel = require('./models/usuario');
 const UsuarioRolModel = require('./models/usuario_rol');
 const FotoUsuarioModel = require('./models/foto_usuario');
 const TelefonoPersonaModel = require('./models/telefono_persona');
+const { cargarData } = require('./data');
 
 
 const Estado = EstadoModel(confiBd, Sequelize);
@@ -70,9 +71,25 @@ try {
   confiBd.sync({
     force: false,
     logging: false, //Evitamos que nos muestre lo que hace con la bd
-  }).then(() => {
-    const { Departamentos, Municipios, Menus, MenuAccesos, MenuAccesosRol } = require('./data');
+  }).then(async() => {
 
+    const { Departamentos, Municipios, Menus, MenuAccesos, MenuAccesosRol,Estados } = require('./data');
+
+    // console.log({Estados});
+    // Estado.bulkCreate(Estados, {
+    //   returning: true
+    // }).then((data2) => {
+    //   // console.log({ data2 });
+    // })
+    //   .catch(error => {
+    //     console.log({ error });
+    //   });
+
+   // await cargarData();
+
+    
+      await Estado.bulkCreate(Estados);
+/*
     confiBd.query("select count(*) as total from cat_estado", {
       type: QueryTypes.SELECT
     }).then(resultado => {
@@ -430,7 +447,7 @@ try {
 
     });
 
-
+*/
     //   confiBd.query("CREATE DATABASE IF NOT EXISTS demoBase;").then(results => {
     //     console.log(results);
     // });
