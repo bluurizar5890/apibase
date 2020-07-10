@@ -10,9 +10,9 @@ module.exports = {
       database: "demobase",
       username: "root",
       password: "Blopez$1991",
-      host: "127.0.0.1",
+      host: "34.94.42.173",
       dialect: "mysql",
-      port:3307,
+      port:3306,
       pool: {
         max: 5,
         min: 0,
