@@ -44,6 +44,15 @@ module.exports = (sequelize, type) => {
                     key: "generoId",
                 }
             },
+            email: {
+                type: type.STRING(150),
+                allowNull: false,
+                unique: true,
+                validate: {
+                    notEmpty: true,
+                    isEmail: true
+                }
+            },
             usuario_crea: {
                 type: type.INTEGER
             },

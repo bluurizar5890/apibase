@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt')
 const Departamentos = [
   { departamentoId: 1, paisId: 502, descripcion: "GUATEMALA", usuario_crea: 1 },
   { departamentoId: 4, paisId: 502, descripcion: "EL PROGRESO", usuario_crea: 1 },
@@ -506,6 +507,22 @@ const Menus = [
     icono: "",
     menu_padreId: 0,
     usuario_crea: 1
+  },
+  {
+    posicion: 19,
+    descripcion: "Menu Acceso",
+    href: "",
+    icono: "",
+    menu_padreId: 0,
+    usuario_crea: 1
+  },
+  {
+    posicion: 20,
+    descripcion: "Rol Menu Acceso",
+    href: "",
+    icono: "",
+    menu_padreId: 0,
+    usuario_crea: 1
   }
 ];
 
@@ -758,6 +775,36 @@ const MenuAccesos = [
   },
   {
     menuId: 18,
+    accesoId: 3,
+    usuario_crea: 1
+  },
+  {
+    menuId: 19,
+    accesoId: 1,
+    usuario_crea: 1
+  },
+  {
+    menuId: 19,
+    accesoId: 2,
+    usuario_crea: 1
+  },
+  {
+    menuId: 19,
+    accesoId: 3,
+    usuario_crea: 1
+  },
+  {
+    menuId: 20,
+    accesoId: 1,
+    usuario_crea: 1
+  },
+  {
+    menuId: 20,
+    accesoId: 2,
+    usuario_crea: 1
+  },
+  {
+    menuId: 20,
     accesoId: 3,
     usuario_crea: 1
   }
@@ -1017,6 +1064,36 @@ const MenuAccesosRol = [
     rolId: 1,
     menu_accesoId: 51,
     usuario_crea: 1
+  },
+  {
+    rolId: 1,
+    menu_accesoId: 52,
+    usuario_crea: 1
+  },
+  {
+    rolId: 1,
+    menu_accesoId: 53,
+    usuario_crea: 1
+  },
+  {
+    rolId: 1,
+    menu_accesoId: 54,
+    usuario_crea: 1
+  },
+  {
+    rolId: 1,
+    menu_accesoId: 55,
+    usuario_crea: 1
+  },
+  {
+    rolId: 1,
+    menu_accesoId: 56,
+    usuario_crea: 1
+  },
+  {
+    rolId: 1,
+    menu_accesoId: 57,
+    usuario_crea: 1
   }
 ];
 
@@ -1035,27 +1112,206 @@ const Estados = [
   }
 ];
 
-const Sequelize = require('sequelize');
-//const { Estado } = require('./db');
-// const cargarData = async () => {
-//   // await Estado.bulkCreate(Estados);
+const Generos = [
+  {
+    generoId: 1,
+    descripcion: "Masculino"
+  },
+  {
+    generoId: 2,
+    descripcion: "Femenino"
+  }
+];
 
-//   Estado.bulkCreate(Estados, {
-//     returning: true
-//   }).then((data2) => {
-//      console.log({ data2 });
-//   })
-//     .catch(error => {
-//       console.log({ error });
-//     });
+const Personas = [
+  {
+    personaId: 1,
+    nombre1: "Byron",
+    apellido1: "López",
+    fecha_nacimiento: "1991-07-18",
+    email: "blu.urizar@gmail.com",
+    generoId: 1
+  }
+];
 
-// }
+const Usuarios = [
+  {
+    usuarioId: 1,
+    personaId: 1,
+    user_name: "blopez",
+    password: bcrypt.hashSync('blopez', 10)
+  }
+];
 
+const UsuarioRoles=[
+  {
+    usuarioId: 1,
+    rolId: 1,
+    usuario_crea: 1
+  }
+];
+const Paises = [
+  {
+    paisId: 502,
+    descripcion: "GUATEMALA",
+    nacionalidad: "GUATEMALTECO",
+    usuario_crea: 1
+  }
+];
+
+const TiposDocumentos = [
+  {
+    tipo_documentoId: 1,
+    descripcion: "DPI",
+    usuario_crea: 1
+  },
+  {
+    tipo_documentoId: 2,
+    descripcion: "NIT",
+    usuario_crea: 1
+  }
+];
+
+const Accesos = [
+  {
+    accesoId: 1,
+    descripcion: "crear",
+    usuario_crea: 1
+  },
+  {
+    accesoId: 2,
+    descripcion: "Visualizar",
+    usuario_crea: 1
+  },
+  {
+    accesoId: 3,
+    descripcion: "Actualizar",
+    usuario_crea: 1
+  },
+  {
+    accesoId: 4,
+    descripcion: "Eliminar",
+    usuario_crea: 1
+  }
+];
+
+const Roles = [
+  {
+    rolId: 1,
+    nombre: "Administrador",
+    descripcion: "Administrador del sistema",
+    usuario_crea: 1
+  },
+  {
+    rolId: 2,
+    nombre: "Operador",
+    descripcion: "Encargado de llevar el control en determinada bodega",
+    usuario_crea: 1
+  }
+];
+
+const TiposTelefonos = [
+  {
+    tipo_telefonoId: 1,
+    descripcion: "Movil",
+    usuario_crea: 1
+  },
+  {
+    tipo_telefonoId: 2,
+    descripcion: "Fijo",
+    usuario_crea: 1
+  }
+];
+
+const EstadosCiviles = [
+  {
+    estado_civilId: 1,
+    descripcion: "Soltero/a",
+    usuario_crea: 1
+  },
+  {
+    estado_civilId: 2,
+    descripcion: "Comprometido/a",
+    usuario_crea: 1
+  },
+  {
+    estado_civilId: 3,
+    descripcion: "En Relación",
+    usuario_crea: 1
+  },
+  {
+    estado_civilId: 4,
+    descripcion: "Unión libre o unión de hecho",
+    usuario_crea: 1
+  },
+  {
+    estado_civilId: 5,
+    descripcion: "Separado/a",
+    usuario_crea: 1
+  },
+  {
+    estado_civilId: 6,
+    descripcion: "Divorciado/a",
+    usuario_crea: 1
+  },
+  {
+    estado_civilId: 7,
+    descripcion: "Viudo/a",
+    usuario_crea: 1
+  },
+  {
+    estado_civilId: 8,
+    descripcion: "Casado/a",
+    usuario_crea: 1
+  }
+];
+
+const TiposSangre = [
+  {
+    descripcion: "O Negativo",
+    usuario_crea: 1
+  },
+  {
+    descripcion: "O Positivo",
+    usuario_crea: 1
+  },
+  {
+    descripcion: "A Negativo",
+    usuario_crea: 1
+  },
+  {
+    descripcion: "A Positivo",
+    usuario_crea: 1
+  },
+  {
+    descripcion: "B Positivo",
+    usuario_crea: 1
+  },
+  {
+    descripcion: "AB Negativo",
+    usuario_crea: 1
+  },
+  {
+    descripcion: "AB Positivo",
+    usuario_crea: 1
+  }
+];
 module.exports = {
+  Estados,
+  Generos,
+  Personas,
+  Usuarios,
+  Paises,
   Departamentos,
   Municipios,
   Menus,
+  Accesos,
   MenuAccesos,
+  Roles,
+  UsuarioRoles,
   MenuAccesosRol,
-  Estados
+  TiposDocumentos,
+  TiposTelefonos,
+  EstadosCiviles,
+  TiposSangre
 }

@@ -29,7 +29,7 @@ list = async (req) => {
         return autorizado;
     }
     
-    if (!req.query.id && !req.query.estadoId && !req.query.generoId) {
+    if (!req.query.id && !req.query.estadoId && !req.query.generoId && !req.query.email) {
         response.code = 0;
         response.data = await Modelo.findAll();
         return response;
@@ -47,6 +47,10 @@ list = async (req) => {
     }
     if(generoId){
         query.generoId=generoId;
+    }
+    
+    if(email){
+        query.email=email;
     }
 
     if (!id) {

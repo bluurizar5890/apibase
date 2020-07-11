@@ -1,11 +1,12 @@
-const { Usuario } = require('../../../store/db');
+const { MenuAcceso } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
-const bcrypt = require('bcrypt')
+const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
-const MenuId=17;
-const Modelo = Usuario;
-const tabla = 'usuario';
+const MenuId=19;
+const Modelo = MenuAcceso;
+const tabla = 'menu_acceso';
 let response = {};
+
 
 const insert = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,1);
@@ -13,16 +14,14 @@ const insert = async (req) => {
         return autorizado;
     }
     
-    const dataUsuario=req.body;
     let { usuarioId } = req.user;
-    dataUsuario.usuario_crea = usuarioId;
-    const password=dataUsuario.password;
-    dataUsuario.password= bcrypt.hashSync(password, 10);
-    const result = await Modelo.create(dataUsuario);
+    req.body.usuario_crea = usuarioId;
+    const result = await Modelo.create(req.body);
     response.code = 0;
     response.data = result;
     return response;
 }
+
 
 list = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,3);
@@ -30,13 +29,13 @@ list = async (req) => {
         return autorizado;
     }
     
-    if (!req.query.id && !req.query.estadoId && !req.query.personaId) {
+    if (!req.query.id && !req.query.estadoId && !req.query.menuId && !req.query.accesoId) {
         response.code = 0;
         response.data = await Modelo.findAll();
         return response;
     }
 
-    const { id, estadoId,personaId,email } = req.query;
+    const { id, estadoId,menuId,accesoId } = req.query;
     let query = {};
     if (estadoId) {
         let estados = estadoId.split(';');
@@ -47,18 +46,21 @@ list = async (req) => {
         query.estadoId = arrayEstado;
     }
 
-    if(personaId){
-        query.personaId=personaId;
+    if(menuId){
+        query.menuId=menuId;
     }
 
+    if(accesoId){
+        query.accesoId=accesoId;
+    }
 
     if (!id) {
         response.code = 0;
-        response.data = await Modelo.findAll({ where: query });
+        response.data = await Modelo.findAll({ where: query});
         return response;
     } else {
         if (Number(id) > 0) {
-            query.usuarioId = Number(id);
+            query.menu_accesoId = Number(id);
             response.code = 0;
             response.data = await Modelo.findOne({ where: query });
             return response;
@@ -75,20 +77,23 @@ const update = async (req) => {
     if(autorizado!==true){
         return autorizado;
     }
-    const { usuarioId } = req.body;
+    const { menu_accesoId } = req.body;
     const dataAnterior = await Modelo.findOne({
-        where: { usuarioId }
+        where: { menu_accesoId }
     });
 
 
     if (dataAnterior) {
+        let { usuarioId } = req.user;
+        req.body.usuario_ult_mod = usuarioId;
         const resultado = await Modelo.update(req.body, {
             where: {
-                usuarioId
+                menu_accesoId
             }
         });
         if (resultado > 0) {
-            await registrarBitacora(tabla, usuarioId, dataAnterior.dataValues, req.body);
+            await registrarBitacora(tabla, menu_accesoId, dataAnterior.dataValues, req.body);
+
             //Actualizar fecha de ultima modificacion
             let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
             const data = {
@@ -96,7 +101,7 @@ const update = async (req) => {
             }
             const resultadoUpdateFecha = await Modelo.update(data, {
                 where: {
-                    usuarioId
+                    menu_accesoId
                 }
             });
 
@@ -117,6 +122,6 @@ const update = async (req) => {
 
 module.exports = {
     list,
-    insert,
-    update
+    update,
+    insert
 }

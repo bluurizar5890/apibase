@@ -29,15 +29,6 @@ module.exports = (sequelize, type) => {
                     notEmpty: true
                 }
             },
-            email: {
-                type: type.STRING(150),
-                allowNull: false,
-                unique: true,
-                validate: {
-                    notEmpty: true,
-                    isEmail: true
-                }
-            },
             forzar_cambio_password:{
                 type: type.BOOLEAN,
                 allowNull: false,
