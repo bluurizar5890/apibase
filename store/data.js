@@ -21,7 +21,7 @@ const Departamentos = [
   { departamentoId: 19, paisId: 502, descripcion: "ZACAPA", usuario_crea: 1 },
   { departamentoId: 20, paisId: 502, descripcion: "CHIQUIMULA", usuario_crea: 1 },
   { departamentoId: 21, paisId: 502, descripcion: "JALAPA", usuario_crea: 1 },
-  { departamentoId: 22, paisId: 502, descripcion: "JUTIAPA,usuario_crea:1" }
+  { departamentoId: 22, paisId: 502, descripcion: "JUTIAPA" }
 ];
 
 const Municipios = [
