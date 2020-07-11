@@ -74,74 +74,34 @@ list = async (req) => {
 }
 */
 list = async (req) => {
-    Rol.hasMany(RolMenuAcceso, { foreignKey: 'rolId' });
-    RolMenuAcceso.hasMany(MenuAcceso, { foreignKey: 'menu_accesoId' });
-    MenuAcceso.hasOne(Menu, { foreignKey: 'menuId' });
-    //MenuAcceso.hasMany(Accesos, { foreignKey: 'menu_accesoId' });
-
-
-    let prueba = Rol.findAll({
-        include: [{
-            model: RolMenuAcceso,
-            required: false,
-            include: [{
-                model: MenuAcceso,
-                required: false,
-                include: [{
-                    model: Menu,
-                    required: false,
-                }]
-            }]
-        }]
-    });
-    return prueba;
-
     let autorizado = await validarpermiso(req, MenuId, 3);
     if (autorizado !== true) {
         return autorizado;
     }
 
-    if (!req.query.id && !req.query.estadoId && !req.query.rolId && !req.query.menu_accesoId) {
-        response.code = 0;
-        response.data = await Modelo.findAll();
-        return response;
-    }
 
-    const { id, estadoId, rolId, menu_accesoId } = req.query;
-    let query = {};
-    if (estadoId) {
-        let estados = estadoId.split(';');
-        let arrayEstado = new Array();
-        estados.map((item) => {
-            arrayEstado.push(Number(item));
-        });
-        query.estadoId = arrayEstado;
-    }
+    Rol.hasMany(RolMenuAcceso, { foreignKey: 'rolId' });
+    RolMenuAcceso.hasMany(MenuAcceso, { foreignKey: 'menu_accesoId' });
+    MenuAcceso.hasOne(Menu, { foreignKey: 'menuId' });
 
-    if (rolId) {
-        query.rolId = rolId;
-    }
 
-    if (menu_accesoId) {
-        query.menu_accesoId = menu_accesoId;
-    }
-
-    if (!id) {
-        response.code = 0;
-        response.data = await Modelo.findAll({ where: query });
-        return response;
-    } else {
-        if (Number(id) > 0) {
-            query.rol_menu_accesoId = Number(id);
-            response.code = 0;
-            response.data = await Modelo.findOne({ where: query });
-            return response;
-        } else {
-            response.code = -1;
-            response.data = "Debe de especificar un codigo";
-            return response;
-        }
-    }
+    let prueba =await Rol.findAll({
+        include: [{
+            model: RolMenuAcceso,
+            required: true,
+            include: [{
+                model: MenuAcceso,
+                required: true,
+                include: [{
+                    model: Menu,
+                    required: true,
+                }]
+            }]
+        }]
+    });
+    response.code = 0;
+    response.data = prueba;
+    return response;
 }
 
 const update = async (req) => {
