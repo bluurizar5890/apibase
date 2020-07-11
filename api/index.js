@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 require("../store/db");
 const config = require('../config');
 const errors = require('../network/errors');
-
+const cors = require('cors');
 
 
 const Estado = require('./components/estado/network');
@@ -36,7 +36,8 @@ require('../auth/strategies/jwt');
 const validacionPermisos = require('../auth/middleware/permisos');
 const app = express();
 app.use(bodyParser.json());
-
+app.use(passport.initialize());
+app.use(cors());
 app.use('/api/estado', passport.authenticate('jwt', { session: false }), Estado);
 app.use('/api/municipio', passport.authenticate('jwt', { session: false }), Municipio);
 app.use('/api/pais', passport.authenticate('jwt', { session: false }), Pais);
