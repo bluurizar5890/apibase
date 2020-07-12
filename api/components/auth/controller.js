@@ -3,9 +3,12 @@ const bcrypt = require('bcrypt');
 const auth = require('../../../auth');
 let response = {};
 
-const login = async (req) => {
-    const user = await Usuario.findOne({ where: { user_name: req.body.user_name } });
+const THIRTY_DAYS_IN_SEC = 2592000;
+const TWO_HOURS_IN_SEC = 7200;
 
+const login = async (req,res) => {
+    const user = await Usuario.findOne({ where: { user_name: req.body.user_name } });
+    const { rememberMe } = false;
     if (!user) {
         response.code = -1;
         response.data = "Credenciales inválidas";
@@ -15,8 +18,15 @@ const login = async (req) => {
         .then((sonIguales) => {
             if (sonIguales === true) {
                 const {usuarioId}=user;
+                const token= auth.sign({usuarioId});
                 response.code = 0;
-                response.data = auth.sign({usuarioId});
+                response.data =token;
+                
+                 res.cookie("mitoken",token,{
+                    httpOnly:true,
+                    maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC
+                 });
+                 
                 return response;
             }
             else {
@@ -27,7 +37,7 @@ const login = async (req) => {
         })
         .catch((error) => {
             response.code = -1;
-            response.data = "No fue posible realizar la autenticación";
+            response.data = "No fue posible realizar la autenticación" +error;
             return response;
         });
 }

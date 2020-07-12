@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser=require('cookie-parser');
 require("../store/db");
 const config = require('../config');
 const errors = require('../network/errors');
@@ -36,6 +37,7 @@ require('../auth/strategies/jwt');
 const validacionPermisos = require('../auth/middleware/permisos');
 const app = express();
 app.use(bodyParser.json());
+app.use(cookieParser());
 app.use(passport.initialize());
 app.use(cors());
 app.use('/api/estado', passport.authenticate('jwt', { session: false }), Estado);

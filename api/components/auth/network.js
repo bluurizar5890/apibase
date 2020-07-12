@@ -4,7 +4,7 @@ const controller = require('./controller');
 const router = express.Router();
 
 const login = (req, res, next) => {
-    controller.login(req)
+    controller.login(req,res)
         .then((data) => {
             response.success(req, res, data, 200);
         })
