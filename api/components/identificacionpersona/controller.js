@@ -14,6 +14,15 @@ const insert = async (req) => {
         return autorizado;
     }
     
+    const { numero_identificacion } = req.body;
+    const existe = await Modelo.findOne({ where:{numero_identificacion},attributes:['identificacion_personaId'] });
+
+    if (existe) {
+        response.code = -1;
+        response.data = "El número de identificación ya existe por favor verifique";
+        return response;
+    }
+
     let { usuarioId } = req.user;
     req.body.usuario_crea = usuarioId;
     const result = await Modelo.create(req.body);
@@ -77,7 +86,24 @@ const update = async (req) => {
     if(autorizado!==true){
         return autorizado;
     }
+
     const { identificacion_personaId } = req.body;
+    const { numero_identificacion } = req.body;
+    const existe = await Modelo.findOne(
+        { where: 
+                {
+                    numero_identificacion,
+                    identificacion_personaId: {[Op.ne]:identificacion_personaId}
+                },
+            attributes:['identificacion_personaId'] 
+        });
+
+    if (existe) {
+        response.code = -1;
+        response.data = "El nuevo número de identificación ya existe, por favor verifique";
+        return response;
+    }
+
     const dataAnterior = await Modelo.findOne({
         where: { identificacion_personaId }
     });

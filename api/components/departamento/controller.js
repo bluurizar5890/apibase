@@ -48,7 +48,7 @@ list = async (req) => {
 
     if (!id) {
         response.code = 0;
-        response.data = await Modelo.findAll({ where: query});
+        response.data = await Modelo.findAll({ where: query,attributes: [['departamentoId', 'value'],["descripcion","label"]]});
         return response;
     } else {
         if (Number(id) > 0) {

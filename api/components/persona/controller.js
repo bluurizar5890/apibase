@@ -1,19 +1,28 @@
+var {Op} = require('sequelize');
 const { Persona } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
-const MenuId=12;
+const MenuId = 12;
 const Modelo = Persona;
 const tabla = 'persona';
 let response = {};
 
 
 const insert = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,1);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 1);
+    if (autorizado !== true) {
         return autorizado;
     }
-    
+    const { email } = req.body;
+    const persona = await Modelo.findOne({ where:{email},attributes:['personaId'] });
+
+    if (persona) {
+        response.code = -1;
+        response.data = "El correo electrónico enviado ya existe, por favor verifique";
+        return response;
+    }
+
     let { usuarioId } = req.user;
     req.body.usuario_crea = usuarioId;
     const result = await Modelo.create(req.body);
@@ -24,18 +33,18 @@ const insert = async (req) => {
 
 
 list = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,3);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 3);
+    if (autorizado !== true) {
         return autorizado;
     }
-    
+
     if (!req.query.id && !req.query.estadoId && !req.query.generoId && !req.query.email) {
         response.code = 0;
         response.data = await Modelo.findAll();
         return response;
     }
 
-    const { id, estadoId,generoId} = req.query;
+    const { id, estadoId, generoId } = req.query;
     let query = {};
     if (estadoId) {
         let estados = estadoId.split(';');
@@ -45,17 +54,17 @@ list = async (req) => {
         });
         query.estadoId = arrayEstado;
     }
-    if(generoId){
-        query.generoId=generoId;
+    if (generoId) {
+        query.generoId = generoId;
     }
-    
-    if(email){
-        query.email=email;
+
+    if (email) {
+        query.email = email;
     }
 
     if (!id) {
         response.code = 0;
-        response.data = await Modelo.findAll({ where: query});
+        response.data = await Modelo.findAll({ where: query });
         return response;
     } else {
         if (Number(id) > 0) {
@@ -72,11 +81,27 @@ list = async (req) => {
 }
 
 const update = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,2);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 2);
+    if (autorizado !== true) {
         return autorizado;
     }
     const { personaId } = req.body;
+    const { email } = req.body;
+    const persona = await Modelo.findOne(
+        { where: 
+                {
+                    email,
+                    personaId: {[Op.ne]:personaId}
+                },
+            attributes:['personaId'] 
+        });
+
+    if (persona) {
+        response.code = -1;
+        response.data = "El nuevo correo electrónico enviado ya existe, por favor verifique";
+        return response;
+    }
+
     const dataAnterior = await Modelo.findOne({
         where: { personaId }
     });

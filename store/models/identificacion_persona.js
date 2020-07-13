@@ -24,6 +24,7 @@ module.exports = (sequelize, type) => {
             numero_identificacion: {
                 type: type.STRING(50),
                 allowNull: false,
+                unique: true,
                 validate: {
                     notEmpty: true
                 }
