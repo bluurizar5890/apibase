@@ -1108,7 +1108,8 @@ const Estados = [
   },
   {
     estadoId: 3,
-    descripcion: "Eliminado"
+    descripcion: "Eliminado",
+    activo:false
   }
 ];
 

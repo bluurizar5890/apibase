@@ -1,21 +1,21 @@
-const { IdentificacionPersona } = require('../../../store/db');
+const { IdentificacionPersona, TipoDocumento,Estado } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
-const MenuId=13;
+const MenuId = 13;
 const Modelo = IdentificacionPersona;
 const tabla = 'identificacion_persona';
 let response = {};
 
 
 const insert = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,1);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 1);
+    if (autorizado !== true) {
         return autorizado;
     }
-    
+
     const { numero_identificacion } = req.body;
-    const existe = await Modelo.findOne({ where:{numero_identificacion},attributes:['identificacion_personaId'] });
+    const existe = await Modelo.findOne({ where: { numero_identificacion }, attributes: ['identificacion_personaId'] });
 
     if (existe) {
         response.code = -1;
@@ -31,20 +31,63 @@ const insert = async (req) => {
     return response;
 }
 
-
-list = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,3);
-    if(autorizado!==true){
+list2 = async (req) => {
+    let autorizado = await validarpermiso(req, MenuId, 3);
+    if (autorizado !== true) {
         return autorizado;
     }
-    
+
+    let prueba = await consultar();
+    response.code = 0;
+    response.data = prueba;
+    return response;
+}
+
+const consultar = async (query) => {
+    if (query) {
+        return await IdentificacionPersona.findAll({
+            include: [{
+                model: TipoDocumento,
+                required: true
+            },
+            {
+                model: Estado,
+                required: true
+            }],
+            where: [query],
+            order: [
+                ['identificacion_personaId', 'ASC']
+            ]
+        });
+    } else {
+        return await IdentificacionPersona.findAll({
+            include: [{
+                model: TipoDocumento,
+                required: true
+            },{
+                model: Estado,
+                required: true
+            }],
+            order: [
+                ['identificacion_personaId', 'ASC']
+            ]
+        });
+    }
+}
+
+list = async (req) => {
+    let autorizado = await validarpermiso(req, MenuId, 3);
+    if (autorizado !== true) {
+        return autorizado;
+    }
+
     if (!req.query.id && !req.query.estadoId && !req.query.personaId && !req.query.tipodocumentoId) {
         response.code = 0;
-        response.data = await Modelo.findAll();
+        response.data = await consultar();;
         return response;
     }
 
-    const { id, estadoId,personaId,tipodocumentoId} = req.query;
+    const { id, estadoId, personaId, tipodocumentoId } = req.query;
     let query = {};
     if (estadoId) {
         let estados = estadoId.split(';');
@@ -54,48 +97,44 @@ list = async (req) => {
         });
         query.estadoId = arrayEstado;
     }
-    if(personaId){
-        query.personaId=personaId;
+    if (personaId) {
+        query.personaId = personaId;
     }
 
-    if(tipodocumentoId){
-        query.tipo_documentoId=tipodocumentoId;
+    if (tipodocumentoId) {
+        query.tipo_documentoId = tipodocumentoId;
     }
 
-
-    if (!id) {
-        response.code = 0;
-        response.data = await Modelo.findAll({ where: query});
-        return response;
-    } else {
+    if (id) {
         if (Number(id) > 0) {
             query.identificacion_personaId = Number(id);
-            response.code = 0;
-            response.data = await Modelo.findOne({ where: query });
-            return response;
         } else {
             response.code = -1;
             response.data = "Debe de especificar un codigo";
             return response;
         }
     }
+    response.code = 0;
+    response.data = await consultar(query);// Modelo.findAll({ where: query});
+    return response;
 }
 
 const update = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,2);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 2);
+    if (autorizado !== true) {
         return autorizado;
     }
 
     const { identificacion_personaId } = req.body;
     const { numero_identificacion } = req.body;
     const existe = await Modelo.findOne(
-        { where: 
-                {
-                    numero_identificacion,
-                    identificacion_personaId: {[Op.ne]:identificacion_personaId}
-                },
-            attributes:['identificacion_personaId'] 
+        {
+            where:
+            {
+                numero_identificacion,
+                identificacion_personaId: { [Op.ne]: identificacion_personaId }
+            },
+            attributes: ['identificacion_personaId']
         });
 
     if (existe) {

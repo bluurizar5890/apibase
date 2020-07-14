@@ -65,6 +65,13 @@ const UsuarioRol = UsuarioRolModel(confiBd, Sequelize);
 const FotoUsuario = FotoUsuarioModel(confiBd, Sequelize);
 const TelefonoPersona = TelefonoPersonaModel(confiBd, Sequelize);
 
+
+//Asociaciones
+TipoDocumento.hasOne(IdentificacionPersona,{ foreignKey: 'tipo_documentoId' });
+IdentificacionPersona.belongsTo(TipoDocumento,{ foreignKey: 'tipo_documentoId' });
+Estado.hasOne(IdentificacionPersona,{ foreignKey: 'estadoId' });
+IdentificacionPersona.belongsTo(Estado,{ foreignKey: 'estadoId' });
+
 try {
   confiBd.sync({
     force: false,
