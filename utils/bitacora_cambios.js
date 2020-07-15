@@ -6,6 +6,7 @@ const registrarBitacora = async (tabla, modificadoId, dataAnterior, dataNueva) =
         try {
 
 //            delete dataNueva.fecha_ult_mod;
+console.log();
             let keys = Object.keys(dataNueva);
             let {usuario_ult_mod}=dataNueva;
 
@@ -30,6 +31,7 @@ const registrarBitacora = async (tabla, modificadoId, dataAnterior, dataNueva) =
                         usuario_crea: usuario_ult_mod
                     }
                     resultado = await BitacoraCambios.create(data);
+                    console.log({resultado});
                 }
             });
 
