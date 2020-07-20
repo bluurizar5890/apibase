@@ -1,3 +1,4 @@
+var {Op} = require('sequelize');
 const { IdentificacionPersona, TipoDocumento,Estado } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
@@ -28,18 +29,6 @@ const insert = async (req) => {
     const result = await Modelo.create(req.body);
     response.code = 0;
     response.data = result;
-    return response;
-}
-
-list2 = async (req) => {
-    let autorizado = await validarpermiso(req, MenuId, 3);
-    if (autorizado !== true) {
-        return autorizado;
-    }
-
-    let prueba = await consultar();
-    response.code = 0;
-    response.data = prueba;
     return response;
 }
 
@@ -119,6 +108,59 @@ list = async (req) => {
     return response;
 }
 
+const eliminar=async(req)=>{
+    let autorizado = await validarpermiso(req, MenuId, 3);
+    if (autorizado !== true) {
+        return autorizado;
+    }
+    let identificacion_personaId=req.params.id;
+    console.log({identificacion_personaId});
+    const dataAnterior = await Modelo.findOne({
+        where: { identificacion_personaId }
+    });
+
+    const dataEliminar={
+        estadoId:3
+    };
+    if (dataAnterior) {
+        let { usuarioId } = req.user;
+        dataEliminar.usuario_ult_mod = usuarioId;
+        const resultado = await Modelo.update(dataEliminar, {
+            where: {
+                identificacion_personaId
+            }
+        });
+        if (resultado > 0) {
+            await registrarBitacora(tabla, identificacion_personaId, dataAnterior.dataValues, dataEliminar);
+
+            //Actualizar fecha de ultima modificacion
+            let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
+            const data = {
+                fecha_ult_mod
+            }
+            const resultadoUpdateFecha = await Modelo.update(data, {
+                where: {
+                    identificacion_personaId
+                }
+            });
+
+            response.code = 0;
+            response.data = "Elemento eliminado exitosamente";
+            return response;
+        } else {
+            response.code = -1;
+            response.data = "No fue posible eliminar el elemento";
+            return response;
+        }
+    } else {
+        response.code = -1;
+        response.data = "No existe información para eliminar con los parametros especificados";
+        return response;
+    }
+
+
+    
+}
 const update = async (req) => {
     let autorizado = await validarpermiso(req, MenuId, 2);
     if (autorizado !== true) {
@@ -166,7 +208,7 @@ const update = async (req) => {
             }
             const resultadoUpdateFecha = await Modelo.update(data, {
                 where: {
-                    personaId
+                    identificacion_personaId
                 }
             });
 
@@ -188,5 +230,6 @@ const update = async (req) => {
 module.exports = {
     list,
     update,
-    insert
+    insert,
+    eliminar
 }
