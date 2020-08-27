@@ -27,7 +27,7 @@ const insert = async (req) => {
     let { usuarioId } = req.user;
     req.body.usuario_crea = usuarioId;
     const result = await Modelo.create(req.body);
-    response.code = 0;
+    response.code = 1;
     response.data = result;
     return response;
 }
@@ -71,7 +71,7 @@ list = async (req) => {
     }
 
     if (!req.query.id && !req.query.estadoId && !req.query.personaId && !req.query.tipodocumentoId) {
-        response.code = 0;
+        response.code = 1;
         response.data = await consultar();;
         return response;
     }
@@ -103,7 +103,7 @@ list = async (req) => {
             return response;
         }
     }
-    response.code = 0;
+    response.code = 1;
     response.data = await consultar(query);// Modelo.findAll({ where: query});
     return response;
 }
@@ -144,7 +144,7 @@ const eliminar=async(req)=>{
                 }
             });
 
-            response.code = 0;
+            response.code = 1;
             response.data = "Elemento eliminado exitosamente";
             return response;
         } else {
@@ -212,7 +212,7 @@ const update = async (req) => {
                 }
             });
 
-            response.code = 0;
+            response.code = 1;
             response.data = "Información Actualizado exitosamente";
             return response;
         } else {

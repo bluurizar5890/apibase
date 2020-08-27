@@ -19,7 +19,7 @@ const login = async (req,res) => {
             if (sonIguales === true) {
                 const {usuarioId}=user;
                 const token= auth.sign({usuarioId});
-                response.code = 0;
+                response.code = 1;
                 response.data =token;
                 
                  res.cookie("mitoken",token,{

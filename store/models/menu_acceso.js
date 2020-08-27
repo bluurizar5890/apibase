@@ -9,17 +9,17 @@ module.exports = (sequelize, type) => {
             },
             menuId: {
                 type: type.INTEGER,
-                references: {
-                    model: "cat_menu",
-                    key: "menuId",
-                }
+                // references: {
+                //     model: "cat_menu",
+                //     key: "menuId",
+                // }
             },
             accesoId: {
                 type: type.INTEGER,
-                references: {
-                    model: "cat_acceso",
-                    key: "accesoId",
-                }
+                // references: {
+                //     model: "cat_acceso",
+                //     key: "accesoId",
+                // }
             },
             usuario_crea: {
                 type: type.INTEGER

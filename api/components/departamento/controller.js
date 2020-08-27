@@ -17,7 +17,7 @@ const insert = async (req) => {
     let { usuarioId } = req.user;
     req.body.usuario_crea = usuarioId;
     const result = await Modelo.create(req.body);
-    response.code = 0;
+    response.code = 1;
     response.data = result;
     return response;
 }
@@ -29,13 +29,13 @@ list = async (req) => {
         return autorizado;
     }
     
-    if (!req.query.id && !req.query.estadoId) {
-        response.code = 0;
+    if (!req.query.id && !req.query.estadoId && !req.query.paisId) {
+        response.code = 1;
         response.data = await Modelo.findAll();
         return response;
     }
 
-    const { id, estadoId} = req.query;
+    const { id, estadoId,paisId} = req.query;
     let query = {};
     if (estadoId) {
         let estados = estadoId.split(';');
@@ -46,14 +46,18 @@ list = async (req) => {
         query.estadoId = arrayEstado;
     }
 
+    if (paisId) {
+        query.paisId = paisId;
+    }
+
     if (!id) {
-        response.code = 0;
-        response.data = await Modelo.findAll({ where: query,attributes: [['departamentoId', 'value'],["descripcion","label"]]});
+        response.code = 1;
+        response.data = await Modelo.findAll({ where: query});
         return response;
     } else {
         if (Number(id) > 0) {
             query.departamentoId = Number(id);
-            response.code = 0;
+            response.code = 1;
             response.data = await Modelo.findOne({ where: query });
             return response;
         } else {
@@ -76,20 +80,21 @@ const update = async (req) => {
 
 
     if (dataAnterior) {
-        let { usuarioId } = req.user;
-        req.body.usuario_ult_mod = usuarioId;
         const resultado = await Modelo.update(req.body, {
             where: {
                 departamentoId
             }
         });
         if (resultado > 0) {
+            let { usuarioId } = req.user;
+            req.body.usuario_ult_mod = usuarioId;
             await registrarBitacora(tabla, departamentoId, dataAnterior.dataValues, req.body);
 
             //Actualizar fecha de ultima modificacion
             let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
             const data = {
-                fecha_ult_mod
+                fecha_ult_mod,
+                usuario_ult_mod:usuarioId
             }
             const resultadoUpdateFecha = await Modelo.update(data, {
                 where: {
@@ -97,11 +102,11 @@ const update = async (req) => {
                 }
             });
 
-            response.code = 0;
+            response.code = 1;
             response.data = "Información Actualizado exitosamente";
             return response;
         } else {
-            response.code = -1;
+            response.code = 0;
             response.data = "No existen cambios para aplicar";
             return response;
         }

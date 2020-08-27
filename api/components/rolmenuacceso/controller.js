@@ -14,90 +14,54 @@ const insert = async (req) => {
     if (autorizado !== true) {
         return autorizado;
     }
-
     let { usuarioId } = req.user;
     req.body.usuario_crea = usuarioId;
-    const result = await Modelo.create(req.body);
-    response.code = 0;
-    response.data = result;
+    const{rolId,menu_accesoId}=req.body;
+    const dataActual = await Modelo.findOne({
+        where: { rolId,menu_accesoId }
+    });
+
+    if(!dataActual){
+        const result = await Modelo.create(req.body);
+        response.code = 1;
+        response.data = result;
+    }else{
+        response.code = -1;
+        response.data = "El rol ya tiene asignado el acceso";
+    }
     return response;
 }
 
-/*
-list = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,3);
-    if(autorizado!==true){
-        return autorizado;
-    }
-    
-    if (!req.query.id && !req.query.estadoId && !req.query.rolId && !req.query.menu_accesoId) {
-        response.code = 0;
-        response.data = await Modelo.findAll();
-        return response;
-    }
 
-    const { id, estadoId,rolId,menu_accesoId } = req.query;
-    let query = {};
-    if (estadoId) {
-        let estados = estadoId.split(';');
-        let arrayEstado = new Array();
-        estados.map((item) => {
-            arrayEstado.push(Number(item));
-        });
-        query.estadoId = arrayEstado;
-    }
-
-    if(rolId){
-        query.rolId=rolId;
-    }
-
-    if(menu_accesoId){
-        query.menu_accesoId=menu_accesoId;
-    }
-
-    if (!id) {
-        response.code = 0;
-        response.data = await Modelo.findAll({ where: query});
-        return response;
-    } else {
-        if (Number(id) > 0) {
-            query.rol_menu_accesoId = Number(id);
-            response.code = 0;
-            response.data = await Modelo.findOne({ where: query });
-            return response;
-        } else {
-            response.code = -1;
-            response.data = "Debe de especificar un codigo";
-            return response;
-        }
-    }
-}
-*/
 list = async (req) => {
     let autorizado = await validarpermiso(req, MenuId, 3);
     if (autorizado !== true) {
         return autorizado;
     }
 
+    const{rolId}=req.query;
 
-    Rol.hasMany(RolMenuAcceso, { foreignKey: 'rolId' });
-    RolMenuAcceso.hasMany(MenuAcceso, { foreignKey: 'menu_accesoId' });
-    MenuAcceso.hasOne(Menu, { foreignKey: 'menuId' });
-
-
-    let prueba =await Rol.findAll({
-        include: [{
-            model: RolMenuAcceso,
-            required: true,
+    let prueba =await RolMenuAcceso.findAll({
             include: [{
                 model: MenuAcceso,
                 required: true,
-                include: [{
+                include: [
+                    {
                     model: Menu,
                     required: true,
-                }]
-            }]
-        }]
+                    attributes: ['menuId','menu_padreId','descripcion', 'estadoId'],
+                },
+                {
+                    model: Acceso,
+                    required: true,
+                    attributes: ['accesoId', 'descripcion', 'estadoId'],
+                }
+            ]
+            }],
+            where:{rolId},
+            order:[
+                ['rol_menu_accesoId','ASC']
+            ]
     });
     response.code = 0;
     response.data = prueba;
@@ -109,31 +73,44 @@ const update = async (req) => {
     if (autorizado !== true) {
         return autorizado;
     }
-    const { rol_menu_accesoId } = req.body;
+    const { rol_menu_accesoId,menu_accesoId } = req.body;
     const dataAnterior = await Modelo.findOne({
         where: { rol_menu_accesoId }
     });
 
 
     if (dataAnterior) {
-        let { usuarioId } = req.user;
-        req.body.usuario_ult_mod = usuarioId;
+        const {menu_accesoId:menu_accesoIdActual,rolId }=dataAnterior;
+
+        const validarAcceso = await Modelo.findOne({
+            where: { menu_accesoId,rolId }
+        });
+
+        if(validarAcceso && menu_accesoId!==menu_accesoIdActual){
+            response.code = 0;
+            response.data = "El acceso que intenta actualizar, el rol ya lo tiene asignado por favor verifique";
+            return response;
+        }
+
         const resultado = await Modelo.update(req.body, {
             where: {
                 rol_menu_accesoId
             }
         });
         if (resultado > 0) {
+            let { usuarioId } = req.user;
+            req.body.usuario_ult_mod = usuarioId;
             await registrarBitacora(tabla, rol_menu_accesoId, dataAnterior.dataValues, req.body);
 
             //Actualizar fecha de ultima modificacion
             let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
             const data = {
-                fecha_ult_mod
+                fecha_ult_mod,
+                usuario_ult_mod:usuarioId
             }
             const resultadoUpdateFecha = await Modelo.update(data, {
                 where: {
-                    rol_menu_accesoId
+                    rol_menu_accesoId,
                 }
             });
 
@@ -141,7 +118,7 @@ const update = async (req) => {
             response.data = "Información Actualizado exitosamente";
             return response;
         } else {
-            response.code = -1;
+            response.code = 0;
             response.data = "No existen cambios para aplicar";
             return response;
         }

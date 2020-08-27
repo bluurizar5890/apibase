@@ -67,10 +67,17 @@ const TelefonoPersona = TelefonoPersonaModel(confiBd, Sequelize);
 
 
 //Asociaciones
-TipoDocumento.hasOne(IdentificacionPersona,{ foreignKey: 'tipo_documentoId' });
-IdentificacionPersona.belongsTo(TipoDocumento,{ foreignKey: 'tipo_documentoId' });
-Estado.hasOne(IdentificacionPersona,{ foreignKey: 'estadoId' });
-IdentificacionPersona.belongsTo(Estado,{ foreignKey: 'estadoId' });
+// TipoDocumento.hasOne(IdentificacionPersona,{ foreignKey: 'tipo_documentoId' });
+// IdentificacionPersona.belongsTo(TipoDocumento,{ foreignKey: 'tipo_documentoId' });
+// Estado.hasOne(IdentificacionPersona,{ foreignKey: 'estadoId' });
+// IdentificacionPersona.belongsTo(Estado,{ foreignKey: 'estadoId' });
+
+MenuAcceso.belongsTo(RolMenuAcceso,{ foreignKey: 'menu_accesoId',sourceKey: 'menu_accesoId'});
+RolMenuAcceso.hasMany(MenuAcceso,{ foreignKey: 'menu_accesoId',sourceKey: 'menu_accesoId'});
+Menu.belongsTo(MenuAcceso,{ foreignKey: 'menuId',sourceKey: 'menuId'});
+MenuAcceso.hasOne(Menu,{ foreignKey: 'menuId',sourceKey: 'menuId'});
+Acceso.belongsTo(MenuAcceso,{ foreignKey: 'accesoId',sourceKey: 'accesoId'});
+MenuAcceso.hasOne(Acceso,{ foreignKey: 'accesoId',sourceKey: 'accesoId'});
 
 try {
   confiBd.sync({

@@ -16,10 +16,10 @@ module.exports = (sequelize, type) => {
             },
             menu_accesoId: {
                 type: type.INTEGER,
-                references: {
-                    model: "menu_acceso",
-                    key: "menu_accesoId",
-                }
+                // references: {
+                //     model: "menu_acceso",
+                //     key: "menu_accesoId",
+                // }
             },
             usuario_crea: {
                 type: type.INTEGER

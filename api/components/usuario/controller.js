@@ -19,7 +19,7 @@ const insert = async (req) => {
     const password=dataUsuario.password;
     dataUsuario.password= bcrypt.hashSync(password, 10);
     const result = await Modelo.create(dataUsuario);
-    response.code = 0;
+    response.code = 1;
     response.data = result;
     return response;
 }
@@ -31,7 +31,7 @@ list = async (req) => {
     }
     
     if (!req.query.id && !req.query.estadoId && !req.query.personaId) {
-        response.code = 0;
+        response.code = 1;
         response.data = await Modelo.findAll();
         return response;
     }
@@ -53,13 +53,13 @@ list = async (req) => {
 
 
     if (!id) {
-        response.code = 0;
+        response.code = 1;
         response.data = await Modelo.findAll({ where: query });
         return response;
     } else {
         if (Number(id) > 0) {
             query.usuarioId = Number(id);
-            response.code = 0;
+            response.code = 1;
             response.data = await Modelo.findOne({ where: query });
             return response;
         } else {
@@ -100,7 +100,7 @@ const update = async (req) => {
                 }
             });
 
-            response.code = 0;
+            response.code = 1;
             response.data = "Información Actualizado exitosamente";
             return response;
         } else {

@@ -14,7 +14,7 @@ const insert = async (req) => {
     }
 
     const result = await Modelo.create(req.body);
-    response.code = 0;
+    response.code = 1;
     response.data = result;
     return response;
 }
@@ -25,7 +25,7 @@ list = async (req) => {
         return autorizado;
     }
        
-    response.code = 0;
+    response.code = 1;
     response.data = await Modelo.findAll({ where: { activo: true } });
     return response;
 }
@@ -41,7 +41,6 @@ const update = async (req) => {
         where: { estadoId }
     });
 
-
     if (dataAnterior) {
         const resultado = await Modelo.update(req.body, {
             where: {
@@ -49,12 +48,14 @@ const update = async (req) => {
             }
         });
         if (resultado > 0) {
+            let { usuarioId } = req.user;
+            req.body.usuario_ult_mod = usuarioId;
             await registrarBitacora(tabla, estadoId, dataAnterior.dataValues, req.body);
-            response.code = 0;
+            response.code = 1;
             response.data = "Información Actualizado exitosamente";
             return response;
         } else {
-            response.code = -1;
+            response.code = 0;
             response.data = "No existen cambios para aplicar";
             return response;
         }

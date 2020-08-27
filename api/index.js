@@ -72,6 +72,6 @@ app.listen(config.api.port, () => {
 
 /*
 let response = {};
-response.code = 0; "0 registro exitoso"|"-1 Alerta"|"-2 Error"
+response.code = 1; "0 registro exitoso"|"-1 Alerta"|"-2 Error"
 response.message ="";
 */
