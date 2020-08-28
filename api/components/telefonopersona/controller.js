@@ -1,4 +1,5 @@
-const { TelefonoPersona } = require('../../../store/db');
+var { Op } = require('sequelize');
+const { TelefonoPersona, TipoTelefono, Estado } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
@@ -13,6 +14,15 @@ const insert = async (req) => {
     if(autorizado!==true){
         return autorizado;
     }
+
+    const { telefono } = req.body;
+    const existe = await Modelo.findOne({ where: { telefono , estadoId: { [Op.ne]: 3}}, attributes: ['telefono_personaId'] });
+
+    if (existe) {
+        response.code = -1;
+        response.data = "El número de teléfono ya existe por favor verifique";
+        return response;
+    }
     
     let { usuarioId } = req.user;
     req.body.usuario_crea = usuarioId;
@@ -20,6 +30,40 @@ const insert = async (req) => {
     response.code = 1;
     response.data = result;
     return response;
+}
+
+const consultar = async (query) => {
+    if (query) {
+        return await TelefonoPersona.findAll({
+            include: [{
+                model: TipoTelefono,
+                required: true,
+            }, {
+                model: Estado,
+                required: true
+            }],
+            order: [
+                ['telefono_personaId', 'ASC']
+            ],
+            where: [query],
+            order: [
+                ['telefono_personaId', 'ASC']
+            ]
+        });
+    } else {
+        return await TelefonoPersona.findAll({
+            include: [{
+                model: TipoTelefono,
+                required: true,
+            }, {
+                model: Estado,
+                required: true
+            }],
+            order: [
+                ['telefono_personaId', 'ASC']
+            ]
+        });
+    }
 }
 
 
@@ -31,7 +75,7 @@ list = async (req) => {
     
     if (!req.query.id && !req.query.estadoId && !req.query.personaId && !req.query.tipotelefonoId) {
         response.code = 1;
-        response.data = await Modelo.findAll();
+        response.data = await consultar();
         return response;
     }
 
@@ -56,13 +100,13 @@ list = async (req) => {
 
     if (!id) {
         response.code = 1;
-        response.data = await Modelo.findAll({ where: query});
+        response.data = await consultar(query);
         return response;
     } else {
         if (Number(id) > 0) {
             query.telefono_personaId = Number(id);
             response.code = 1;
-            response.data = await Modelo.findOne({ where: query });
+            response.data = await consultar(query);
             return response;
         } else {
             response.code = -1;
@@ -72,36 +116,107 @@ list = async (req) => {
     }
 }
 
+const eliminar = async (req) => {
+    let autorizado = await validarpermiso(req, MenuId, 4);
+    if (autorizado !== true) {
+        return autorizado;
+    }
+    let telefono_personaId = req.params.id;
+    const dataAnterior = await Modelo.findOne({
+        where: { telefono_personaId }
+    });
+
+    const dataEliminar = {
+        estadoId: 3
+    };
+    if (dataAnterior) {
+        const resultado = await Modelo.update(dataEliminar, {
+            where: {
+                telefono_personaId
+            }
+        });
+        if (resultado > 0) {
+            let { usuarioId } = req.user;
+            dataEliminar.usuario_ult_mod = usuarioId;
+            await registrarBitacora(tabla, telefono_personaId, dataAnterior.dataValues, dataEliminar);
+
+            //Actualizar fecha de ultima modificacion
+            let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
+            const data = {
+                fecha_ult_mod,
+                usuario_ult_mod: usuarioId
+            }
+            const resultadoUpdateFecha = await Modelo.update(data, {
+                where: {
+                    telefono_personaId
+                }
+            });
+
+            response.code = 1;
+            response.data = "Elemento eliminado exitosamente";
+            return response;
+        } else {
+            response.code = -1;
+            response.data = "No fue posible eliminar el elemento";
+            return response;
+        }
+    } else {
+        response.code = -1;
+        response.data = "No existe información para eliminar con los parametros especificados";
+        return response;
+    }
+}
+
 const update = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,2);
     if(autorizado!==true){
         return autorizado;
     }
-    const { telefono_personaId } = req.body;
+    const { telefono_personaId,telefono } = req.body;
     const dataAnterior = await Modelo.findOne({
         where: { telefono_personaId }
     });
 
+    if (telefono) {
+        const existe = await Modelo.findOne(
+            {
+                where:
+                {
+                    telefono,
+                    telefono_personaId: { [Op.ne]: telefono_personaId },
+                    estadoId: { [Op.ne]: 3}
+                },
+                attributes: ['telefono_personaId']
+            });
+
+        if (existe) {
+            response.code = -1;
+            response.data = "El nuevo número de teléfono ya existe por favor verifique";
+            return response;
+        }
+    }
+
 
     if (dataAnterior) {
-        let { usuarioId } = req.user;
-        req.body.usuario_ult_mod = usuarioId;
         const resultado = await Modelo.update(req.body, {
             where: {
                 telefono_personaId
             }
         });
         if (resultado > 0) {
+            let { usuarioId } = req.user;
+            req.body.usuario_ult_mod = usuarioId;
             await registrarBitacora(tabla, telefono_personaId, dataAnterior.dataValues, req.body);
 
             //Actualizar fecha de ultima modificacion
             let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
             const data = {
-                fecha_ult_mod
+                fecha_ult_mod,
+                usuario_ult_mod:usuarioId
             }
             const resultadoUpdateFecha = await Modelo.update(data, {
                 where: {
-                    personaId
+                    telefono_personaId
                 }
             });
 
@@ -109,7 +224,7 @@ const update = async (req) => {
             response.data = "Información Actualizado exitosamente";
             return response;
         } else {
-            response.code = -1;
+            response.code = 0;
             response.data = "No existen cambios para aplicar";
             return response;
         }
@@ -123,5 +238,6 @@ const update = async (req) => {
 module.exports = {
     list,
     update,
-    insert
+    insert,
+    eliminar
 }

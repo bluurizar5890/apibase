@@ -9,10 +9,10 @@ module.exports = (sequelize, type) => {
             },
             personaId: {
                 type: type.INTEGER,
-                references: {
-                    model: "persona",
-                    key: "personaId",
-                }
+                // references: {
+                //     model: "persona",
+                //     key: "personaId",
+                // }
             },
             user_name: {
                 type: type.STRING(50),
@@ -62,10 +62,10 @@ module.exports = (sequelize, type) => {
                 type: type.INTEGER,
                 allowNull: false,
                 defaultValue: 1,
-                references: {
-                    model: "cat_estado",
-                    key: "estadoId",
-                }
+                // references: {
+                //     model: "cat_estado",
+                //     key: "estadoId",
+                // }
             }
         },
         {

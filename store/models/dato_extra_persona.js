@@ -9,24 +9,24 @@ module.exports = (sequelize, type) => {
             },
             personaId: {
                 type: type.INTEGER,
-                references: {
-                    model: "persona",
-                    key: "personaId",
-                }
+                // references: {
+                //     model: "persona",
+                //     key: "personaId",
+                // }
             },
             tipo_sangreId: {
                 type: type.INTEGER,
-                references: {
-                    model: "cat_tipo_sangre",
-                    key: "tipo_sangreId",
-                }
+                // references: {
+                //     model: "cat_tipo_sangre",
+                //     key: "tipo_sangreId",
+                // }
             },
             estado_civilId: {
                 type: type.INTEGER,
-                references: {
-                    model: "cat_estado_civil",
-                    key: "estado_civilId",
-                }
+                // references: {
+                //     model: "cat_estado_civil",
+                //     key: "estado_civilId",
+                // }
             },
             usuario_crea: {
                 type: type.INTEGER
@@ -46,10 +46,10 @@ module.exports = (sequelize, type) => {
                 type: type.INTEGER,
                 allowNull: false,
                 defaultValue: 1,
-                references: {
-                    model: "cat_estado",
-                    key: "estadoId",
-                }
+                // references: {
+                //     model: "cat_estado",
+                //     key: "estadoId",
+                // }
             }
         },
         {

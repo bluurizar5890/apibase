@@ -9,17 +9,17 @@ module.exports = (sequelize, type) => {
             },
             personaId: {
                 type: type.INTEGER,
-                references: {
-                    model: "persona",
-                    key: "personaId",
-                }
+                // references: {
+                //     model: "persona",
+                //     key: "personaId",
+                // }
             },
             municipioId: {
                 type: type.INTEGER,
-                references: {
-                    model: "cat_municipio",
-                    key: "municipioId",
-                }
+                // references: {
+                //     model: "cat_municipio",
+                //     key: "municipioId",
+                // }
             },
             direccion: {
                 type: type.STRING(500),
@@ -49,10 +49,10 @@ module.exports = (sequelize, type) => {
                 type: type.INTEGER,
                 allowNull: false,
                 defaultValue: 1,
-                references: {
-                    model: "cat_estado",
-                    key: "estadoId",
-                }
+                // references: {
+                //     model: "cat_estado",
+                //     key: "estadoId",
+                // }
             }
         },
         {

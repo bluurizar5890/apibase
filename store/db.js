@@ -39,6 +39,8 @@ const UsuarioModel = require('./models/usuario');
 const UsuarioRolModel = require('./models/usuario_rol');
 const FotoUsuarioModel = require('./models/foto_usuario');
 const TelefonoPersonaModel = require('./models/telefono_persona');
+const direccion_persona = require('./models/direccion_persona');
+const usuario = require('./models/usuario');
 
 const Estado = EstadoModel(confiBd, Sequelize);
 const Genero = GeneroModel(confiBd, Sequelize);
@@ -100,14 +102,6 @@ try {
         await EstadoCivil.bulkCreate(EstadosCiviles);
         await TipoSangre.bulkCreate(TiposSangre);
         await UsuarioRol.bulkCreate(UsuarioRoles);
-        
-       
-
-        // TipoDocumento.hasOne(IdentificacionPersona,{ foreignKey: 'tipo_documentoId' });
-// IdentificacionPersona.belongsTo(TipoDocumento,{ foreignKey: 'tipo_documentoId' });
-// Estado.hasOne(IdentificacionPersona,{ foreignKey: 'estadoId' });
-// IdentificacionPersona.belongsTo(Estado,{ foreignKey: 'estadoId' });
-
       }
       MenuAcceso.belongsTo(RolMenuAcceso,{ foreignKey: 'menu_accesoId',sourceKey: 'menu_accesoId'});
       RolMenuAcceso.hasMany(MenuAcceso,{ foreignKey: 'menu_accesoId',sourceKey: 'menu_accesoId'});
@@ -123,6 +117,56 @@ try {
 
       IdentificacionPersona.belongsTo(Persona,{foreignKey: 'personaId',sourceKey:'personaId'});
       Persona.hasMany(IdentificacionPersona,{foreignKey: 'personaId',sourceKey:'personaId'});
+
+      DireccionPersona.belongsTo(Persona,{foreignKey: 'personaId',sourceKey:'personaId'});
+      Persona.hasMany(DireccionPersona,{foreignKey: 'personaId',sourceKey:'personaId'});
+
+      Estado.belongsTo(DireccionPersona,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      DireccionPersona.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      Municipio.belongsTo(DireccionPersona,{foreignKey: 'municipioId',sourceKey:'municipioId'});
+      DireccionPersona.hasOne(Municipio,{foreignKey: 'municipioId',sourceKey:'municipioId'});
+
+      TipoTelefono.belongsTo(TelefonoPersona,{foreignKey: 'tipo_telefonoId',sourceKey:'tipo_telefonoId'});
+      TelefonoPersona.hasOne(TipoTelefono,{foreignKey: 'tipo_telefonoId',sourceKey:'tipo_telefonoId'});
+      Estado.belongsTo(TelefonoPersona,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      TelefonoPersona.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      
+      Departamento.belongsTo(Municipio,{foreignKey: 'departamentoId',sourceKey:'departamentoId'});
+      Municipio.hasOne(Departamento,{foreignKey: 'departamentoId',sourceKey:'departamentoId'});
+
+      TelefonoPersona.belongsTo(Persona,{foreignKey: 'personaId',sourceKey:'personaId'});
+      Persona.hasMany(TelefonoPersona,{foreignKey: 'personaId',sourceKey:'personaId'});
+
+      TipoSangre.belongsTo(DatoExtraPersona,{foreignKey: 'tipo_sangreId',sourceKey:'tipo_sangreId'});
+      DatoExtraPersona.hasOne(TipoSangre,{foreignKey: 'tipo_sangreId',sourceKey:'tipo_sangreId'});
+
+      EstadoCivil.belongsTo(DatoExtraPersona,{foreignKey: 'estado_civilId',sourceKey:'estado_civilId'});
+      DatoExtraPersona.hasOne(EstadoCivil,{foreignKey: 'estado_civilId',sourceKey:'estado_civilId'});
+
+      Estado.belongsTo(DatoExtraPersona,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      DatoExtraPersona.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      DatoExtraPersona.belongsTo(Persona,{foreignKey: 'personaId',sourceKey:'personaId'});
+      Persona.hasMany(DatoExtraPersona,{foreignKey: 'personaId',sourceKey:'personaId'});
+
+      Estado.belongsTo(Usuario,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      Usuario.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      Usuario.belongsTo(Persona,{foreignKey: 'personaId',sourceKey:'personaId'});
+      Persona.hasMany(Usuario,{foreignKey: 'personaId',sourceKey:'personaId'});
+
+      UsuarioRol.belongsTo(Rol,{foreignKey:'rolId',sourceKey:'rolId'});
+      Rol.hasMany(UsuarioRol,{foreignKey:'rolId',sourceKey:'rolId'});
+
+      Estado.belongsTo(UsuarioRol,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      UsuarioRol.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      Estado.belongsTo(Rol,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      Rol.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      UsuarioRol.belongsTo(Usuario,{foreignKey: 'usuarioId',sourceKey:'usuarioId'});
+      Usuario.hasMany(UsuarioRol,{foreignKey: 'usuarioId',sourceKey:'usuarioId'});
 
     });
   });

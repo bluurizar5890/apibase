@@ -16,7 +16,7 @@ const insert = async (req) => {
     }
 
     const { numero_identificacion } = req.body;
-    const existe = await Modelo.findOne({ where: { numero_identificacion }, attributes: ['identificacion_personaId'] });
+    const existe = await Modelo.findOne({ where: { numero_identificacion,estadoId: { [Op.ne]: 3} }, attributes: ['identificacion_personaId'] });
 
     if (existe) {
         response.code = -1;
@@ -111,7 +111,7 @@ list = async (req) => {
 }
 
 const eliminar = async (req) => {
-    let autorizado = await validarpermiso(req, MenuId, 3);
+    let autorizado = await validarpermiso(req, MenuId, 4);
     if (autorizado !== true) {
         return autorizado;
     }
@@ -160,8 +160,6 @@ const eliminar = async (req) => {
         return response;
     }
 
-
-
 }
 
 const update = async (req) => {
@@ -177,7 +175,8 @@ const update = async (req) => {
                 where:
                 {
                     numero_identificacion,
-                    identificacion_personaId: { [Op.ne]: identificacion_personaId }
+                    identificacion_personaId: { [Op.ne]: identificacion_personaId },
+                    estadoId: { [Op.ne]: 3}
                 },
                 attributes: ['identificacion_personaId']
             });

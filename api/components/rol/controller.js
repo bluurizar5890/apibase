@@ -1,18 +1,18 @@
-const { Rol } = require('../../../store/db');
+const { Rol, UsuarioRol, Estado, Usuario } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
-const MenuId=11;
+const MenuId = 11;
 const Modelo = Rol;
 const tabla = 'cat_rol';
 let response = {};
 
 const insert = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,1);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 1);
+    if (autorizado !== true) {
         return autorizado;
     }
-    
+
     let { usuarioId } = req.user;
     req.body.usuario_crea = usuarioId;
     const result = await Modelo.create(req.body);
@@ -21,15 +21,64 @@ const insert = async (req) => {
     return response;
 }
 
+const consultar = async (query,include=1) => {
+    if (include == 1) {
+        if (query) {
+            return await Rol.findAll({
+                include: [{
+                    model: UsuarioRol,
+                    required: false,
+                    include: [{
+                        model: Usuario,
+                        required: true
+                    }]
+                },
+                {
+                    model: Estado,
+                    required: true
+                }],
+                where: [query],
+                order: [
+                    ['rolId', 'ASC']
+                ]
+            });
+        } else {
+            return await Rol.findAll({
+                include: [{
+                    model: UsuarioRol,
+                    required: false,
+                    include: [{
+                        model: Usuario,
+                        required: true
+                    }]
+                },
+                {
+                    model: Estado,
+                    required: true
+                }],
+                order: [
+                    ['rolId', 'ASC']
+                ]
+            });
+        }
+    } else {
+        if (query) {
+            return await Modelo.findAll({ where: query });
+        } else {
+            return await Modelo.findAll();
+        }
+    }
+}
+
 list = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,3);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 3);
+    if (autorizado !== true) {
         return autorizado;
     }
-    
+    const { include } = req.query;
     if (!req.query.id && !req.query.estadoId) {
         response.code = 1;
-        response.data = await Modelo.findAll();
+        response.data = await consultar(null, include);
         return response;
     }
 
@@ -46,13 +95,13 @@ list = async (req) => {
 
     if (!id) {
         response.code = 1;
-        response.data = await Modelo.findAll({ where: query });
+        response.data = await consultar(query, include);
         return response;
     } else {
         if (Number(id) > 0) {
             query.rolId = Number(id);
             response.code = 1;
-            response.data = await Modelo.findOne({ where: query });
+            response.data = await consultar(query, include);
             return response;
         } else {
             response.code = -1;
@@ -63,8 +112,8 @@ list = async (req) => {
 }
 
 const update = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,2);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 2);
+    if (autorizado !== true) {
         return autorizado;
     }
     const { rolId } = req.body;
@@ -88,7 +137,7 @@ const update = async (req) => {
             let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
             const data = {
                 fecha_ult_mod,
-                usuario_ult_mod:usuarioId
+                usuario_ult_mod: usuarioId
             }
             const resultadoUpdateFecha = await Modelo.update(data, {
                 where: {

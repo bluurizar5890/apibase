@@ -1,4 +1,5 @@
-const { UsuarioRol } = require('../../../store/db');
+var { Op } = require('sequelize');
+const { UsuarioRol, Rol, Estado } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
@@ -13,12 +14,54 @@ const insert = async (req) => {
         return autorizado;
     }
     
-    let { usuarioId } = req.user;
-    req.body.usuario_crea = usuarioId;
+    const { rolId,usuarioId } = req.body;
+    const existe = await Modelo.findOne({ where: { rolId,usuarioId,estadoId: { [Op.ne]: 3} }, attributes: ['usuario_rolId'] });
+
+    if (existe) {
+        response.code = -1;
+        response.data = "El usuario ya tiene asignado dicho rol";
+        return response;
+    }
+
+    let { usuarioId:usuarioIdReq } = req.user;
+    req.body.usuario_crea = usuarioIdReq;
     const result = await Modelo.create(req.body);
     response.code = 1;
     response.data = result;
     return response;
+}
+
+const consultar = async (query) => {
+    if (query) {
+        return await UsuarioRol.findAll({
+            include: [{
+                model: Rol,
+                required: true
+            },
+            {
+                model: Estado,
+                required: true
+            }],
+            where: [query],
+            order: [
+                ['usuario_rolId', 'ASC']
+            ]
+        });
+    } else {
+        return await UsuarioRol.findAll({
+            include: [{
+                model: Rol,
+                required: true
+            },
+            {
+                model: Estado,
+                required: true
+            }],
+            order: [
+                ['usuario_rolId', 'ASC']
+            ]
+        });
+    }
 }
 
 list = async (req) => {
@@ -29,7 +72,7 @@ list = async (req) => {
     
     if (!req.query.id && !req.query.estadoId && !req.query.usuarioId && !req.query.rolId) {
         response.code = 1;
-        response.data = await Modelo.findAll();
+        response.data = await consultar();
         return response;
     }
 
@@ -54,13 +97,13 @@ list = async (req) => {
 
     if (!id) {
         response.code = 1;
-        response.data = await Modelo.findAll({ where: query });
+        response.data = awaitconsultar(query);
         return response;
     } else {
         if (Number(id) > 0) {
             query.usuario_rolId = Number(id);
             response.code = 1;
-            response.data = await Modelo.findOne({ where: query });
+            response.data = await consultar(query);
             return response;
         } else {
             response.code = -1;
@@ -70,32 +113,103 @@ list = async (req) => {
     }
 }
 
+const eliminar = async (req) => {
+    let autorizado = await validarpermiso(req, MenuId, 4);
+    if (autorizado !== true) {
+        return autorizado;
+    }
+    let usuario_rolId = req.params.id;
+    const dataAnterior = await Modelo.findOne({
+        where: { usuario_rolId }
+    });
+
+    const dataEliminar = {
+        estadoId: 3
+    };
+    if (dataAnterior) {
+        const resultado = await Modelo.update(dataEliminar, {
+            where: {
+                usuario_rolId
+            }
+        });
+        if (resultado > 0) {
+            let { usuarioId } = req.user;
+            dataEliminar.usuario_ult_mod = usuarioId;
+            await registrarBitacora(tabla, usuario_rolId, dataAnterior.dataValues, dataEliminar);
+
+            //Actualizar fecha de ultima modificacion
+            let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
+            const data = {
+                fecha_ult_mod,
+                usuario_ult_mod: usuarioId
+            }
+            const resultadoUpdateFecha = await Modelo.update(data, {
+                where: {
+                    usuario_rolId
+                }
+            });
+
+            response.code = 1;
+            response.data = "Elemento eliminado exitosamente";
+            return response;
+        } else {
+            response.code = -1;
+            response.data = "No fue posible eliminar el elemento";
+            return response;
+        }
+    } else {
+        response.code = -1;
+        response.data = "No existe información para eliminar con los parametros especificados";
+        return response;
+    }
+}
+
 const update = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,2);
     if(autorizado!==true){
         return autorizado;
     }
-    const { usuario_rolId } = req.body;
+    const { usuario_rolId,rolId} = req.body;
+    if (rolId) {
+        const existe = await Modelo.findOne(
+            {
+                where:
+                {
+                    rolId,
+                    usuario_rolId: { [Op.ne]: usuario_rolId },
+                    estadoId: { [Op.ne]: 3}
+                },
+                attributes: ['usuario_rolId']
+            });
+
+        if (existe) {
+            response.code = -1;
+            response.data = "El usuario ya tiene asignado dicho rol";
+            return response;
+        }
+    }
+
     const dataAnterior = await Modelo.findOne({
         where: { usuario_rolId }
     });
 
 
     if (dataAnterior) {
-        let { usuarioId } = req.user;
-        req.body.usuario_ult_mod = usuarioId;
         const resultado = await Modelo.update(req.body, {
             where: {
                 usuario_rolId
             }
         });
         if (resultado > 0) {
+            let { usuarioId } = req.user;
+            req.body.usuario_ult_mod = usuarioId;
             await registrarBitacora(tabla, usuario_rolId, dataAnterior.dataValues, req.body);
 
             //Actualizar fecha de ultima modificacion
             let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
             const data = {
-                fecha_ult_mod
+                fecha_ult_mod,
+                usuario_ult_mod:usuarioId
             }
             const resultadoUpdateFecha = await Modelo.update(data, {
                 where: {
@@ -107,7 +221,7 @@ const update = async (req) => {
             response.data = "Información Actualizado exitosamente";
             return response;
         } else {
-            response.code = -1;
+            response.code = 0;
             response.data = "No existen cambios para aplicar";
             return response;
         }
@@ -121,5 +235,6 @@ const update = async (req) => {
 module.exports = {
     list,
     insert,
-    update
+    update,
+    eliminar
 }

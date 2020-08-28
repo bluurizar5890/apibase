@@ -1,5 +1,5 @@
 var { Op } = require('sequelize');
-const { Persona, IdentificacionPersona, Estado, TipoDocumento } = require('../../../store/db');
+const { Persona, IdentificacionPersona, Estado, TipoDocumento, DireccionPersona, Municipio, Departamento, TelefonoPersona,TipoTelefono, EstadoCivil, DatoExtraPersona,TipoSangre, Usuario } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
@@ -47,6 +47,54 @@ const consultar = async (query,include=1) => {
                     model: Estado,
                     required: true
                 }],
+            },
+            {
+                model: DireccionPersona,
+                required: false,
+                include: [{
+                    model: Municipio,
+                    required: false,
+                    attributes: ['municipioId', 'municipioId_depto', 'descripcion', 'estadoId'],
+                    include: [{
+                        model: Departamento,
+                        required: true,
+                        attributes: ['departamentoId', 'paisId', 'descripcion', 'estadoId'],
+                    }]
+                },
+                {
+                    model: Estado,
+                    required: true
+                }],
+            },
+            {
+                model: TelefonoPersona,
+                required: false,
+                attributes: ['telefono_personaId', 'telefono', 'estadoId'],
+                include: [{
+                    model: TipoTelefono,
+                    required: true,
+                    attributes: ['tipo_telefonoId', 'descripcion', 'estadoId'],
+                },
+                {
+                    model: Estado,
+                    required: true
+                }],
+            },
+            {
+                model: DatoExtraPersona,
+                required: false,
+                include: [{
+                    model: TipoSangre,
+                    required: false,
+                },
+                {
+                    model: EstadoCivil,
+                    required: false,
+                },
+                {
+                    model: Estado,
+                    required: true
+                }],
             }],
             where: [query],
             order: [
@@ -63,6 +111,62 @@ const consultar = async (query,include=1) => {
                     required: true,
                     attributes: ['tipo_documentoId', 'descripcion', 'estadoId'],
                 },
+                {
+                    model: Estado,
+                    required: true
+                }],
+            },
+            {
+                model: DireccionPersona,
+                required: false,
+                include: [{
+                    model: Municipio,
+                    required: false,
+                    attributes: ['municipioId', 'municipioId_depto', 'descripcion', 'estadoId'],
+                    include: [{
+                        model: Departamento,
+                        required: true,
+                        attributes: ['departamentoId', 'paisId', 'descripcion', 'estadoId'],
+                    }]
+                },
+                {
+                    model: Estado,
+                    required: true
+                }],
+            },
+            {
+                model: TelefonoPersona,
+                required: false,
+                attributes: ['telefono_personaId', 'telefono', 'estadoId'],
+                include: [{
+                    model: TipoTelefono,
+                    required: true,
+                    attributes: ['tipo_telefonoId', 'descripcion', 'estadoId'],
+                },
+                {
+                    model: Estado,
+                    required: true
+                }],
+            },
+            {
+                model: DatoExtraPersona,
+                required: false,
+                include: [{
+                    model: TipoSangre,
+                    required: false,
+                },
+                {
+                    model: EstadoCivil,
+                    required: false,
+                },
+                {
+                    model: Estado,
+                    required: true
+                }],
+            }, {
+                model: Usuario,
+                required: false,
+                include: [
                 {
                     model: Estado,
                     required: true
@@ -126,6 +230,57 @@ list = async (req) => {
             response.data = "Debe de especificar un codigo";
             return response;
         }
+    }
+}
+
+const eliminar = async (req) => {
+    let autorizado = await validarpermiso(req, MenuId, 4);
+    if (autorizado !== true) {
+        return autorizado;
+    }
+    let personaId = req.params.id;
+    const dataAnterior = await Modelo.findOne({
+        where: { personaId }
+    });
+
+    const dataEliminar = {
+        estadoId: 3
+    };
+    if (dataAnterior) {
+        const resultado = await Modelo.update(dataEliminar, {
+            where: {
+                personaId
+            }
+        });
+        if (resultado > 0) {
+            let { usuarioId } = req.user;
+            dataEliminar.usuario_ult_mod = usuarioId;
+            await registrarBitacora(tabla, personaId, dataAnterior.dataValues, dataEliminar);
+
+            //Actualizar fecha de ultima modificacion
+            let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
+            const data = {
+                fecha_ult_mod,
+                usuario_ult_mod: usuarioId
+            }
+            const resultadoUpdateFecha = await Modelo.update(data, {
+                where: {
+                    personaId
+                }
+            });
+
+            response.code = 1;
+            response.data = "Elemento eliminado exitosamente";
+            return response;
+        } else {
+            response.code = -1;
+            response.data = "No fue posible eliminar el elemento";
+            return response;
+        }
+    } else {
+        response.code = -1;
+        response.data = "No existe información para eliminar con los parametros especificados";
+        return response;
     }
 }
 
@@ -197,5 +352,6 @@ const update = async (req) => {
 module.exports = {
     list,
     update,
-    insert
+    insert,
+    eliminar
 }
