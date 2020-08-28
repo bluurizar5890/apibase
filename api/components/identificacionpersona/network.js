@@ -35,8 +35,6 @@ const eliminar = (req, res, next) => {
         .catch(next);
 }
 
-
-
 router.post('/',registrar);
 router.get('/', listar);
 router.put('/',actualizar);

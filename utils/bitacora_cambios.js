@@ -1,20 +1,27 @@
 const { BitacoraCambios } = require('../store/db');
 const config = require('../config');
-const moment=require('moment');
+const moment = require('moment');
 const registrarBitacora = async (tabla, modificadoId, dataAnterior, dataNueva) => {
     if (config.api.bitacora_cambios) {
         try {
             let keys = Object.keys(dataNueva);
-            let {usuario_ult_mod}=dataNueva;
+            let { usuario_ult_mod } = dataNueva;
+            // console.log({ dataNueva, dataAnterior });
             keys.map(async (campo) => {
                 let valor_anterior = dataAnterior[campo];
                 let valor_nuevo = dataNueva[campo];
+                let tipo_dato;
+                if (valor_anterior == null) {
+                    valor_anterior = 'null';
+                    tipo_dato = 'string';
+                }
 
-                if (valor_anterior != valor_nuevo && (valor_anterior && valor_nuevo)) {
-                    let tipo_dato = typeof (valor_anterior);
-                    if(tipo_dato==='object'){
-                        valor_anterior=moment(valor_anterior).format('YYYY/MM/DD HH:mm');
-                        valor_nuevo=moment(valor_nuevo).format('YYYY/MM/DD HH:mm');
+                // if (valor_anterior !== valor_nuevo && (valor_anterior && valor_nuevo)) {
+                if (valor_anterior !== valor_nuevo) {
+                    tipo_dato = !tipo_dato && typeof(valor_anterior);
+                    if (tipo_dato === 'object') {
+                        valor_anterior = moment(valor_anterior).format('YYYY/MM/DD HH:mm');
+                        valor_nuevo = moment(valor_nuevo).format('YYYY/MM/DD HH:mm');
                     }
                     let data = {
                         tabla,

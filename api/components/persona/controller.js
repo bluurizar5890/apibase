@@ -1,5 +1,5 @@
-var {Op} = require('sequelize');
-const { Persona } = require('../../../store/db');
+var { Op } = require('sequelize');
+const { Persona, IdentificacionPersona, Estado, TipoDocumento } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
@@ -15,7 +15,7 @@ const insert = async (req) => {
         return autorizado;
     }
     const { email } = req.body;
-    const persona = await Modelo.findOne({ where:{email},attributes:['personaId'] });
+    const persona = await Modelo.findOne({ where: { email }, attributes: ['personaId'] });
 
     if (persona) {
         response.code = 0;
@@ -31,20 +31,70 @@ const insert = async (req) => {
     return response;
 }
 
+const consultar = async (query,include=1) => {
+    if(include==1){
+    if (query) {
+        return await Persona.findAll({
+            include: [{
+                model: IdentificacionPersona,
+                required: false,
+                include: [{
+                    model: TipoDocumento,
+                    required: true,
+                    attributes: ['tipo_documentoId', 'descripcion', 'estadoId'],
+                },
+                {
+                    model: Estado,
+                    required: true
+                }],
+            }],
+            where: [query],
+            order: [
+                ['personaId', 'ASC']
+            ]
+        });
+    } else {
+        return await Persona.findAll({
+            include: [{
+                model: IdentificacionPersona,
+                required: false,
+                include: [{
+                    model: TipoDocumento,
+                    required: true,
+                    attributes: ['tipo_documentoId', 'descripcion', 'estadoId'],
+                },
+                {
+                    model: Estado,
+                    required: true
+                }],
+            }],
+            order: [
+                ['personaId', 'ASC']
+            ]
+        });
+    }
+}else{
+    if(query){
+        return await Persona.findAll({where:query});
+    }else{
+        return await Persona.findAll();
+    }
+}
+}
 
 list = async (req) => {
     let autorizado = await validarpermiso(req, MenuId, 3);
     if (autorizado !== true) {
         return autorizado;
     }
-
+    const {include}=req.query;
     if (!req.query.id && !req.query.estadoId && !req.query.generoId && !req.query.email) {
         response.code = 1;
-        response.data = await Modelo.findAll();
+        response.data = await consultar(null,include);
         return response;
     }
 
-    const { id, estadoId, generoId } = req.query;
+    const { id, estadoId, generoId,email } = req.query;
     let query = {};
     if (estadoId) {
         let estados = estadoId.split(';');
@@ -61,16 +111,15 @@ list = async (req) => {
     if (email) {
         query.email = email;
     }
-
     if (!id) {
         response.code = 1;
-        response.data = await Modelo.findAll({ where: query });
+        response.data = await  consultar(query,include);
         return response;
     } else {
         if (Number(id) > 0) {
             query.personaId = Number(id);
             response.code = 1;
-            response.data = await Modelo.findOne({ where: query });
+            response.data = await  await  consultar(query,include);
             return response;
         } else {
             response.code = -1;
@@ -85,27 +134,28 @@ const update = async (req) => {
     if (autorizado !== true) {
         return autorizado;
     }
-    const { personaId } = req.body;
-    const { email } = req.body;
-    const persona = await Modelo.findOne(
-        { where: 
+    const { personaId, email } = req.body;
+    if (email) {
+        const persona = await Modelo.findOne(
+            {
+                where:
                 {
                     email,
-                    personaId: {[Op.ne]:personaId}
+                    personaId: { [Op.ne]: personaId }
                 },
-            attributes:['personaId'] 
-        });
+                attributes: ['personaId']
+            });
 
-    if (persona) {
-        response.code = -1;
-        response.data = "El nuevo correo electrónico enviado ya existe, por favor verifique";
-        return response;
+        if (persona) {
+            response.code = -1;
+            response.data = "El nuevo correo electrónico enviado ya existe, por favor verifique";
+            return response;
+        }
     }
 
     const dataAnterior = await Modelo.findOne({
         where: { personaId }
     });
-
 
     if (dataAnterior) {
         const resultado = await Modelo.update(req.body, {
@@ -117,12 +167,11 @@ const update = async (req) => {
             let { usuarioId } = req.user;
             req.body.usuario_ult_mod = usuarioId;
             await registrarBitacora(tabla, personaId, dataAnterior.dataValues, req.body);
-
             //Actualizar fecha de ultima modificacion
             let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
             const data = {
                 fecha_ult_mod,
-                usuario_ult_mod:usuarioId
+                usuario_ult_mod: usuarioId
             }
             const resultadoUpdateFecha = await Modelo.update(data, {
                 where: {
@@ -134,7 +183,7 @@ const update = async (req) => {
             response.data = "Información Actualizado exitosamente";
             return response;
         } else {
-            response.code =0;
+            response.code = 0;
             response.data = "No existen cambios para aplicar";
             return response;
         }

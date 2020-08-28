@@ -33,17 +33,11 @@ module.exports = (sequelize, type) => {
             },
             valor_anterior: {
                 type: type.STRING(1000),
-                allowNull: false,
-                validate: {
-                    notEmpty: true
-                }
+                allowNull: false
             },
             valor_nuevo: {
                 type: type.STRING(1000),
-                allowNull: false,
-                validate: {
-                    notEmpty: true
-                }
+                allowNull: false
             },
             usuario_crea: {
                 type: type.INTEGER
