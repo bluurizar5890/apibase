@@ -35,8 +35,17 @@ const eliminar = (req, res, next) => {
         .catch(next);
 }
 
+const prueba=(req,res,next)=>{
+    controller.prueba(req,res)
+    .then((data) => {
+        response.success(req, res, data, 200);
+    })
+    .catch(next);
+}
+
 router.post('/',registrar);
 router.get('/', listar);
 router.put('/',actualizar);
 router.delete('/:id',eliminar);
+router.get('/prueba',prueba);
 module.exports = router;

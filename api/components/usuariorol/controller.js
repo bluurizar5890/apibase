@@ -232,9 +232,34 @@ const update = async (req) => {
     }
 };
 
+const prueba=async(req,res)=>{
+    var pdf = require('html-pdf');
+    var contenido = `
+    <h1>Esto es un test de html-pdf</h1>
+    <p>Estoy generando PDF a partir de este código HTML sencillo</p>
+    `;
+
+    const stream = await new Promise((resolve, reject) => {
+        pdf.create(contenido).toBuffer((err, stream) => {
+          if (err) {
+            reject(reject);
+            return;
+          }
+          resolve(stream);
+        });
+      });
+
+      return stream;
+
+
+console.log(a);
+
+}
+
 module.exports = {
     list,
     insert,
     update,
-    eliminar
+    eliminar,
+    prueba
 }
