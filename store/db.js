@@ -111,7 +111,7 @@ try {
       MenuAcceso.hasOne(Acceso,{ foreignKey: 'accesoId',sourceKey: 'accesoId'});
       
       TipoDocumento.belongsTo(IdentificacionPersona,{foreignKey: 'tipo_documentoId',sourceKey:'tipo_documentoId'});
-      IdentificacionPersona.hasMany(TipoDocumento,{foreignKey: 'tipo_documentoId',sourceKey:'tipo_documentoId'});
+      IdentificacionPersona.hasOne(TipoDocumento,{foreignKey: 'tipo_documentoId',sourceKey:'tipo_documentoId'});
       Estado.belongsTo(IdentificacionPersona,{foreignKey: 'estadoId',sourceKey:'estadoId'});
       IdentificacionPersona.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
 
