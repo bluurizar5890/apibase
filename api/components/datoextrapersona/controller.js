@@ -1,3 +1,4 @@
+var { Op } = require('sequelize');
 const { DatoExtraPersona, TipoSangre, EstadoCivil, Estado } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
@@ -16,7 +17,7 @@ const insert = async (req) => {
     }
     const{personaId}=req.body;
     const dataAnterior = await Modelo.findOne({
-        where: { personaId }
+        where: { personaId,estadoId: { [Op.ne]: 3}}
     });
 
     if(dataAnterior){
