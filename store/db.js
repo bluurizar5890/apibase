@@ -138,6 +138,12 @@ try {
       TelefonoPersona.belongsTo(Persona,{foreignKey: 'personaId',sourceKey:'personaId'});
       Persona.hasMany(TelefonoPersona,{foreignKey: 'personaId',sourceKey:'personaId'});
 
+      Estado.belongsTo(Persona,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      Persona.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      Genero.belongsTo(Persona,{foreignKey: 'generoId',sourceKey:'generoId'});
+      Persona.hasOne(Genero,{foreignKey: 'generoId',sourceKey:'generoId'});
+
       TipoSangre.belongsTo(DatoExtraPersona,{foreignKey: 'tipo_sangreId',sourceKey:'tipo_sangreId'});
       DatoExtraPersona.hasOne(TipoSangre,{foreignKey: 'tipo_sangreId',sourceKey:'tipo_sangreId'});
 

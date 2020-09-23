@@ -1,5 +1,5 @@
 var { Op } = require('sequelize');
-const { Persona, IdentificacionPersona, Estado, TipoDocumento, DireccionPersona, Municipio, Departamento, TelefonoPersona,TipoTelefono, EstadoCivil, DatoExtraPersona,TipoSangre, Usuario } = require('../../../store/db');
+const { Persona, IdentificacionPersona, Estado, TipoDocumento, DireccionPersona, Municipio, Departamento, TelefonoPersona, TipoTelefono, EstadoCivil, DatoExtraPersona, TipoSangre, Usuario, Genero } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
@@ -31,159 +31,171 @@ const insert = async (req) => {
     return response;
 }
 
-const consultar = async (query,include=1) => {
-    if(include==1){
-    if (query) {
-        return await Persona.findAll({
-            include: [{
-                model: IdentificacionPersona,
-                required: false,
+const consultar = async (query, include = 1) => {
+    if (include == 1) {
+        if (query) {
+            return await Persona.findAll({
                 include: [{
-                    model: TipoDocumento,
-                    required: true,
-                    attributes: ['tipo_documentoId', 'descripcion', 'estadoId'],
-                },
-                {
                     model: Estado,
-                    required: true
-                }],
-            },
-            {
-                model: DireccionPersona,
-                required: false,
-                include: [{
-                    model: Municipio,
                     required: false,
-                    attributes: ['municipioId', 'municipioId_depto', 'descripcion', 'estadoId'],
+                }, {
+                    model: Genero,
+                    required: false,
+                }, {
+                    model: IdentificacionPersona,
+                    required: false,
                     include: [{
-                        model: Departamento,
+                        model: TipoDocumento,
                         required: true,
-                        attributes: ['departamentoId', 'paisId', 'descripcion', 'estadoId'],
-                    }]
+                        attributes: ['tipo_documentoId', 'descripcion', 'estadoId'],
+                    },
+                    {
+                        model: Estado,
+                        required: true
+                    }],
                 },
                 {
-                    model: Estado,
-                    required: true
-                }],
-            },
-            {
-                model: TelefonoPersona,
-                required: false,
-                attributes: ['telefono_personaId', 'telefono', 'estadoId'],
-                include: [{
-                    model: TipoTelefono,
-                    required: true,
-                    attributes: ['tipo_telefonoId', 'descripcion', 'estadoId'],
-                },
-                {
-                    model: Estado,
-                    required: true
-                }],
-            },
-            {
-                model: DatoExtraPersona,
-                required: false,
-                include: [{
-                    model: TipoSangre,
+                    model: DireccionPersona,
                     required: false,
+                    include: [{
+                        model: Municipio,
+                        required: false,
+                        attributes: ['municipioId', 'municipioId_depto', 'descripcion', 'estadoId'],
+                        include: [{
+                            model: Departamento,
+                            required: true,
+                            attributes: ['departamentoId', 'paisId', 'descripcion', 'estadoId'],
+                        }]
+                    },
+                    {
+                        model: Estado,
+                        required: true
+                    }],
                 },
                 {
-                    model: EstadoCivil,
+                    model: TelefonoPersona,
                     required: false,
+                    attributes: ['telefono_personaId', 'telefono', 'estadoId'],
+                    include: [{
+                        model: TipoTelefono,
+                        required: true,
+                        attributes: ['tipo_telefonoId', 'descripcion', 'estadoId'],
+                    },
+                    {
+                        model: Estado,
+                        required: true
+                    }],
                 },
                 {
-                    model: Estado,
-                    required: true
+                    model: DatoExtraPersona,
+                    required: false,
+                    include: [{
+                        model: TipoSangre,
+                        required: false,
+                    },
+                    {
+                        model: EstadoCivil,
+                        required: false,
+                    },
+                    {
+                        model: Estado,
+                        required: true
+                    }],
                 }],
-            }],
-            where: [query],
-            order: [
-                ['personaId', 'ASC']
-            ]
-        });
+                where: [query],
+                order: [
+                    ['personaId', 'ASC']
+                ]
+            });
+        } else {
+            return await Persona.findAll({
+                include: [{
+                    model: Estado,
+                    required: false,
+                }, {
+                    model: Genero,
+                    required: false,
+                }, {
+                    model: IdentificacionPersona,
+                    required: false,
+                    include: [{
+                        model: TipoDocumento,
+                        required: true,
+                        attributes: ['tipo_documentoId', 'descripcion', 'estadoId'],
+                    },
+                    {
+                        model: Estado,
+                        required: true
+                    }],
+                },
+                {
+                    model: DireccionPersona,
+                    required: false,
+                    include: [{
+                        model: Municipio,
+                        required: false,
+                        attributes: ['municipioId', 'municipioId_depto', 'descripcion', 'estadoId'],
+                        include: [{
+                            model: Departamento,
+                            required: true,
+                            attributes: ['departamentoId', 'paisId', 'descripcion', 'estadoId'],
+                        }]
+                    },
+                    {
+                        model: Estado,
+                        required: true
+                    }],
+                },
+                {
+                    model: TelefonoPersona,
+                    required: false,
+                    attributes: ['telefono_personaId', 'telefono', 'estadoId'],
+                    include: [{
+                        model: TipoTelefono,
+                        required: true,
+                        attributes: ['tipo_telefonoId', 'descripcion', 'estadoId'],
+                    },
+                    {
+                        model: Estado,
+                        required: true
+                    }],
+                },
+                {
+                    model: DatoExtraPersona,
+                    required: false,
+                    include: [{
+                        model: TipoSangre,
+                        required: false,
+                    },
+                    {
+                        model: EstadoCivil,
+                        required: false,
+                    },
+                    {
+                        model: Estado,
+                        required: true
+                    }],
+                }, {
+                    model: Usuario,
+                    required: false,
+                    include: [
+                        {
+                            model: Estado,
+                            required: true
+                        }],
+                }],
+                order: [
+                    ['personaId', 'ASC']
+                ]
+            });
+        }
     } else {
-        return await Persona.findAll({
-            include: [{
-                model: IdentificacionPersona,
-                required: false,
-                include: [{
-                    model: TipoDocumento,
-                    required: true,
-                    attributes: ['tipo_documentoId', 'descripcion', 'estadoId'],
-                },
-                {
-                    model: Estado,
-                    required: true
-                }],
-            },
-            {
-                model: DireccionPersona,
-                required: false,
-                include: [{
-                    model: Municipio,
-                    required: false,
-                    attributes: ['municipioId', 'municipioId_depto', 'descripcion', 'estadoId'],
-                    include: [{
-                        model: Departamento,
-                        required: true,
-                        attributes: ['departamentoId', 'paisId', 'descripcion', 'estadoId'],
-                    }]
-                },
-                {
-                    model: Estado,
-                    required: true
-                }],
-            },
-            {
-                model: TelefonoPersona,
-                required: false,
-                attributes: ['telefono_personaId', 'telefono', 'estadoId'],
-                include: [{
-                    model: TipoTelefono,
-                    required: true,
-                    attributes: ['tipo_telefonoId', 'descripcion', 'estadoId'],
-                },
-                {
-                    model: Estado,
-                    required: true
-                }],
-            },
-            {
-                model: DatoExtraPersona,
-                required: false,
-                include: [{
-                    model: TipoSangre,
-                    required: false,
-                },
-                {
-                    model: EstadoCivil,
-                    required: false,
-                },
-                {
-                    model: Estado,
-                    required: true
-                }],
-            }, {
-                model: Usuario,
-                required: false,
-                include: [
-                {
-                    model: Estado,
-                    required: true
-                }],
-            }],
-            order: [
-                ['personaId', 'ASC']
-            ]
-        });
+        if (query) {
+            return await Persona.findAll({ where: query });
+        } else {
+            return await Persona.findAll();
+        }
     }
-}else{
-    if(query){
-        return await Persona.findAll({where:query});
-    }else{
-        return await Persona.findAll();
-    }
-}
 }
 
 list = async (req) => {
@@ -191,14 +203,14 @@ list = async (req) => {
     if (autorizado !== true) {
         return autorizado;
     }
-    const {include}=req.query;
+    const { include } = req.query;
     if (!req.query.id && !req.query.estadoId && !req.query.generoId && !req.query.email) {
         response.code = 1;
-        response.data = await consultar(null,include);
+        response.data = await consultar(null, include);
         return response;
     }
 
-    const { id, estadoId, generoId,email } = req.query;
+    const { id, estadoId, generoId, email } = req.query;
     let query = {};
     if (estadoId) {
         let estados = estadoId.split(';');
@@ -217,13 +229,13 @@ list = async (req) => {
     }
     if (!id) {
         response.code = 1;
-        response.data = await  consultar(query,include);
+        response.data = await consultar(query, include);
         return response;
     } else {
         if (Number(id) > 0) {
             query.personaId = Number(id);
             response.code = 1;
-            response.data = await  await  consultar(query,include);
+            response.data = await await consultar(query, include);
             return response;
         } else {
             response.code = -1;
