@@ -171,6 +171,9 @@ try {
       Estado.belongsTo(Rol,{foreignKey: 'estadoId',sourceKey:'estadoId'});
       Rol.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
 
+      Usuario.belongsTo(Rol,{foreignKey: 'usuario_crea',sourceKey:'usuarioId'});
+      Rol.hasOne(Usuario,{foreignKey: 'usuarioId',sourceKey:'usuario_crea'});
+
       UsuarioRol.belongsTo(Usuario,{foreignKey: 'usuarioId',sourceKey:'usuarioId'});
       Usuario.hasMany(UsuarioRol,{foreignKey: 'usuarioId',sourceKey:'usuarioId'});
 

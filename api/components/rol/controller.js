@@ -25,7 +25,11 @@ const consultar = async (query,include=1) => {
     if (include == 1) {
         if (query) {
             return await Rol.findAll({
-                include: [{
+                include: [  {
+                    model: Usuario,
+                    required: true,
+                    attributes: ['usuarioId', 'user_name'],
+                },{
                     model: UsuarioRol,
                     required: false,
                     include: [{
@@ -44,7 +48,11 @@ const consultar = async (query,include=1) => {
             });
         } else {
             return await Rol.findAll({
-                include: [{
+                include: [  {
+                    model: Usuario,
+                    required: true,
+                    attributes: ['usuarioId', 'user_name'],
+                },{
                     model: UsuarioRol,
                     required: false,
                     include: [{

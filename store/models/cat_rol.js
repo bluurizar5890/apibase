@@ -1,5 +1,5 @@
 module.exports = (sequelize, type) => {
-    return sequelize.define(
+    const Rol = sequelize.define(
         "cat_rol",
         {
             rolId: {
@@ -47,4 +47,20 @@ module.exports = (sequelize, type) => {
             freezeTableName: true,
         }
     );
+
+    // Rol.associate = function(models) {
+    //     console.log({models});
+    //      Rol.hasMany(models.usuario,{as:'usuario', foreignKey:'rolId',sourceKey:'rolId'});
+    // };
+
+    //Nos sirve para poder validar algo antes de darle commit
+    // Rol.beforeCreate((rol) => {
+    //     const {nombre}=rol.dataValues;
+    //     if (nombre != "Nuevo") {
+    //         console.log(nombre);
+    //         throw new Error("Los datos ingresados no son validos")
+    //         console.log("El rol no esta autorizado");
+    //     }
+    // });
+    return Rol;
 };
