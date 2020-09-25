@@ -8,10 +8,10 @@ module.exports = (sequelize, type) => {
             },
             paisId: {
                 type: type.INTEGER,
-                references: {
-                    model: "cat_pais",
-                    key: "paisId",
-                }
+                // references: {
+                //     model: "cat_pais",
+                //     key: "paisId",
+                // }
             },
             descripcion: {
                 type: type.STRING(50),
@@ -39,10 +39,10 @@ module.exports = (sequelize, type) => {
                 type: type.INTEGER,
                 allowNull: false,
                 defaultValue: 1,
-                references: {
-                    model: "cat_estado",
-                    key: "estadoId",
-                }
+                // references: {
+                //     model: "cat_estado",
+                //     key: "estadoId",
+                // }
             }
         },
         {

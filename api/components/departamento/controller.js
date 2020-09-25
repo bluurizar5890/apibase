@@ -1,19 +1,19 @@
-const { Departamento } = require('../../../store/db');
+const { Departamento, Estado, Pais } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
-const MenuId=9;
+const MenuId = 9;
 const Modelo = Departamento;
 const tabla = 'cat_departamento';
 let response = {};
 
 
 const insert = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,1);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 1);
+    if (autorizado !== true) {
         return autorizado;
     }
-    
+
     let { usuarioId } = req.user;
     req.body.usuario_crea = usuarioId;
     const result = await Modelo.create(req.body);
@@ -23,19 +23,67 @@ const insert = async (req) => {
 }
 
 
+const consultar = async (query, include = 1) => {
+    if (include == 1) {
+        console.log(query);
+        if (query) {
+            return await Modelo.findAll({
+                include: [{
+                    model: Estado,
+                    required: true,
+                    attributes: ['descripcion'],
+                },
+                {
+                    model: Pais,
+                    required: true,
+                    attributes: ['descripcion','nacionalidad']
+                }],
+                where: [query],
+                order: [
+                    ['departamentoId', 'ASC']
+                ]
+            });
+        } else {
+            return await Modelo.findAll({
+                include: [{
+                    model: Estado,
+                    required: true,
+                    attributes: ['descripcion'],
+                },
+                {
+                    model: Pais,
+                    required: true,
+                    attributes: ['descripcion','nacionalidad']
+                }],
+                order: [
+                    ['departamentoId', 'ASC']
+                ]
+            });
+        }
+    } else {
+        if (query) {
+            return await Modelo.findAll({ where: query });
+        } else {
+            return await Modelo.findAll();
+        }
+    }
+}
+
+
 list = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,3);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 3);
+    if (autorizado !== true) {
         return autorizado;
     }
-    
+
+    const { include } = req.query;
     if (!req.query.id && !req.query.estadoId && !req.query.paisId) {
         response.code = 1;
-        response.data = await Modelo.findAll();
+        response.data = await consultar(null, include);
         return response;
     }
 
-    const { id, estadoId,paisId} = req.query;
+    const { id, estadoId, paisId } = req.query;
     let query = {};
     if (estadoId) {
         let estados = estadoId.split(';');
@@ -52,13 +100,13 @@ list = async (req) => {
 
     if (!id) {
         response.code = 1;
-        response.data = await Modelo.findAll({ where: query});
+        response.data = await consultar(query, include);
         return response;
     } else {
         if (Number(id) > 0) {
             query.departamentoId = Number(id);
             response.code = 1;
-            response.data = await Modelo.findOne({ where: query });
+            response.data = await consultar(query, include);
             return response;
         } else {
             response.code = -1;
@@ -69,8 +117,8 @@ list = async (req) => {
 }
 
 const update = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,2);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 2);
+    if (autorizado !== true) {
         return autorizado;
     }
     const { departamentoId } = req.body;
@@ -94,7 +142,7 @@ const update = async (req) => {
             let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
             const data = {
                 fecha_ult_mod,
-                usuario_ult_mod:usuarioId
+                usuario_ult_mod: usuarioId
             }
             const resultadoUpdateFecha = await Modelo.update(data, {
                 where: {
@@ -117,8 +165,60 @@ const update = async (req) => {
     }
 };
 
+const eliminar = async (req) => {
+    let autorizado = await validarpermiso(req, MenuId, 4);
+    if (autorizado !== true) {
+        return autorizado;
+    }
+    let departamentoId = req.params.id;
+    const dataAnterior = await Modelo.findOne({
+        where: { departamentoId }
+    });
+
+    const dataEliminar = {
+        estadoId: 3
+    };
+    if (dataAnterior) {
+        const resultado = await Modelo.update(dataEliminar, {
+            where: {
+                departamentoId
+            }
+        });
+        if (resultado > 0) {
+            let { usuarioId } = req.user;
+            dataEliminar.usuario_ult_mod = usuarioId;
+            await registrarBitacora(tabla, departamentoId, dataAnterior.dataValues, dataEliminar);
+
+            //Actualizar fecha de ultima modificacion
+            let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
+            const data = {
+                fecha_ult_mod,
+                usuario_ult_mod: usuarioId
+            }
+            const resultadoUpdateFecha = await Modelo.update(data, {
+                where: {
+                    departamentoId
+                }
+            });
+
+            response.code = 1;
+            response.data = "Elemento eliminado exitosamente";
+            return response;
+        } else {
+            response.code = -1;
+            response.data = "No fue posible eliminar el elemento";
+            return response;
+        }
+    } else {
+        response.code = -1;
+        response.data = "No existe información para eliminar con los parametros especificados";
+        return response;
+    }
+}
+
 module.exports = {
     list,
     update,
-    insert
+    insert,
+    eliminar
 }

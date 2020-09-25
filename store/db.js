@@ -103,6 +103,21 @@ try {
         await TipoSangre.bulkCreate(TiposSangre);
         await UsuarioRol.bulkCreate(UsuarioRoles);
       }
+
+
+      //Inicio Relaciones de estado con las demas tablas
+      Estado.belongsTo(Pais,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      Pais.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      Estado.belongsTo(Departamento,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      Departamento.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      //Fin Relaciones de estado con las demas tablas
+
+      //Inicio Relaciones de pais
+      Pais.belongsTo(Departamento,{foreignKey: 'paisId',sourceKey:'paisId'});
+      Departamento.hasOne(Pais,{foreignKey: 'paisId',sourceKey:'paisId'});
+      //Fin Relaciones de pais
+      
       MenuAcceso.belongsTo(RolMenuAcceso,{ foreignKey: 'menu_accesoId',sourceKey: 'menu_accesoId'});
       RolMenuAcceso.hasMany(MenuAcceso,{ foreignKey: 'menu_accesoId',sourceKey: 'menu_accesoId'});
       Menu.belongsTo(MenuAcceso,{ foreignKey: 'menuId',sourceKey: 'menuId'});
@@ -170,6 +185,7 @@ try {
 
       Estado.belongsTo(Rol,{foreignKey: 'estadoId',sourceKey:'estadoId'});
       Rol.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
 
       Usuario.belongsTo(Rol,{foreignKey: 'usuario_crea',sourceKey:'usuarioId'});
       Rol.hasOne(Usuario,{foreignKey: 'usuarioId',sourceKey:'usuario_crea'});

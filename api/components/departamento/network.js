@@ -11,12 +11,12 @@ const registrar = (req, res, next) => {
         .catch(next);
 }
 
-const listar=(req,res,next)=>{
+const listar = (req, res, next) => {
     controller.list(req)
-    .then((data) => {
-        response.success(req, res, data, 200);
-    })
-    .catch(next);
+        .then((data) => {
+            response.success(req, res, data, 200);
+        })
+        .catch(next);
 }
 
 const actualizar = (req, res, next) => {
@@ -27,8 +27,17 @@ const actualizar = (req, res, next) => {
         .catch(next);
 }
 
-router.post('/',registrar);
+const eliminar = (req, res, next) => {
+    controller.eliminar(req)
+        .then((data) => {
+            response.success(req, res, data, 200);
+        })
+        .catch(next);
+}
+
+router.post('/', registrar);
 router.get('/', listar);
-router.put('/',actualizar);
+router.put('/', actualizar);
+router.delete('/:id', eliminar);
 
 module.exports = router;

@@ -1,4 +1,4 @@
-const { Pais } = require('../../../store/db');
+const { Pais, Estado } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
@@ -22,15 +22,50 @@ const insert = async (req) => {
     return response;
 }
 
+const consultar = async (query,include=1) => {
+    if (include == 1) {
+        if (query) {
+            return await Modelo.findAll({
+                include: [  {
+                    model: Estado,
+                    required: true,
+                    attributes: ['descripcion'],
+                }],
+                where: [query],
+                order: [
+                    ['paisId', 'ASC']
+                ]
+            });
+        } else {
+            return await Modelo.findAll({
+                include: [  {
+                    model: Estado,
+                    required: true,
+                    attributes: ['descripcion'],
+                }],
+                order: [
+                    ['paisId', 'ASC']
+                ]
+            });
+        }
+    } else {
+        if (query) {
+            return await Modelo.findAll({ where: query });
+        } else {
+            return await Modelo.findAll();
+        }
+    }
+}
+
 list = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,3);
     if(autorizado!==true){
         return autorizado;
     }
-    
+    const { include } = req.query;
     if (!req.query.id && !req.query.estadoId) {
         response.code = 1;
-        response.data = await Modelo.findAll();
+        response.data =  await consultar(null, include);
         return response;
     }
 
@@ -47,13 +82,13 @@ list = async (req) => {
 
     if (!id) {
         response.code = 1;
-        response.data = await Modelo.findAll({ where: query});
+        response.data = await consultar(query, include);
         return response;
     } else {
         if (Number(id) > 0) {
             query.paisId = Number(id);
             response.code = 1;
-            response.data = await Modelo.findOne({ where: query });
+            response.data = await consultar(query, include);
             return response;
         } else {
             response.code = -1;
@@ -112,8 +147,61 @@ const update = async (req) => {
     }
 };
 
+const eliminar = async (req) => {
+    let autorizado = await validarpermiso(req, MenuId, 4);
+    if (autorizado !== true) {
+        return autorizado;
+    }
+    let paisId = req.params.id;
+    const dataAnterior = await Modelo.findOne({
+        where: { paisId }
+    });
+
+    const dataEliminar = {
+        estadoId: 3
+    };
+    if (dataAnterior) {
+        const resultado = await Modelo.update(dataEliminar, {
+            where: {
+                paisId
+            }
+        });
+        if (resultado > 0) {
+            let { usuarioId } = req.user;
+            dataEliminar.usuario_ult_mod = usuarioId;
+            await registrarBitacora(tabla, paisId, dataAnterior.dataValues, dataEliminar);
+
+            //Actualizar fecha de ultima modificacion
+            let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
+            const data = {
+                fecha_ult_mod,
+                usuario_ult_mod: usuarioId
+            }
+            const resultadoUpdateFecha = await Modelo.update(data, {
+                where: {
+                    paisId
+                }
+            });
+
+            response.code = 1;
+            response.data = "Elemento eliminado exitosamente";
+            return response;
+        } else {
+            response.code = -1;
+            response.data = "No fue posible eliminar el elemento";
+            return response;
+        }
+    } else {
+        response.code = -1;
+        response.data = "No existe información para eliminar con los parametros especificados";
+        return response;
+    }
+}
+
+
 module.exports = {
     list,
     update,
-    insert
+    insert,
+    eliminar
 }
