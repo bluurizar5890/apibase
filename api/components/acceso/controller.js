@@ -1,10 +1,10 @@
-const { EstadoCivil } = require('../../../store/db');
+const { Acceso } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
-const MenuId=4;
-const Modelo = EstadoCivil;
-const tabla = 'cat_estado_civil';
+const MenuId=1;
+const Modelo = Acceso;
+const tabla = 'cat_acceso';
 let response = {};
 
 
@@ -34,7 +34,7 @@ list = async (req) => {
         return response;
     }
 
-    const { id, estadoId} = req.query;
+    const { id, estadoId } = req.query;
     let query = {};
     if (estadoId) {
         let estados = estadoId.split(';');
@@ -51,7 +51,7 @@ list = async (req) => {
         return response;
     } else {
         if (Number(id) > 0) {
-            query.estado_civilId = Number(id);
+            query.accesoId = Number(id);
             response.code = 1;
             response.data = await Modelo.findOne({ where: query });
             return response;
@@ -68,22 +68,22 @@ const update = async (req) => {
     if(autorizado!==true){
         return autorizado;
     }
-    const { estado_civilId } = req.body;
+    const { accesoId } = req.body;
     const dataAnterior = await Modelo.findOne({
-        where: { estado_civilId }
+        where: { accesoId }
     });
 
 
     if (dataAnterior) {
         const resultado = await Modelo.update(req.body, {
             where: {
-                estado_civilId
+                accesoId
             }
         });
         if (resultado > 0) {
             let { usuarioId } = req.user;
             req.body.usuario_ult_mod = usuarioId;
-             await registrarBitacora(tabla, estado_civilId, dataAnterior.dataValues, req.body);
+            await registrarBitacora(tabla, accesoId, dataAnterior.dataValues, req.body);
 
             //Actualizar fecha de ultima modificacion
             let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
@@ -93,7 +93,7 @@ const update = async (req) => {
             }
             const resultadoUpdateFecha = await Modelo.update(data, {
                 where: {
-                    estado_civilId
+                    accesoId
                 }
             });
 
@@ -112,15 +112,14 @@ const update = async (req) => {
     }
 };
 
-
 const eliminar = async (req) => {
     let autorizado = await validarpermiso(req, MenuId, 4);
     if (autorizado !== true) {
         return autorizado;
     }
-    let estado_civilId = req.params.id;
+    let accesoId = req.params.id;
     const dataAnterior = await Modelo.findOne({
-        where: { estado_civilId }
+        where: { accesoId }
     });
 
     const dataEliminar = {
@@ -129,13 +128,13 @@ const eliminar = async (req) => {
     if (dataAnterior) {
         const resultado = await Modelo.update(dataEliminar, {
             where: {
-                estado_civilId
+                accesoId
             }
         });
         if (resultado > 0) {
             let { usuarioId } = req.user;
             dataEliminar.usuario_ult_mod = usuarioId;
-            await registrarBitacora(tabla, estado_civilId, dataAnterior.dataValues, dataEliminar);
+            await registrarBitacora(tabla, accesoId, dataAnterior.dataValues, dataEliminar);
 
             //Actualizar fecha de ultima modificacion
             let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
@@ -145,7 +144,7 @@ const eliminar = async (req) => {
             }
             const resultadoUpdateFecha = await Modelo.update(data, {
                 where: {
-                    estado_civilId
+                    accesoId
                 }
             });
 
@@ -163,6 +162,7 @@ const eliminar = async (req) => {
         return response;
     }
 }
+
 
 module.exports = {
     list,
