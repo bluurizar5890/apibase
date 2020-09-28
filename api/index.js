@@ -24,6 +24,8 @@ const IdentificacionPersona = require('./components/identificacionpersona/networ
 const TelefonoPersona = require('./components/telefonopersona/network');
 const UsuarioRol = require('./components/usuariorol/network');
 const Usuario = require('./components/usuario/network');
+const Acceso = require('./components/acceso/network');
+const Menu = require('./components/menu/network');
 const MenuAcceso = require('./components/menuacceso/network');
 const RolMenuAcceso = require('./components/rolmenuacceso/network');
 const Auth = require('./components/auth/network');
@@ -57,6 +59,8 @@ app.use('/api/persona/identificacion', passport.authenticate('jwt', { session: f
 app.use('/api/persona/telefono', passport.authenticate('jwt', { session: false }), TelefonoPersona);
 app.use('/api/usuario', passport.authenticate('jwt', { session: false }), Usuario);
 app.use('/api/usuario/rol', passport.authenticate('jwt', { session: false }), UsuarioRol);
+app.use('/api/acceso', passport.authenticate('jwt', { session: false }), Acceso);
+app.use('/api/menu', passport.authenticate('jwt', { session: false }), Menu);
 app.use('/api/menuacceso', passport.authenticate('jwt', { session: false }), MenuAcceso);
 app.use('/api/rolmenuacceso', passport.authenticate('jwt', { session: false }), RolMenuAcceso);
 app.use('/api/auth', Auth);

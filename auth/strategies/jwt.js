@@ -21,6 +21,8 @@ passport.use(
             on a.menu_accesoId=b.menu_accesoId and a.estadoId=1 and b.estadoId=1
             inner join usuario_rol c
             on a.rolId=c.rolId and c.estadoId=1
+            inner join cat_acceso d
+            on b.accesoId=d.accesoId and d.estadoId=1
             where c.usuarioId=${usuarioId};`, {
                 type: QueryTypes.SELECT
               });

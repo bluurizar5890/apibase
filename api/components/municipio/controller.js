@@ -117,8 +117,59 @@ const update = async (req) => {
     }
 };
 
+const eliminar = async (req) => {
+    let autorizado = await validarpermiso(req, MenuId, 4);
+    if (autorizado !== true) {
+        return autorizado;
+    }
+    let municipioId = req.params.id;
+    const dataAnterior = await Modelo.findOne({
+        where: { municipioId }
+    });
+
+    const dataEliminar = {
+        estadoId: 3
+    };
+    if (dataAnterior) {
+        const resultado = await Modelo.update(dataEliminar, {
+            where: {
+                municipioId
+            }
+        });
+        if (resultado > 0) {
+            let { usuarioId } = req.user;
+            dataEliminar.usuario_ult_mod = usuarioId;
+            await registrarBitacora(tabla, municipioId, dataAnterior.dataValues, dataEliminar);
+
+            //Actualizar fecha de ultima modificacion
+            let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
+            const data = {
+                fecha_ult_mod,
+                usuario_ult_mod: usuarioId
+            }
+            const resultadoUpdateFecha = await Modelo.update(data, {
+                where: {
+                    municipioId
+                }
+            });
+
+            response.code = 1;
+            response.data = "Elemento eliminado exitosamente";
+            return response;
+        } else {
+            response.code = -1;
+            response.data = "No fue posible eliminar el elemento";
+            return response;
+        }
+    } else {
+        response.code = -1;
+        response.data = "No existe información para eliminar con los parametros especificados";
+        return response;
+    }
+}
 module.exports = {
     list,
     update,
-    insert
+    insert,
+    eliminar
 }

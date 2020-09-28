@@ -367,7 +367,7 @@ const Municipios = [
 const Menus = [
   {
     posicion: 1,
-    descripcion: "Catálogos",
+    descripcion: "Acceso",
     href: "",
     icono: "",
     menu_padreId: 0,
@@ -519,6 +519,13 @@ const Menus = [
   {
     posicion: 20,
     descripcion: "Rol Menu Acceso",
+    href: "",
+    icono: "",
+    menu_padreId: 0,
+    usuario_crea: 1
+  },{
+    posicion: 21,
+    descripcion: "Menu",
     href: "",
     icono: "",
     menu_padreId: 0,
