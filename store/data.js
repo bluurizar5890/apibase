@@ -1188,12 +1188,12 @@ const Accesos = [
   },
   {
     accesoId: 2,
-    descripcion: "Visualizar",
+    descripcion: "Actualizar",
     usuario_crea: 1
   },
   {
     accesoId: 3,
-    descripcion: "Actualizar",
+    descripcion: "Visualizar",
     usuario_crea: 1
   },
   {

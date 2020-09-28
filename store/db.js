@@ -111,15 +111,47 @@ try {
 
       Estado.belongsTo(Departamento,{foreignKey: 'estadoId',sourceKey:'estadoId'});
       Departamento.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      Estado.belongsTo(Municipio,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      Municipio.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      Estado.belongsTo(TipoDocumento,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      TipoDocumento.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      Estado.belongsTo(TipoTelefono,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      TipoTelefono.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      Estado.belongsTo(TipoSangre,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      TipoSangre.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      Estado.belongsTo(EstadoCivil,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      EstadoCivil.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      Estado.belongsTo(Acceso,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      Acceso.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      Estado.belongsTo(Menu,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      Menu.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      Estado.belongsTo(RolMenuAcceso,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      RolMenuAcceso.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+
+      Estado.belongsTo(MenuAcceso,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      MenuAcceso.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
       //Fin Relaciones de estado con las demas tablas
 
       //Inicio Relaciones de pais
       Pais.belongsTo(Departamento,{foreignKey: 'paisId',sourceKey:'paisId'});
       Departamento.hasOne(Pais,{foreignKey: 'paisId',sourceKey:'paisId'});
       //Fin Relaciones de pais
+
+      //Inicio Relaciones Departamento
+      Departamento.belongsTo(Municipio,{foreignKey: 'departamentoId',sourceKey:'departamentoId'});
+      Municipio.hasOne(Departamento,{foreignKey: 'departamentoId',sourceKey:'departamentoId'});
+      //Fin Relaciones Departamento
       
       MenuAcceso.belongsTo(RolMenuAcceso,{ foreignKey: 'menu_accesoId',sourceKey: 'menu_accesoId'});
-      RolMenuAcceso.hasMany(MenuAcceso,{ foreignKey: 'menu_accesoId',sourceKey: 'menu_accesoId'});
+      RolMenuAcceso.hasOne(MenuAcceso,{ foreignKey: 'menu_accesoId',sourceKey: 'menu_accesoId'});
       Menu.belongsTo(MenuAcceso,{ foreignKey: 'menuId',sourceKey: 'menuId'});
       MenuAcceso.hasOne(Menu,{ foreignKey: 'menuId',sourceKey: 'menuId'});
       Acceso.belongsTo(MenuAcceso,{ foreignKey: 'accesoId',sourceKey: 'accesoId'});

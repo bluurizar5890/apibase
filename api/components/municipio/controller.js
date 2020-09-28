@@ -1,4 +1,4 @@
-const { Municipio } = require('../../../store/db');
+const { Municipio, Estado, Departamento } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
@@ -6,7 +6,6 @@ const MenuId=10;
 const Modelo = Municipio;
 const tabla = 'cat_municipio';
 let response = {};
-
 
 const insert = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,1);
@@ -22,15 +21,61 @@ const insert = async (req) => {
     return response;
 }
 
+const consultar = async (query, include = 1) => {
+    if (include == 1) {
+        console.log(query);
+        if (query) {
+            return await Modelo.findAll({
+                include: [{
+                    model: Estado,
+                    required: true,
+                    attributes: ['descripcion'],
+                },
+                {
+                    model: Departamento,
+                    required: true,
+                    attributes: ['descripcion']
+                }],
+                where: [query],
+                order: [
+                    ['municipioId', 'ASC']
+                ]
+            });
+        } else {
+            return await Modelo.findAll({
+                include: [{
+                    model: Estado,
+                    required: true,
+                    attributes: ['descripcion'],
+                },
+                {
+                    model: Departamento,
+                    required: true,
+                    attributes: ['descripcion']
+                }],
+                order: [
+                    ['municipioId', 'ASC']
+                ]
+            });
+        }
+    } else {
+        if (query) {
+            return await Modelo.findAll({ where: query });
+        } else {
+            return await Modelo.findAll();
+        }
+    }
+}
+
 list = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,3);
     if(autorizado!==true){
         return autorizado;
     }
-    
+    const { include } = req.query;
     if (!req.query.id && !req.query.estadoId && !req.query.departamentoId) {
         response.code = 1;
-        response.data = await Modelo.findAll();
+        response.data = await  await consultar(null, include);
         return response;
     }
 
@@ -52,13 +97,13 @@ list = async (req) => {
 
     if (!id) {
         response.code = 1;
-        response.data = await Modelo.findAll({ where: query});
+        response.data = await consultar(query, include);
         return response;
     } else {
         if (Number(id) > 0) {
             query.municipioId = Number(id);
             response.code = 1;
-            response.data = await Modelo.findOne({ where: query });
+            response.data =await consultar(query, include);
             return response;
         } else {
             response.code = -1;

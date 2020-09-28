@@ -1,4 +1,4 @@
-const { MenuAcceso } = require('../../../store/db');
+const { MenuAcceso, Estado, Acceso } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
@@ -34,16 +34,58 @@ const insert = async (req) => {
   
 }
 
+const consultar = async (query, include = 1) => {
+    if (include == 1) {
+        if (query) {
+            return await Modelo.findAll({
+                include: [{
+                    model: Acceso,
+                    required: true,
+                    attributes: ['descripcion'],
+                },{
+                    model: Estado,
+                    required: true,
+                    attributes: ['descripcion'],
+                }],
+                where: [query],
+                order: [
+                    ['menu_accesoId', 'ASC']
+                ]
+            });
+        } else {
+            return await Modelo.findAll({
+                include: [{
+                    model: Acceso,
+                    required: true,
+                    attributes: ['descripcion'],
+                },{
+                    model: Estado,
+                    required: true,
+                    attributes: ['descripcion'],
+                }],
+                order: [
+                    ['menu_accesoId', 'ASC']
+                ]
+            });
+        }
+    } else {
+        if (query) {
+            return await Modelo.findAll({ where: query });
+        } else {
+            return await Modelo.findAll();
+        }
+    }
+}
 
 list = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,3);
     if(autorizado!==true){
         return autorizado;
     }
-    
+    const { include } = req.query;
     if (!req.query.id && !req.query.estadoId && !req.query.menuId && !req.query.accesoId) {
         response.code = 1;
-        response.data = await Modelo.findAll();
+        response.data = await consultar(null,include);
         return response;
     }
 
@@ -68,13 +110,13 @@ list = async (req) => {
 
     if (!id) {
         response.code = 1;
-        response.data = await Modelo.findAll({ where: query});
+        response.data =  await consultar(query,include);
         return response;
     } else {
         if (Number(id) > 0) {
             query.menu_accesoId = Number(id);
             response.code = 1;
-            response.data = await Modelo.findOne({ where: query });
+            response.data = await consultar(query,include);
             return response;
         } else {
             response.code = -1;

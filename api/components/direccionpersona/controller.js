@@ -65,7 +65,6 @@ const consultar = async (query) => {
     }
 }
 
-
 list = async (req) => {
     let autorizado = await validarpermiso(req, MenuId, 3);
     if (autorizado !== true) {

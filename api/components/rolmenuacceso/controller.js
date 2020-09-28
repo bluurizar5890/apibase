@@ -1,4 +1,4 @@
-const { RolMenuAcceso, Rol, Menu, MenuAcceso,Acceso } = require('../../../store/db');
+const { RolMenuAcceso, Rol, Menu, MenuAcceso,Acceso, Estado } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
@@ -57,13 +57,17 @@ list = async (req) => {
                     attributes: ['accesoId', 'descripcion', 'estadoId'],
                 }
             ]
+            },{
+                model: Estado,
+                required: true,
+                attributes: ['descripcion'],
             }],
             where:{rolId},
             order:[
                 ['rol_menu_accesoId','ASC']
             ]
     });
-    response.code = 0;
+    response.code = 1;
     response.data = prueba;
     return response;
 }
@@ -114,7 +118,7 @@ const update = async (req) => {
                 }
             });
 
-            response.code = 0;
+            response.code = 1;
             response.data = "Información Actualizado exitosamente";
             return response;
         } else {
@@ -129,8 +133,60 @@ const update = async (req) => {
     }
 };
 
+const eliminar = async (req) => {
+    let autorizado = await validarpermiso(req, MenuId, 4);
+    if (autorizado !== true) {
+        return autorizado;
+    }
+    let rol_menu_accesoId = req.params.id;
+    const dataAnterior = await Modelo.findOne({
+        where: { rol_menu_accesoId }
+    });
+
+    const dataEliminar = {
+        estadoId: 3
+    };
+    if (dataAnterior) {
+        const resultado = await Modelo.update(dataEliminar, {
+            where: {
+                rol_menu_accesoId
+            }
+        });
+        if (resultado > 0) {
+            let { usuarioId } = req.user;
+            dataEliminar.usuario_ult_mod = usuarioId;
+            await registrarBitacora(tabla, rol_menu_accesoId, dataAnterior.dataValues, dataEliminar);
+
+            //Actualizar fecha de ultima modificacion
+            let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
+            const data = {
+                fecha_ult_mod,
+                usuario_ult_mod: usuarioId
+            }
+            const resultadoUpdateFecha = await Modelo.update(data, {
+                where: {
+                    rol_menu_accesoId
+                }
+            });
+
+            response.code = 1;
+            response.data = "Elemento eliminado exitosamente";
+            return response;
+        } else {
+            response.code = -1;
+            response.data = "No fue posible eliminar el elemento";
+            return response;
+        }
+    } else {
+        response.code = -1;
+        response.data = "No existe información para eliminar con los parametros especificados";
+        return response;
+    }
+}
+
 module.exports = {
     list,
     update,
-    insert
+    insert,
+    eliminar
 }

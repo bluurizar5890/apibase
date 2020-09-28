@@ -22,7 +22,6 @@ const insert = async (req) => {
     return response;
 }
 
-
 const consultar = async (query, include = 1) => {
     if (include == 1) {
         console.log(query);
@@ -68,7 +67,6 @@ const consultar = async (query, include = 1) => {
         }
     }
 }
-
 
 list = async (req) => {
     let autorizado = await validarpermiso(req, MenuId, 3);
