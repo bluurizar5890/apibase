@@ -24,6 +24,7 @@ const insert = async (req) => {
     }
 
     let { usuarioId } = req.user;
+    req.body.email=req.body.email.toLowerCase();
     req.body.usuario_crea = usuarioId;
     const result = await Modelo.create(req.body);
     response.code = 1;
@@ -323,7 +324,9 @@ const update = async (req) => {
     const dataAnterior = await Modelo.findOne({
         where: { personaId }
     });
-
+    if(req.body.email){
+        req.body.email=req.body.email.toLowerCase();
+    }
     if (dataAnterior) {
         const resultado = await Modelo.update(req.body, {
             where: {

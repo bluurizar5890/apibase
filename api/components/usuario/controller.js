@@ -1,4 +1,4 @@
-const { Usuario, Estado, UsuarioRol, Rol, Persona } = require('../../../store/db');
+const { Usuario, Estado, Persona } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const bcrypt = require('bcrypt')
 const { validarpermiso } = require('../../../auth');
@@ -15,7 +15,12 @@ const insert = async (req) => {
     }
     
     const dataUsuario=req.body;
-    let { usuarioId } = req.user;
+    let { usuarioId} = req.user;
+
+    const { dias_cambio_password } = req.body;
+    if(dias_cambio_password===0){
+        delete req.body.fecha_cambio_password;
+    }
     dataUsuario.usuario_crea = usuarioId;
     const password=dataUsuario.password;
     dataUsuario.password= bcrypt.hashSync(password, 10);

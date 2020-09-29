@@ -1,5 +1,6 @@
-const { Usuario } = require('../../../store/db');
+const { Usuario,bd } = require('../../../store/db');
 const bcrypt = require('bcrypt');
+const { QueryTypes } = require('sequelize');
 const auth = require('../../../auth');
 let response = {};
 
@@ -14,13 +15,30 @@ const login = async (req,res) => {
         response.data = "Credenciales inválidas";
         return response;
     }
+  
     return bcrypt.compare(req.body.password, user.password)
-        .then((sonIguales) => {
+        .then(async(sonIguales) => {
             if (sonIguales === true) {
                 const {usuarioId}=user;
+                const data={};
                 const token= auth.sign({usuarioId});
+               
+                const accesos=await bd.query(`select distinct b.menuId,b.accesoId from rol_menu_acceso a 
+                inner join menu_acceso b
+                on a.menu_accesoId=b.menu_accesoId and a.estadoId=1 and b.estadoId=1
+                inner join usuario_rol c
+                on a.rolId=c.rolId and c.estadoId=1
+                inner join cat_acceso d
+                on b.accesoId=d.accesoId and d.estadoId=1
+                where c.usuarioId=${usuarioId};`, {
+                type: QueryTypes.SELECT
+                });
+
+                
+                data.token=token;
+                data.accesos=accesos;
                 response.code = 1;
-                response.data =token;
+                response.data =data;
                 
                  res.cookie("mitoken",token,{
                     httpOnly:true,

@@ -9,7 +9,7 @@ function sign(data) {
 const validarpermiso = async (req, menuId, accesoId) => {
     let response = {};
     const permisos = req.user.actions;
-    let permiso = await permisos.find(item => item.id === menuId && item.action === accesoId);
+    let permiso = await permisos.find(item => item.menuId === menuId && item.accesoId === accesoId);
     if (permiso === undefined) {
         response.code = -1;
         response.data = "No esta autorizado para realizar esta acción";
