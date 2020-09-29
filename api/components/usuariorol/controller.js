@@ -33,7 +33,7 @@ const insert = async (req) => {
 
 const consultar = async (query) => {
     if (query) {
-        return await UsuarioRol.findAll({
+        return await Modelo.findAll({
             include: [{
                 model: Rol,
                 required: true
@@ -48,7 +48,7 @@ const consultar = async (query) => {
             ]
         });
     } else {
-        return await UsuarioRol.findAll({
+        return await Modelo.findAll({
             include: [{
                 model: Rol,
                 required: true
@@ -97,7 +97,7 @@ list = async (req) => {
 
     if (!id) {
         response.code = 1;
-        response.data = awaitconsultar(query);
+        response.data = await consultar(query);
         return response;
     } else {
         if (Number(id) > 0) {

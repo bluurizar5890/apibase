@@ -1,4 +1,4 @@
-const { Usuario, Estado, UsuarioRol, Rol } = require('../../../store/db');
+const { Usuario, Estado, UsuarioRol, Rol, Persona } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const bcrypt = require('bcrypt')
 const { validarpermiso } = require('../../../auth');
@@ -25,54 +25,63 @@ const insert = async (req) => {
     return response;
 }
 
-const consultar = async (query) => {
-    if (query) {
-        return await Usuario.findAll({
-            include: [{
-                model:UsuarioRol,
-                required: false,
-                include:[{
-                    model:Rol,
-                    required:true
-                }]
-            },{
-                model: Estado,
-                required: true,
-            }],
-            where: [query],
-            order: [
-                ['usuarioId', 'ASC']
-            ]
-        });
+const consultar = async (query, include = 1) => {
+    if (include == 1) {
+        if (query) {
+            return await Modelo.findAll({
+                include: [
+                    {
+                    model: Persona,
+                    required: true,
+                    attributes: ['nombre1','nombre2','nombre_otros','apellido1','apellido2','apellido_casada','email']
+                },{
+                    model: Estado,
+                    required: true,
+                    attributes: ['descripcion']
+                }],
+                where: [query],
+                order: [
+                    ['usuarioId', 'ASC']
+                ],
+                attributes: ['usuarioId','personaId','user_name','fecha_cambio_password','fecha_crea','estadoId','forzar_cambio_password','dias_cambio_password']
+            });
+        } else {
+            return await Modelo.findAll({
+                include: [{
+                    model: Persona,
+                    required: true,
+                    attributes: ['nombre1','nombre2','nombre_otros','apellido1','apellido2','apellido_casada','email']
+                },{
+                    model: Estado,
+                    required: true,
+                    attributes: ['descripcion']
+                }],
+                order: [
+                    ['usuarioId', 'ASC']
+                ],
+                attributes: ['usuarioId','personaId','user_name','fecha_cambio_password','fecha_crea','estadoId','forzar_cambio_password','dias_cambio_password']
+            });
+        }
     } else {
-        return await Usuario.findAll({
-            include: [{
-                model:UsuarioRol,
-                required: false,
-                include:[{
-                    model:Rol,
-                    required:true
-                }]
-            },{
-                model: Estado,
-                required: true,
-            }],
-            order: [
-                ['usuarioId', 'ASC']
-            ]
-        });
+        if (query) {
+            return await Modelo.findAll({ where: query });
+        } else {
+            return await Modelo.findAll();
+        }
     }
 }
+
+
 
 list = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,3);
     if(autorizado!==true){
         return autorizado;
     }
-    
+    const {include}=req.query;
     if (!req.query.id && !req.query.estadoId && !req.query.personaId) {
         response.code = 1;
-        response.data = await consultar();
+        response.data = await consultar(null,include);
         return response;
     }
 
@@ -94,13 +103,13 @@ list = async (req) => {
 
     if (!id) {
         response.code = 1;
-        response.data = await consultar(query);
+        response.data =await consultar(query,include);
         return response;
     } else {
         if (Number(id) > 0) {
             query.usuarioId = Number(id);
             response.code = 1;
-            response.data = await consultar(query);
+            response.data =await consultar(query,include);
             return response;
         } else {
             response.code = -1;
@@ -175,8 +184,9 @@ const update = async (req) => {
     if (dataAnterior) {
         delete req.body.user_name;
         const password=req.body.password;
+        if(password){
         req.body.password= bcrypt.hashSync(password, 10);
-
+        }
         const resultado = await Modelo.update(req.body, {
             where: {
                 usuarioId

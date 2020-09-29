@@ -1,4 +1,4 @@
-const { Rol, UsuarioRol, Estado, Usuario } = require('../../../store/db');
+const { Rol, Estado} = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
@@ -25,21 +25,11 @@ const consultar = async (query,include=1) => {
     if (include == 1) {
         if (query) {
             return await Rol.findAll({
-                include: [  {
-                    model: Usuario,
-                    required: true,
-                    attributes: ['usuarioId', 'user_name'],
-                },{
-                    model: UsuarioRol,
-                    required: false,
-                    include: [{
-                        model: Usuario,
-                        required: true
-                    }]
-                },
+                include: [
                 {
                     model: Estado,
-                    required: true
+                    required: true,
+                    attributes: ['descripcion']
                 }],
                 where: [query],
                 order: [
@@ -48,21 +38,11 @@ const consultar = async (query,include=1) => {
             });
         } else {
             return await Rol.findAll({
-                include: [  {
-                    model: Usuario,
-                    required: true,
-                    attributes: ['usuarioId', 'user_name'],
-                },{
-                    model: UsuarioRol,
-                    required: false,
-                    include: [{
-                        model: Usuario,
-                        required: true
-                    }]
-                },
+                include: [
                 {
                     model: Estado,
-                    required: true
+                    required: true,
+                    attributes: ['descripcion']
                 }],
                 order: [
                     ['rolId', 'ASC']

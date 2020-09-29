@@ -42,6 +42,7 @@ const consultar = async (query, include = 1) => {
                     model: Acceso,
                     required: true,
                     attributes: ['descripcion'],
+                    where:[{estadoId:1}]
                 },{
                     model: Estado,
                     required: true,
@@ -58,6 +59,7 @@ const consultar = async (query, include = 1) => {
                     model: Acceso,
                     required: true,
                     attributes: ['descripcion'],
+                    where:[{estadoId:1}]
                 },{
                     model: Estado,
                     required: true,
