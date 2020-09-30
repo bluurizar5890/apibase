@@ -33,43 +33,120 @@ const insert = async (req) => {
 }
 
 
+const consultar = async (query, include = 1) => {
+    if (include == 1) {
+        if (query) {
+            return await Modelo.findAll({
+                include: [{
+                    model: MenuAcceso,
+                    required: true,
+                    include: [
+                        {
+                        model: Menu,
+                        required: true,
+                        attributes: ['menuId','menu_padreId','descripcion', 'estadoId'],
+                    },
+                    {
+                        model: Acceso,
+                        required: true,
+                        attributes: ['accesoId', 'descripcion', 'estadoId'],
+                    }
+                ]
+                },{
+                    model: Estado,
+                    required: true,
+                    attributes: ['descripcion'],
+                }],
+                where: [query],
+                order: [
+                    ['rol_menu_accesoId', 'ASC']
+                ]
+            });
+        } else {
+            return await Modelo.findAll({
+                include: [{
+                    model: MenuAcceso,
+                    required: true,
+                    include: [
+                        {
+                        model: Menu,
+                        required: true,
+                        attributes: ['menuId','menu_padreId','descripcion', 'estadoId'],
+                    },
+                    {
+                        model: Acceso,
+                        required: true,
+                        attributes: ['accesoId', 'descripcion', 'estadoId'],
+                    }
+                ]
+                },{
+                    model: Estado,
+                    required: true,
+                    attributes: ['descripcion'],
+                }],
+                order: [
+                    ['rol_menu_accesoId', 'ASC']
+                ]
+            });
+        }
+    } else {
+        if (query) {
+            return await Modelo.findAll({ where: query });
+        } else {
+            return await Modelo.findAll();
+        }
+    }
+}
+
+
 list = async (req) => {
     let autorizado = await validarpermiso(req, MenuId, 3);
     if (autorizado !== true) {
         return autorizado;
     }
+  
+    const { include } = req.query;
+    if (!req.query.id && !req.query.estadoId && !req.query.rolId && !req.query.menu_accesoId) {
+        response.code = 1;
+        response.data = await consultar(null,include);
+        return response;
+    }
 
-    const{rolId}=req.query;
+    const { id, estadoId,rolId,menu_accesoId } = req.query;
+    let query = {};
+    if (estadoId) {
+        let estados = estadoId.split(';');
+        let arrayEstado = new Array();
+        estados.map((item) => {
+            arrayEstado.push(Number(item));
+        });
+        query.estadoId = arrayEstado;
+    }
 
-    let prueba =await RolMenuAcceso.findAll({
-            include: [{
-                model: MenuAcceso,
-                required: true,
-                include: [
-                    {
-                    model: Menu,
-                    required: true,
-                    attributes: ['menuId','menu_padreId','descripcion', 'estadoId'],
-                },
-                {
-                    model: Acceso,
-                    required: true,
-                    attributes: ['accesoId', 'descripcion', 'estadoId'],
-                }
-            ]
-            },{
-                model: Estado,
-                required: true,
-                attributes: ['descripcion'],
-            }],
-            where:{rolId},
-            order:[
-                ['rol_menu_accesoId','ASC']
-            ]
-    });
-    response.code = 1;
-    response.data = prueba;
-    return response;
+    if(rolId){
+        query.rolId = rolId;
+    }
+
+    if(menu_accesoId){
+        query.menu_accesoId = menu_accesoId;
+    }
+
+    if (!id) {
+        response.code = 1;
+        response.data = await consultar(query,include);
+        return response;
+    } else {
+        if (Number(id) > 0) {
+            query.tipo_documentoId = Number(id);
+            response.code = 1;
+            response.data = await consultar(query,include);
+            return response;
+        } else {
+            response.code = -1;
+            response.data = "Debe de especificar un codigo";
+            return response;
+        }
+    }
 }
 
 const update = async (req) => {
