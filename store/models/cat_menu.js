@@ -41,14 +41,19 @@ module.exports = (sequelize, type) => {
             fecha_ult_mod: {
                 type: type.DATE
             },
+            visible: {
+                type: type.INTEGER,
+                allowNull: false,
+                defaultValue: 1
+            },
             estadoId: {
                 type: type.INTEGER,
                 allowNull: false,
                 defaultValue: 1,
-                references: {
-                    model: "cat_estado",
-                    key: "estadoId",
-                }
+                // references: {
+                //     model: "cat_estado",
+                //     key: "estadoId",
+                // }
             }
         },
         {

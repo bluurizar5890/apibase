@@ -1,29 +1,136 @@
-const { Usuario,bd } = require('../../../store/db');
+const { Usuario, bd, Persona } = require('../../../store/db');
 const bcrypt = require('bcrypt');
 const { QueryTypes } = require('sequelize');
+const moment = require('moment');
 const auth = require('../../../auth');
 let response = {};
 
 const THIRTY_DAYS_IN_SEC = 2592000;
 const TWO_HOURS_IN_SEC = 7200;
 
-const login = async (req,res) => {
-    const user = await Usuario.findOne({ where: { user_name: req.body.user_name } });
+const getUserInfo = async (user) => {
+    let { usuarioId, user_name, personaId, forzar_cambio_password, dias_cambio_password, fecha_cambio_password } = user;
+    const persona = await Persona.findOne({ where: { personaId } });
+    let diasUpdatePass = 0;
+    if (forzar_cambio_password === false && dias_cambio_password > 0) {
+        diasUpdatePass = moment.duration(moment(fecha_cambio_password).diff(moment(new Date()))).asDays();
+        diasUpdatePass = Math.round(diasUpdatePass);
+        if (diasUpdatePass <= 0) {
+            forzar_cambio_password = true;
+        }
+    }
+    const { nombre1,
+        nombre2,
+        nombre_otros,
+        apellido1,
+        apellido2,
+        apellido_casada,
+        fecha_nacimiento,
+        generoId,
+        email } = persona;
+    let nombre = nombre1;
+    if (nombre2 && nombre2 !== "") {
+        if (String(nombre2).trim().length > 0) {
+            nombre += " " + nombre2;
+        }
+    }
+    if (nombre_otros && nombre_otros !== "") {
+        if (String(nombre_otros).trim().length > 0) {
+            nombre += " " + nombre_otros;
+        }
+    }
+    nombre += " " + apellido1;
+
+    if (apellido2 && apellido2 !== "") {
+        if (String(apellido2).trim().length > 0) {
+            nombre += " " + apellido2;
+        }
+    }
+    if (apellido_casada && apellido_casada !== "") {
+        if (String(apellido_casada).trim().length > 0) {
+            nombre += " " + apellido_casada;
+        }
+    }
+    const userInfo = {
+        usuarioId,
+        user_name,
+        personaId,
+        forzar_cambio_password,
+        nombre,
+        fecha_nacimiento,
+        generoId,
+        email,
+        dias_cambio_password,
+        fecha_cambio_password,
+        diasUpdatePass
+    }
+    return userInfo;
+}
+const getMenuUsuario = async (usuarioId) => {
+    const menuUsuario = await bd.query(`select distinct a.menuId,a.posicion,a.descripcion,a.href,a.icono,a.menu_padreId from cat_menu a
+                inner join menu_acceso b
+                on a.menuId=b.menuId and a.estadoId=1 and b.estadoId=1 and a.visible=1
+                inner join rol_menu_acceso c
+                on b.menu_accesoId=c.menu_accesoId and c.estadoId
+                inner join usuario_rol d
+                on c.rolId=d.rolId and d.estadoId=1
+                where d.usuarioId=${usuarioId} order by a.posicion;`, {
+        type: QueryTypes.SELECT
+    });
+
+    let listPrincipales = menuUsuario.filter(i => i.menu_padreId === 0);
+    let menu = [];
+    listPrincipales.map(({ menuId: id, posicion, descripcion: title, icono: ico }) => {
+
+        let listHijos = menuUsuario.filter(i => i.menu_padreId === id);
+        let childrens = [];
+        listHijos.map((item) => {
+            let menuHijo = {
+                id: item.menuId,
+                title: item.descripcion,
+                type: 'item',
+                url: item.href,
+                classes: 'nav-item'
+            }
+            childrens.push(menuHijo);
+        })
+
+        let menuItem = {
+            id,
+            title,
+            type: 'collapse',
+            ico,
+            children: childrens
+        }
+        menu.push(menuItem);
+    })
+    return menu;
+}
+const login = async (req, res) => {
+    const { accesos, menu, userInfo } = req.body;
+    const user = await Usuario.findOne({ where: { user_name: req.body.user_name, estadoId: 1 } });
     const { rememberMe } = false;
     if (!user) {
         response.code = -1;
         response.data = "Credenciales inválidas";
         return response;
     }
-  
+
     return bcrypt.compare(req.body.password, user.password)
-        .then(async(sonIguales) => {
+        .then(async (sonIguales) => {
             if (sonIguales === true) {
-                const {usuarioId}=user;
-                const data={};
-                const token= auth.sign({usuarioId});
-               
-                const accesos=await bd.query(`select distinct b.menuId,b.accesoId from rol_menu_acceso a 
+                const { usuarioId } = user;
+                const data = {};
+                const token = auth.sign({ usuarioId });
+                data.token = token;
+                if (userInfo === true) {
+                    data.userInfo = await getUserInfo(user);
+                }
+                if (menu === true) {
+                    data.menu = await getMenuUsuario(usuarioId);
+                }
+                if (accesos === true) {
+                    const accesos = await bd.query(`select distinct b.menuId,b.accesoId from rol_menu_acceso a 
                 inner join menu_acceso b
                 on a.menu_accesoId=b.menu_accesoId and a.estadoId=1 and b.estadoId=1
                 inner join usuario_rol c
@@ -31,20 +138,21 @@ const login = async (req,res) => {
                 inner join cat_acceso d
                 on b.accesoId=d.accesoId and d.estadoId=1
                 where c.usuarioId=${usuarioId};`, {
-                type: QueryTypes.SELECT
+                        type: QueryTypes.SELECT
+                    });
+                    data.accesos = accesos;
+                }
+
+
+
+                response.code = 1;
+                response.data = data;
+
+                res.cookie("mitoken", token, {
+                    httpOnly: true,
+                    maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC
                 });
 
-                
-                data.token=token;
-                data.accesos=accesos;
-                response.code = 1;
-                response.data =data;
-                
-                 res.cookie("mitoken",token,{
-                    httpOnly:true,
-                    maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC
-                 });
-                 
                 return response;
             }
             else {
@@ -55,7 +163,7 @@ const login = async (req,res) => {
         })
         .catch((error) => {
             response.code = -1;
-            response.data = "No fue posible realizar la autenticación" +error;
+            response.data = "No fue posible realizar la autenticación " + error;
             return response;
         });
 }
