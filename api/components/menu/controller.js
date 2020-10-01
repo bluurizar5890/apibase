@@ -1,7 +1,8 @@
-const { Menu, Estado } = require('../../../store/db');
+const { Menu, Estado, bd } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
+const { QueryTypes } = require('sequelize');
 const MenuId=21;
 const Modelo = Menu;
 const tabla = 'cat_menu';
@@ -98,6 +99,7 @@ list = async (req) => {
         }
     }
 }
+
 
 const update = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,2);
@@ -199,9 +201,59 @@ const eliminar = async (req) => {
     }
 }
 
+const listmenu = async (req) => {
+    let autorizado=await validarpermiso(req,MenuId,3);
+    if(autorizado!==true){
+        return autorizado;
+    }
+    const {usuarioId}=req.user;
+    const menuUsuario = await bd.query(`select distinct a.menuId,a.posicion,a.descripcion,a.href,a.icono,a.menu_padreId from cat_menu a
+                inner join menu_acceso b
+                on a.menuId=b.menuId and a.estadoId=1 and b.estadoId=1 and a.visible=1
+                inner join rol_menu_acceso c
+                on b.menu_accesoId=c.menu_accesoId and c.estadoId
+                inner join usuario_rol d
+                on c.rolId=d.rolId and d.estadoId=1
+                where d.usuarioId=${usuarioId} order by a.posicion;`, {
+        type: QueryTypes.SELECT
+    });
+
+    let listPrincipales = menuUsuario.filter(i => i.menu_padreId === 0);
+    let menu = [];
+    listPrincipales.map(({ menuId: id, posicion, descripcion: title, icono: ico }) => {
+
+        let listHijos = menuUsuario.filter(i => i.menu_padreId === id);
+        let childrens = [];
+        listHijos.map((item) => {
+            let menuHijo = {
+                id: item.menuId,
+                title: item.descripcion,
+                type: 'item',
+                url: item.href,
+                classes: 'nav-item'
+            }
+            childrens.push(menuHijo);
+        })
+
+        let menuItem = {
+            id,
+            title,
+            type: 'collapse',
+            ico,
+            children: childrens
+        }
+        menu.push(menuItem);
+    });
+
+    response.code=1;
+    response.data=menu;
+    return response;
+}
+
 module.exports = {
     list,
     update,
     insert,
-    eliminar
+    eliminar,
+    listmenu
 }

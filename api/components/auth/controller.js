@@ -66,48 +66,20 @@ const getUserInfo = async (user) => {
     }
     return userInfo;
 }
-const getMenuUsuario = async (usuarioId) => {
-    const menuUsuario = await bd.query(`select distinct a.menuId,a.posicion,a.descripcion,a.href,a.icono,a.menu_padreId from cat_menu a
-                inner join menu_acceso b
-                on a.menuId=b.menuId and a.estadoId=1 and b.estadoId=1 and a.visible=1
-                inner join rol_menu_acceso c
-                on b.menu_accesoId=c.menu_accesoId and c.estadoId
-                inner join usuario_rol d
-                on c.rolId=d.rolId and d.estadoId=1
-                where d.usuarioId=${usuarioId} order by a.posicion;`, {
+const getAccesos = async (usuarioId) => {
+    return await bd.query(`select distinct b.menuId,b.accesoId from rol_menu_acceso a 
+    inner join menu_acceso b
+    on a.menu_accesoId=b.menu_accesoId and a.estadoId=1 and b.estadoId=1
+    inner join usuario_rol c
+    on a.rolId=c.rolId and c.estadoId=1
+    inner join cat_acceso d
+    on b.accesoId=d.accesoId and d.estadoId=1
+    where c.usuarioId=${usuarioId};`, {
         type: QueryTypes.SELECT
     });
-
-    let listPrincipales = menuUsuario.filter(i => i.menu_padreId === 0);
-    let menu = [];
-    listPrincipales.map(({ menuId: id, posicion, descripcion: title, icono: ico }) => {
-
-        let listHijos = menuUsuario.filter(i => i.menu_padreId === id);
-        let childrens = [];
-        listHijos.map((item) => {
-            let menuHijo = {
-                id: item.menuId,
-                title: item.descripcion,
-                type: 'item',
-                url: item.href,
-                classes: 'nav-item'
-            }
-            childrens.push(menuHijo);
-        })
-
-        let menuItem = {
-            id,
-            title,
-            type: 'collapse',
-            ico,
-            children: childrens
-        }
-        menu.push(menuItem);
-    })
-    return menu;
 }
 const login = async (req, res) => {
-    const { accesos, menu, userInfo } = req.body;
+    const { accesos, userInfo } = req.body;
     const user = await Usuario.findOne({ where: { user_name: req.body.user_name, estadoId: 1 } });
     const { rememberMe } = false;
     if (!user) {
@@ -123,27 +95,12 @@ const login = async (req, res) => {
                 const data = {};
                 const token = auth.sign({ usuarioId });
                 data.token = token;
-                if (userInfo === true) {
-                    data.userInfo = await getUserInfo(user);
-                }
-                if (menu === true) {
-                    data.menu = await getMenuUsuario(usuarioId);
-                }
+                data.userInfo = await getUserInfo(user);
+
                 if (accesos === true) {
-                    const accesos = await bd.query(`select distinct b.menuId,b.accesoId from rol_menu_acceso a 
-                inner join menu_acceso b
-                on a.menu_accesoId=b.menu_accesoId and a.estadoId=1 and b.estadoId=1
-                inner join usuario_rol c
-                on a.rolId=c.rolId and c.estadoId=1
-                inner join cat_acceso d
-                on b.accesoId=d.accesoId and d.estadoId=1
-                where c.usuarioId=${usuarioId};`, {
-                        type: QueryTypes.SELECT
-                    });
+                    const accesos = await getAccesos(usuarioId);
                     data.accesos = accesos;
                 }
-
-
 
                 response.code = 1;
                 response.data = data;

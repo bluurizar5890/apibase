@@ -19,6 +19,14 @@ const listar=(req,res,next)=>{
     .catch(next);
 }
 
+const listAccesos=(req,res,next)=>{
+    controller.listAccesos(req)
+    .then((data) => {
+        response.success(req, res, data, 200);
+    })
+    .catch(next);
+}
+
 const actualizar = (req, res, next) => {
     controller.update(req)
         .then((data) => {
@@ -37,7 +45,9 @@ const eliminar = (req, res, next) => {
 
 router.post('/',registrar);
 router.get('/', listar);
+router.get('/accesos', listAccesos);
 router.put('/',actualizar);
 router.delete('/:id',eliminar);
+
 
 module.exports = router;

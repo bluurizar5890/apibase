@@ -1,8 +1,9 @@
-const { RolMenuAcceso, Rol, Menu, MenuAcceso,Acceso, Estado } = require('../../../store/db');
+const { RolMenuAcceso, Rol, Menu, MenuAcceso,Acceso, Estado, bd } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
 const { Accesos } = require('../../../store/data');
+const { QueryTypes } = require('sequelize');
 const MenuId = 20;
 const Modelo = RolMenuAcceso;
 const tabla = 'rol_menu_acceso';
@@ -149,6 +150,26 @@ list = async (req) => {
     }
 }
 
+const listAccesos = async (req) => {
+    let autorizado=await validarpermiso(req,MenuId,3);
+    if(autorizado!==true){
+        return autorizado;
+    }
+    const {usuarioId}=req.user;
+    response.code=1;
+    response.data=await bd.query(`select distinct b.menuId,b.accesoId from rol_menu_acceso a 
+    inner join menu_acceso b
+    on a.menu_accesoId=b.menu_accesoId and a.estadoId=1 and b.estadoId=1
+    inner join usuario_rol c
+    on a.rolId=c.rolId and c.estadoId=1
+    inner join cat_acceso d
+    on b.accesoId=d.accesoId and d.estadoId=1
+    where c.usuarioId=${usuarioId};`, {
+        type: QueryTypes.SELECT
+    });
+    return response;
+}
+
 const update = async (req) => {
     let autorizado = await validarpermiso(req, MenuId, 2);
     if (autorizado !== true) {
@@ -265,5 +286,6 @@ module.exports = {
     list,
     update,
     insert,
-    eliminar
+    eliminar,
+    listAccesos
 }
