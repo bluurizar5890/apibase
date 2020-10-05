@@ -24,6 +24,12 @@ module.exports = (sequelize, type) => {
             icono: {
                 type: type.STRING(150)
             },
+            classes: {
+                type: type.STRING(150)
+            },
+            type: {
+                type: type.STRING(150)
+            },
             menu_padreId: {
                 type: type.INTEGER
             },

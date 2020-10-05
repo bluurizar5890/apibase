@@ -3,17 +3,17 @@ const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
 const { QueryTypes } = require('sequelize');
-const MenuId=21;
+const MenuId = 21;
 const Modelo = Menu;
 const tabla = 'cat_menu';
 let response = {};
 
 const insert = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,1);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 1);
+    if (autorizado !== true) {
         return autorizado;
     }
-    
+
     let { usuarioId } = req.user;
     req.body.usuario_crea = usuarioId;
     const result = await Modelo.create(req.body);
@@ -59,15 +59,15 @@ const consultar = async (query, include = 1) => {
 }
 
 list = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,3);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 3);
+    if (autorizado !== true) {
         return autorizado;
     }
 
     const { include } = req.query;
     if (!req.query.id && !req.query.estadoId) {
         response.code = 1;
-        response.data = await consultar(null,include);
+        response.data = await consultar(null, include);
         return response;
     }
 
@@ -84,13 +84,13 @@ list = async (req) => {
 
     if (!id) {
         response.code = 1;
-        response.data =  await consultar(query,include);
+        response.data = await consultar(query, include);
         return response;
     } else {
         if (Number(id) > 0) {
             query.menuId = Number(id);
             response.code = 1;
-            response.data = await consultar(query,include);
+            response.data = await consultar(query, include);
             return response;
         } else {
             response.code = -1;
@@ -102,8 +102,8 @@ list = async (req) => {
 
 
 const update = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,2);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 2);
+    if (autorizado !== true) {
         return autorizado;
     }
     const { menuId } = req.body;
@@ -127,7 +127,7 @@ const update = async (req) => {
             let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
             const data = {
                 fecha_ult_mod,
-                usuario_ult_mod:usuarioId
+                usuario_ult_mod: usuarioId
             }
             const resultadoUpdateFecha = await Modelo.update(data, {
                 where: {
@@ -202,12 +202,12 @@ const eliminar = async (req) => {
 }
 
 const listmenu = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,3);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 3);
+    if (autorizado !== true) {
         return autorizado;
     }
-    const {usuarioId}=req.user;
-    const menuUsuario = await bd.query(`select distinct a.menuId,a.posicion,a.descripcion,a.href,a.icono,a.menu_padreId from cat_menu a
+    const { usuarioId } = req.user;
+    const menuUsuario = await bd.query(`select distinct a.menuId as id,a.posicion,a.descripcion as title,a.href as url,a.icono as icon,a.menu_padreId,a.classes,a.type from cat_menu a
                 inner join menu_acceso b
                 on a.menuId=b.menuId and a.estadoId=1 and b.estadoId=1 and a.visible=1
                 inner join rol_menu_acceso c
@@ -218,35 +218,52 @@ const listmenu = async (req) => {
         type: QueryTypes.SELECT
     });
 
-    let listPrincipales = menuUsuario.filter(i => i.menu_padreId === 0);
+    const getHijos = (id) => {
+        let itemsChildren = [];
+        let hijos = menuUsuario.filter(i => i.menu_padreId === id);
+        hijos.map(({ id, menu_padreId, posicion,url, title, icon, classes, type }) => {
+            itemsChildren.push({
+                id,
+                title,
+                type,
+                url,
+                classes,
+                icon,
+                children: getHijos(id)
+            });
+        });
+        return itemsChildren;
+    }
     let menu = [];
-    listPrincipales.map(({ menuId: id, posicion, descripcion: title, icono: ico }) => {
-
-        let listHijos = menuUsuario.filter(i => i.menu_padreId === id);
-        let childrens = [];
-        listHijos.map((item) => {
-            let menuHijo = {
-                id: item.menuId,
-                title: item.descripcion,
-                type: 'item',
-                url: item.href,
-                classes: 'nav-item'
-            }
-            childrens.push(menuHijo);
-        })
-
-        let menuItem = {
-            id,
-            title,
-            type: 'collapse',
-            ico,
-            children: childrens
+    menuUsuario.map(({ id, menu_padreId, posicion, url,title, icon, classes, type }) => {
+        if (menu_padreId === null || menu_padreId === 0) {
+            menu.push({
+                id,
+                title,
+                type,
+                url,
+                classes,
+                icon,
+                children: getHijos(id)
+            });
         }
-        menu.push(menuItem);
     });
 
-    response.code=1;
-    response.data=menu;
+
+
+
+    let menuResponse = [
+        {
+            "id": "support",
+            "title": "Navigation",
+            "type": "group",
+            "icon": "icon-support",
+            "children": menu
+        }
+    ];
+
+    response.code = 1;
+    response.data = menuResponse
     return response;
 }
 
@@ -257,3 +274,128 @@ module.exports = {
     eliminar,
     listmenu
 }
+
+const menuDEmo = [
+    {
+        "id": "support",
+        "title": "Navigation",
+        "type": "group",
+        "icon": "icon-support",
+        "children": [
+            {
+                "id": "catalogos",
+                "title": "Catálogos",
+                "type": "collapse",
+                "icon": "feather icon-sidebar",
+                "children": [
+                    {
+                        "id": "pais",
+                        "title": "Pais",
+                        "type": "item",
+                        "url": "/catalogo/pais",
+                        "classes": "nav-item"
+                    },
+                    {
+                        "id": "departamento",
+                        "title": "Departamento",
+                        "type": "item",
+                        "url": "/catalogo/departamento",
+                        "classes": "nav-item"
+                    },
+                    {
+                        "id": "municipio",
+                        "title": "Municipio",
+                        "type": "item",
+                        "url": "/catalogo/municipio",
+                        "classes": "nav-item"
+                    },
+                    {
+                        "id": "tipodocumento",
+                        "title": "Tipo Documento",
+                        "type": "item",
+                        "url": "/catalogo/tipodocumento",
+                        "classes": "nav-item"
+                    },
+                    {
+                        "id": "tipotelefono",
+                        "title": "Tipo Teléfono",
+                        "type": "item",
+                        "url": "/catalogo/tipotelefono",
+                        "classes": "nav-item"
+                    },
+                    {
+                        "id": "tiposangre",
+                        "title": "Tipo Sangre",
+                        "type": "item",
+                        "url": "/catalogo/tiposangre",
+                        "classes": "nav-item"
+                    },
+                    {
+                        "id": "estadocivil",
+                        "title": "Estado Civil",
+                        "type": "item",
+                        "url": "/catalogo/estadocivil",
+                        "classes": "nav-item"
+                    },
+                    {
+                        "id": "persona",
+                        "title": "Persona",
+                        "type": "item",
+                        "url": "/catalogo/persona",
+                        "classes": "nav-item"
+                    }
+                ]
+            },
+            {
+                "id": "seguridad",
+                "title": "Seguridad",
+                "type": "collapse",
+                "icon": "feather icon-sidebar",
+                "children": [
+                    {
+                        "id": "login",
+                        "title": "Login",
+                        "type": "item",
+                        "url": "/auth/login",
+                        "classes": "nav-item"
+                    },
+                    {
+                        "id": "acceso",
+                        "title": "Accesos",
+                        "type": "item",
+                        "url": "/seguridad/acceso",
+                        "classes": "nav-item"
+                    },
+                    {
+                        "id": "menu",
+                        "title": "Menu",
+                        "type": "item",
+                        "url": "/seguridad/menu",
+                        "classes": "nav-item"
+                    },
+                    {
+                        "id": "rol",
+                        "title": "Rol",
+                        "type": "item",
+                        "url": "/seguridad/rol",
+                        "classes": "nav-item"
+                    },
+                    {
+                        "id": "rolmenuacceso",
+                        "title": "Rol Menu Acceso",
+                        "type": "item",
+                        "url": "/seguridad/rolmenuacceso/1",
+                        "classes": "nav-item"
+                    },
+                    {
+                        "id": "usuario",
+                        "title": "Usuarios",
+                        "type": "item",
+                        "url": "/seguridad/usuario",
+                        "classes": "nav-item"
+                    }
+                ]
+            }
+        ]
+    }
+];

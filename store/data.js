@@ -368,9 +368,9 @@ const Menus = [
   {
     posicion: 1,
     descripcion: "Acceso",
-    href: "",
+    href: "/seguridad/acceso",
     icono: "",
-    menu_padreId: 0,
+    menu_padreId: 23,
     usuario_crea: 1
   },
   {
@@ -392,72 +392,72 @@ const Menus = [
   {
     posicion: 4,
     descripcion: "Estado Civil",
-    href: "",
+    href: "/catalogo/estadocivil",
     icono: "",
-    menu_padreId: 1,
+    menu_padreId: 22,
     usuario_crea: 1
   },
   {
     posicion: 5,
     descripcion: "Tipo documento",
-    href: "",
+    href: "/catalogo/tipodocumento",
     icono: "",
-    menu_padreId: 1,
+    menu_padreId: 22,
     usuario_crea: 1
   },
   {
     posicion: 6,
     descripcion: "Tipo de Sangre",
-    href: "",
+    href: "/catalogo/tiposangre",
     icono: "",
-    menu_padreId: 1,
+    menu_padreId: 22,
     usuario_crea: 1
   }, {
     posicion: 7,
     descripcion: "Tipo de Teléfono",
-    href: "",
+    href: "/catalogo/tipotelefono",
     icono: "",
-    menu_padreId: 1,
+    menu_padreId: 22,
     usuario_crea: 1
   },
   {
     posicion: 8,
     descripcion: "Pais",
-    href: "",
+    href: "/catalogo/pais",
     icono: "",
-    menu_padreId: 1,
+    menu_padreId: 22,
     usuario_crea: 1
   },
   {
     posicion: 9,
     descripcion: "Departamento",
-    href: "",
+    href: "/catalogo/departamento",
     icono: "",
-    menu_padreId: 1,
+    menu_padreId: 22,
     usuario_crea: 1
   },
   {
     posicion: 10,
     descripcion: "Municipio",
-    href: "",
+    href: "/catalogo/municipio",
     icono: "",
-    menu_padreId: 1,
+    menu_padreId: 22,
     usuario_crea: 1
   },
   {
     posicion: 11,
     descripcion: "Rol",
-    href: "",
+    href: "/seguridad/rol",
     icono: "",
-    menu_padreId: 1,
+    menu_padreId: 23,
     usuario_crea: 1
   },
   {
     posicion: 12,
     descripcion: "Persona",
-    href: "",
+    href: "/catalogo/persona",
     icono: "",
-    menu_padreId: 0,
+    menu_padreId: 22,
     usuario_crea: 1
   },
   {
@@ -465,39 +465,43 @@ const Menus = [
     descripcion: "Identificacion Persona",
     href: "",
     icono: "",
-    menu_padreId: 0,
-    usuario_crea: 1
+    menu_padreId: 22,
+    usuario_crea: 1,
+    visible:false
   },
   {
     posicion: 14,
     descripcion: "Telefono Persona",
     href: "",
     icono: "",
-    menu_padreId: 0,
-    usuario_crea: 1
+    menu_padreId: 22,
+    usuario_crea: 1,
+    visible:false
   },
   {
     posicion: 15,
     descripcion: "Direccion Persona",
     href: "",
     icono: "",
-    menu_padreId: 0,
-    usuario_crea: 1
+    menu_padreId: 22,
+    usuario_crea: 1,
+    visible:false
   },
   {
     posicion: 16,
     descripcion: "Dato extra persona",
     href: "",
     icono: "",
-    menu_padreId: 0,
-    usuario_crea: 1
+    menu_padreId: 22,
+    usuario_crea: 1,
+    visible:false
   },
   {
     posicion: 17,
     descripcion: "Usuario",
-    href: "",
+    href: "/seguridad/usuario",
     icono: "",
-    menu_padreId: 0,
+    menu_padreId: 23,
     usuario_crea: 1
   },
   {
@@ -505,27 +509,45 @@ const Menus = [
     descripcion: "Usuario Rol",
     href: "",
     icono: "",
-    menu_padreId: 0,
-    usuario_crea: 1
+    menu_padreId: 23,
+    usuario_crea: 1,
+    visible:false
   },
   {
     posicion: 19,
     descripcion: "Menu Acceso",
     href: "",
     icono: "",
-    menu_padreId: 0,
-    usuario_crea: 1
+    menu_padreId: 23,
+    usuario_crea: 1,
+    visible:false
   },
   {
     posicion: 20,
     descripcion: "Rol Menu Acceso",
     href: "",
     icono: "",
-    menu_padreId: 0,
-    usuario_crea: 1
+    menu_padreId: 23,
+    usuario_crea: 1,
+    visible:false
   },{
     posicion: 21,
     descripcion: "Menu",
+    href: "/seguridad/menu",
+    icono: "",
+    menu_padreId: 23,
+    usuario_crea: 1
+  },{
+    posicion: 22,
+    descripcion: "Catálogos",
+    href: "",
+    icono: "",
+    menu_padreId: 0,
+    usuario_crea: 1
+  },
+  {
+    posicion: 23,
+    descripcion: "Seguridad",
     href: "",
     icono: "",
     menu_padreId: 0,
