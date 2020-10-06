@@ -48,63 +48,81 @@ const consultar = async (query, include = 1) => {
                     attributes: ['descripcion']
                 }, {
                     model: IdentificacionPersona,
+                    as: "IdentificacionPersona",
                     required: false,
                     include: [{
                         model: TipoDocumento,
+                        as:"TipoDocumento",
                         required: true,
                         attributes: ['tipo_documentoId', 'descripcion', 'estadoId'],
                     },
                     {
                         model: Estado,
-                        required: true
+                        as:"Estado",
+                        required: true,
+                        attributes: ['descripcion']
                     }],
                 },
                 {
                     model: DireccionPersona,
+                    as: "DireccionPersona",
                     required: false,
                     include: [{
                         model: Municipio,
+                        as:"Municipio",
                         required: false,
                         attributes: ['municipioId', 'municipioId_depto', 'descripcion', 'estadoId'],
                         include: [{
                             model: Departamento,
+                            as:"Departamento",
                             required: true,
                             attributes: ['departamentoId', 'paisId', 'descripcion', 'estadoId'],
                         }]
                     },
                     {
                         model: Estado,
-                        required: true
+                        as:"Estado",
+                        required: true,
+                        attributes: ['descripcion']
                     }],
                 },
                 {
                     model: TelefonoPersona,
+                    as: "TelefonoPersona",
                     required: false,
                     attributes: ['telefono_personaId', 'telefono', 'estadoId'],
                     include: [{
                         model: TipoTelefono,
+                        as:"TipoTelefono",
                         required: true,
                         attributes: ['tipo_telefonoId', 'descripcion', 'estadoId'],
                     },
                     {
                         model: Estado,
-                        required: true
+                        as:"Estado",
+                        required: true,
+                        attributes: ['descripcion']
                     }],
                 },
                 {
                     model: DatoExtraPersona,
+                    as:"DatoExtraPersona",
                     required: false,
                     include: [{
                         model: TipoSangre,
+                        as:"TipoSangre",
                         required: false,
                     },
                     {
                         model: EstadoCivil,
+                        as:"EstadoCivil",
                         required: false,
                     },
                     {
                         model: Estado,
-                        required: true
+                        as:"Estado",
+                        required: true,
+                        attributes: ['descripcion']
                     }],
                 }],
                 where: [query],
@@ -126,63 +144,81 @@ const consultar = async (query, include = 1) => {
                     attributes: ['descripcion']
                 }, {
                     model: IdentificacionPersona,
+                    as: "IdentificacionPersona",
                     required: false,
                     include: [{
                         model: TipoDocumento,
+                        as:"TipoDocumento",
                         required: true,
                         attributes: ['tipo_documentoId', 'descripcion', 'estadoId'],
                     },
                     {
                         model: Estado,
-                        required: true
+                        as:"Estado",
+                        required: true,
+                        attributes: ['descripcion']
                     }],
                 },
                 {
                     model: DireccionPersona,
+                    as: "DireccionPersona",
                     required: false,
                     include: [{
                         model: Municipio,
+                        as:"Municipio",
                         required: false,
                         attributes: ['municipioId', 'municipioId_depto', 'descripcion', 'estadoId'],
                         include: [{
                             model: Departamento,
+                            as:"Departamento",
                             required: true,
                             attributes: ['departamentoId', 'paisId', 'descripcion', 'estadoId'],
                         }]
                     },
                     {
                         model: Estado,
-                        required: true
+                        as:"Estado",
+                        required: true,
+                        attributes: ['descripcion']
                     }],
                 },
                 {
                     model: TelefonoPersona,
+                    as: "TelefonoPersona",
                     required: false,
                     attributes: ['telefono_personaId', 'telefono', 'estadoId'],
                     include: [{
                         model: TipoTelefono,
+                        as:"TipoTelefono",
                         required: true,
                         attributes: ['tipo_telefonoId', 'descripcion', 'estadoId'],
                     },
                     {
                         model: Estado,
-                        required: true
+                        as:"Estado",
+                        required: true,
+                        attributes: ['descripcion']
                     }],
                 },
                 {
                     model: DatoExtraPersona,
+                    as:"DatoExtraPersona",
                     required: false,
                     include: [{
                         model: TipoSangre,
+                        as:"TipoSangre",
                         required: false,
                     },
                     {
                         model: EstadoCivil,
+                        as:"EstadoCivil",
                         required: false,
                     },
                     {
                         model: Estado,
-                        required: true
+                        as:"Estado",
+                        required: true,
+                        attributes: ['descripcion']
                     }],
                 }, {
                     model: Usuario,
@@ -191,7 +227,9 @@ const consultar = async (query, include = 1) => {
                     include: [
                         {
                             model: Estado,
-                            required: true
+                            as:"Estado",
+                            required: true,
+                            attributes: ['descripcion']
                         }],
                 }],
                 order: [

@@ -38,9 +38,11 @@ const consultar = async (query, include = 1) => {
                     {
                     model: Persona,
                     required: true,
+                    as: "Persona",
                     attributes: ['nombre1','nombre2','nombre_otros','apellido1','apellido2','apellido_casada','email']
                 },{
                     model: Estado,
+                    as: "Estado",
                     required: true,
                     attributes: ['descripcion']
                 }],
@@ -55,9 +57,11 @@ const consultar = async (query, include = 1) => {
                 include: [{
                     model: Persona,
                     required: true,
+                    as: "Persona",
                     attributes: ['nombre1','nombre2','nombre_otros','apellido1','apellido2','apellido_casada','email']
                 },{
                     model: Estado,
+                    as: "Estado",
                     required: true,
                     attributes: ['descripcion']
                 }],

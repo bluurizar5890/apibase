@@ -38,13 +38,19 @@ const consultar = async (query) => {
         return await DatoExtraPersona.findAll({
             include: [{
                 model: TipoSangre,
+                as: "TipoSangre",
                 required: false,
+                attributes: ['descripcion']
             },{
                 model: EstadoCivil,
+                as: "EstadoCivil",
                 required: false,
+                attributes: ['descripcion']
             }, {
                 model: Estado,
-                required: true
+                as: "Estado",
+                required: true,
+                attributes: ['descripcion']
             }],
             where: [query],
             order: [
@@ -55,13 +61,19 @@ const consultar = async (query) => {
         return await DatoExtraPersona.findAll({
             include: [{
                 model: TipoSangre,
+                as: "TipoSangre",
                 required: false,
+                attributes: ['descripcion']
             },{
                 model: EstadoCivil,
+                as: "EstadoCivil",
                 required: false,
+                attributes: ['descripcion']
             }, {
                 model: Estado,
-                required: true
+                as: "Estado",
+                required: true,
+                attributes: ['descripcion']
             }],
             order: [
                 ['dato_extra_personaId', 'ASC']

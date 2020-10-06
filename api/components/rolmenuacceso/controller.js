@@ -40,21 +40,26 @@ const consultar = async (query, include = 1) => {
             return await Modelo.findAll({
                 include: [{
                     model: MenuAcceso,
+                    as: "MenuAcceso",
                     required: true,
+                    attributes: ['menu_accesoId','menuId','accesoId'],
                     include: [
                         {
                         model: Menu,
+                        as:'Menu',
                         required: true,
                         attributes: ['menuId','menu_padreId','descripcion', 'estadoId'],
                     },
                     {
                         model: Acceso,
+                        as:'Acceso',
                         required: true,
                         attributes: ['accesoId', 'descripcion', 'estadoId'],
                     }
                 ]
                 },{
                     model: Estado,
+                    as: "Estado",
                     required: true,
                     attributes: ['descripcion'],
                 }],
@@ -67,21 +72,26 @@ const consultar = async (query, include = 1) => {
             return await Modelo.findAll({
                 include: [{
                     model: MenuAcceso,
+                    as: "MenuAcceso",
                     required: true,
+                    attributes: ['menu_accesoId','menuId','accesoId'],
                     include: [
                         {
                         model: Menu,
+                        as:'Menu',
                         required: true,
                         attributes: ['menuId','menu_padreId','descripcion', 'estadoId'],
                     },
                     {
                         model: Acceso,
+                        as:'Acceso',
                         required: true,
                         attributes: ['accesoId', 'descripcion', 'estadoId'],
                     }
                 ]
                 },{
                     model: Estado,
+                    as: "Estado",
                     required: true,
                     attributes: ['descripcion'],
                 }],

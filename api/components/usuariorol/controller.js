@@ -1,5 +1,5 @@
 var { Op } = require('sequelize');
-const { UsuarioRol, Rol, Estado } = require('../../../store/db');
+const { UsuarioRol, Rol, Estado, Usuario } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
@@ -36,11 +36,25 @@ const consultar = async (query) => {
         return await Modelo.findAll({
             include: [{
                 model: Rol,
-                required: true
+                as: "Rol",
+                required: true,
+                attributes: {
+                    exclude: ["fecha_crea", "usuario_ult_mod","fecha_ult_mod"],
+                  }
+            },
+            {
+                model: Usuario,
+                as: "Usuario",
+                required: true,
+                attributes: {
+                    exclude: ["password", "forzar_cambio_password","fecha_cambio_password","dias_cambio_password","intentos_fallidos"],
+                  }
             },
             {
                 model: Estado,
-                required: true
+                as: "Estado",
+                required: true,
+                attributes: ['descripcion']
             }],
             where: [query],
             order: [
@@ -51,11 +65,25 @@ const consultar = async (query) => {
         return await Modelo.findAll({
             include: [{
                 model: Rol,
-                required: true
+                as: "Rol",
+                required: true,
+                attributes: {
+                    exclude: ["fecha_crea", "usuario_ult_mod","fecha_ult_mod"],
+                  }
+            },
+            {
+                model: Usuario,
+                as: "Usuario",
+                required: true,
+                attributes: {
+                    exclude: ["password", "forzar_cambio_password","fecha_cambio_password","dias_cambio_password","intentos_fallidos"],
+                  }
             },
             {
                 model: Estado,
-                required: true
+                as: "Estado",
+                required: true,
+                attributes: ['descripcion']
             }],
             order: [
                 ['usuario_rolId', 'ASC']

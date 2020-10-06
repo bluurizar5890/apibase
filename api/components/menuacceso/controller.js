@@ -1,4 +1,4 @@
-const { MenuAcceso, Estado, Acceso } = require('../../../store/db');
+const { MenuAcceso, Estado, Acceso, Menu } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
@@ -38,13 +38,22 @@ const consultar = async (query, include = 1) => {
     if (include == 1) {
         if (query) {
             return await Modelo.findAll({
-                include: [{
+                include: [
+                    {
+                        model: Menu,
+                        as: "Menu",
+                        required: true,
+                        attributes: ['descripcion'],
+                        where:[{estadoId:1}]
+                    },{
                     model: Acceso,
+                    as: "Acceso",
                     required: true,
                     attributes: ['descripcion'],
                     where:[{estadoId:1}]
                 },{
                     model: Estado,
+                    as: "Estado",
                     required: true,
                     attributes: ['descripcion'],
                 }],
@@ -56,12 +65,20 @@ const consultar = async (query, include = 1) => {
         } else {
             return await Modelo.findAll({
                 include: [{
+                    model: Menu,
+                    as: "Menu",
+                    required: true,
+                    attributes: ['descripcion'],
+                    where:[{estadoId:1}]
+                },{
                     model: Acceso,
+                    as: "Acceso",
                     required: true,
                     attributes: ['descripcion'],
                     where:[{estadoId:1}]
                 },{
                     model: Estado,
+                    as: "Estado",
                     required: true,
                     attributes: ['descripcion'],
                 }],

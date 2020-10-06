@@ -37,10 +37,13 @@ const consultar = async (query) => {
         return await TelefonoPersona.findAll({
             include: [{
                 model: TipoTelefono,
+                as: "TipoTelefono",
                 required: true,
             }, {
                 model: Estado,
-                required: true
+                as: "Estado",
+                required: true,
+                attributes: ['descripcion']
             }],
             order: [
                 ['telefono_personaId', 'ASC']
@@ -54,10 +57,13 @@ const consultar = async (query) => {
         return await TelefonoPersona.findAll({
             include: [{
                 model: TipoTelefono,
+                as: "TipoTelefono",
                 required: true,
             }, {
                 model: Estado,
-                required: true
+                as: "Estado",
+                required: true,
+                attributes: ['descripcion']
             }],
             order: [
                 ['telefono_personaId', 'ASC']

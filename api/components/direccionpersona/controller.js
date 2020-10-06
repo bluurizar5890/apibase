@@ -27,16 +27,20 @@ const consultar = async (query) => {
         return await DireccionPersona.findAll({
             include: [{
                 model: Municipio,
+                as: "Municipio",
                 required: false,
                 attributes: ['municipioId', 'municipioId_depto', 'descripcion', 'estadoId'],
                 include: [{
                     model: Departamento,
+                    as: "Departamento",
                     required: true,
                     attributes: ['departamentoId', 'paisId', 'descripcion', 'estadoId'],
                 }],
             }, {
                 model: Estado,
-                required: true
+                as: "Estado",
+                required: true,
+                attributes: ['descripcion']
             }],
             where: [query],
             order: [
@@ -47,16 +51,20 @@ const consultar = async (query) => {
         return await DireccionPersona.findAll({
             include: [{
                 model: Municipio,
+                as: "Municipio",
                 required: false,
                 attributes: ['municipioId', 'municipioId_depto', 'descripcion', 'estadoId'],
                 include: [{
                     model: Departamento,
+                    as: "Departamento",
                     required: true,
                     attributes: ['departamentoId', 'paisId', 'descripcion', 'estadoId'],
                 }],
             }, {
                 model: Estado,
-                required: true
+                as: "Estado",
+                required: true,
+                attributes: ['descripcion']
             }],
             order: [
                 ['direccion_personaId', 'ASC']

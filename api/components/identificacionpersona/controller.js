@@ -37,12 +37,15 @@ const consultar = async (query) => {
         return await IdentificacionPersona.findAll({
             include: [{
                 model: TipoDocumento,
+                as: "TipoDocumento",
                 required: true,
                 attributes: ['tipo_documentoId', 'descripcion', 'estadoId'],
             },
             {
                 model: Estado,
-                required: true
+                as: "Estado",
+                required: true,
+                attributes: ['descripcion']
             }],
             where: [query],
             order: [
@@ -53,11 +56,14 @@ const consultar = async (query) => {
         return await IdentificacionPersona.findAll({
             include: [{
                 model: TipoDocumento,
+                as: "TipoDocumento",
                 required: true,
                 attributes: ['tipo_documentoId', 'descripcion', 'estadoId'],
             }, {
                 model: Estado,
-                required: true
+                as: "Estado",
+                required: true,
+                attributes: ['descripcion'],
             }],
             order: [
                 ['identificacion_personaId', 'ASC']

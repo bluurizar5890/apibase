@@ -152,6 +152,159 @@ Persona.hasMany(Usuario,{
   onDelete: "CASCADE",
 });
 
+Persona.hasMany(IdentificacionPersona,{
+  as: "IdentificacionPersona",
+  foreignKey: "personaId",
+  onDelete: "CASCADE",
+});
+
+Persona.hasMany(DireccionPersona,{
+  as: "DireccionPersona",
+  foreignKey: "personaId",
+  onDelete: "CASCADE",
+});
+
+Persona.hasMany(TelefonoPersona,{
+  as: "TelefonoPersona",
+  foreignKey: "personaId",
+  onDelete: "CASCADE",
+});
+
+Persona.hasMany(DatoExtraPersona,{
+  as: "DatoExtraPersona",
+  foreignKey: "personaId",
+  onDelete: "CASCADE",
+});
+
+
+IdentificacionPersona.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+IdentificacionPersona.belongsTo(TipoDocumento,{
+  as: "TipoDocumento",
+  foreignKey: "tipo_documentoId",
+  onDelete: "CASCADE",
+});
+
+TelefonoPersona.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+TelefonoPersona.belongsTo(TipoTelefono,{
+  as: "TipoTelefono",
+  foreignKey: "tipo_telefonoId",
+  onDelete: "CASCADE",
+});
+
+DireccionPersona.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+DireccionPersona.belongsTo(Municipio,{
+  as: "Municipio",
+  foreignKey: "municipioId",
+  onDelete: "CASCADE",
+});
+
+DatoExtraPersona.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+DatoExtraPersona.belongsTo(TipoSangre,{
+  as: "TipoSangre",
+  foreignKey: "tipo_sangreId",
+  onDelete: "CASCADE",
+});
+
+DatoExtraPersona.belongsTo(EstadoCivil,{
+  as: "EstadoCivil",
+  foreignKey: "estado_civilId",
+  onDelete: "CASCADE",
+});
+
+Usuario.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+Usuario.belongsTo(Persona,{
+  as: "Persona",
+  foreignKey: "personaId",
+  onDelete: "CASCADE",
+});
+
+UsuarioRol.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+UsuarioRol.belongsTo(Rol,{
+  as: "Rol",
+  foreignKey: "rolId",
+  onDelete: "CASCADE",
+});
+
+UsuarioRol.belongsTo(Usuario,{
+  as: "Usuario",
+  foreignKey: "usuarioId",
+  onDelete: "CASCADE",
+});
+
+MenuAcceso.belongsTo(Menu,{
+  as: "Menu",
+  foreignKey: "menuId",
+  onDelete: "CASCADE",
+});
+
+MenuAcceso.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+MenuAcceso.belongsTo(Acceso,{
+  as: "Acceso",
+  foreignKey: "accesoId",
+  onDelete: "CASCADE",
+});
+
+RolMenuAcceso.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+RolMenuAcceso.belongsTo(MenuAcceso,{
+  as: "MenuAcceso",
+  foreignKey: "menu_accesoId",
+  onDelete: "CASCADE",
+});
+
+
+Menu.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+Menu.belongsTo(Menu,{
+  as: "MenuPadre",
+  foreignKey: "menu_padreId",
+  onDelete: "CASCADE",
+});
+
+
 //Asociaciones
 // TipoDocumento.hasOne(IdentificacionPersona,{ foreignKey: 'tipo_documentoId' });
 // IdentificacionPersona.belongsTo(TipoDocumento,{ foreignKey: 'tipo_documentoId' });
