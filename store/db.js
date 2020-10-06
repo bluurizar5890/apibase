@@ -68,6 +68,90 @@ const FotoUsuario = FotoUsuarioModel(confiBd, Sequelize);
 const TelefonoPersona = TelefonoPersonaModel(confiBd, Sequelize);
 
 
+EstadoCivil.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+Pais.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+Departamento.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+Departamento.belongsTo(Pais,{
+  as: "Pais",
+  foreignKey: "paisId",
+  onDelete: "CASCADE",
+});
+
+Municipio.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+Municipio.belongsTo(Departamento,{
+  as: "Departamento",
+  foreignKey: "departamentoId",
+  onDelete: "CASCADE",
+});
+
+TipoDocumento.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+TipoTelefono.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+TipoSangre.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+Acceso.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+Rol.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+Persona.belongsTo(Estado,{
+  as: "Estado",
+  foreignKey: "estadoId",
+  onDelete: "CASCADE",
+});
+
+Persona.belongsTo(Genero,{
+  as: "Genero",
+  foreignKey: "generoId",
+  onDelete: "CASCADE",
+});
+
+Persona.hasMany(Usuario,{
+  as: "Usuario",
+  foreignKey: "personaId",
+  onDelete: "CASCADE",
+});
+
 //Asociaciones
 // TipoDocumento.hasOne(IdentificacionPersona,{ foreignKey: 'tipo_documentoId' });
 // IdentificacionPersona.belongsTo(TipoDocumento,{ foreignKey: 'tipo_documentoId' });
@@ -124,8 +208,8 @@ try {
       Estado.belongsTo(TipoSangre,{foreignKey: 'estadoId',sourceKey:'estadoId'});
       TipoSangre.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
 
-      Estado.belongsTo(EstadoCivil,{foreignKey: 'estadoId',sourceKey:'estadoId'});
-      EstadoCivil.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      // Estado.belongsTo(EstadoCivil,{foreignKey: 'estadoId',sourceKey:'estadoId'});
+      // EstadoCivil.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});
 
       Estado.belongsTo(Acceso,{foreignKey: 'estadoId',sourceKey:'estadoId'});
       Acceso.hasOne(Estado,{foreignKey: 'estadoId',sourceKey:'estadoId'});

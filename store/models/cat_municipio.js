@@ -9,10 +9,10 @@ module.exports = (sequelize, type) => {
             },
             departamentoId: {
                 type: type.INTEGER,
-                // references: {
-                //     model: "cat_departamento",
-                //     key: "departamentoId",
-                // }
+                references: {
+                    model: "cat_departamento",
+                    key: "departamentoId",
+                }
             },
             municipioId_depto: {
                 type: type.INTEGER

@@ -38,10 +38,14 @@ const consultar = async (query, include = 1) => {
             return await Persona.findAll({
                 include: [{
                     model: Estado,
-                    required: false,
+                    as: "Estado",
+                    required: true,
+                    attributes: ['descripcion']
                 }, {
                     model: Genero,
-                    required: false,
+                    as: "Genero",
+                    required: true,
+                    attributes: ['descripcion']
                 }, {
                     model: IdentificacionPersona,
                     required: false,
@@ -112,10 +116,14 @@ const consultar = async (query, include = 1) => {
             return await Persona.findAll({
                 include: [{
                     model: Estado,
-                    required: false,
+                    as: "Estado",
+                    required: true,
+                    attributes: ['descripcion']
                 }, {
                     model: Genero,
-                    required: false,
+                    as: "Genero",
+                    required: true,
+                    attributes: ['descripcion']
                 }, {
                     model: IdentificacionPersona,
                     required: false,
@@ -178,6 +186,7 @@ const consultar = async (query, include = 1) => {
                     }],
                 }, {
                     model: Usuario,
+                    as: "Usuario",
                     required: false,
                     include: [
                         {

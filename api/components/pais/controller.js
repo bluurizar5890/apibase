@@ -28,6 +28,7 @@ const consultar = async (query,include=1) => {
             return await Modelo.findAll({
                 include: [  {
                     model: Estado,
+                    as: "Estado",
                     required: true,
                     attributes: ['descripcion'],
                 }],
@@ -40,6 +41,7 @@ const consultar = async (query,include=1) => {
             return await Modelo.findAll({
                 include: [  {
                     model: Estado,
+                    as: "Estado",
                     required: true,
                     attributes: ['descripcion'],
                 }],

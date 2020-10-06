@@ -13,7 +13,7 @@ module.exports = (sequelize, type) => {
                 unique: true,
                 validate: {
                     notEmpty:{
-                        msg:"El vampo no puede ser vacio"
+                        msg:"El campo no puede ser vacio"
                     }
                 }
             },

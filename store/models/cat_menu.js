@@ -33,6 +33,11 @@ module.exports = (sequelize, type) => {
             menu_padreId: {
                 type: type.INTEGER
             },
+            visible: {
+                type: type.INTEGER,
+                allowNull: false,
+                defaultValue: 1
+            },
             usuario_crea: {
                 type: type.INTEGER
             },
@@ -46,11 +51,6 @@ module.exports = (sequelize, type) => {
             },
             fecha_ult_mod: {
                 type: type.DATE
-            },
-            visible: {
-                type: type.INTEGER,
-                allowNull: false,
-                defaultValue: 1
             },
             estadoId: {
                 type: type.INTEGER,
