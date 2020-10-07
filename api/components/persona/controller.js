@@ -31,7 +31,7 @@ const insert = async (req) => {
     response.data = result;
     return response;
 }
-
+/*
 const consultar = async (query, include = 1) => {
     if (include == 1) {
         if (query) {
@@ -231,6 +231,54 @@ const consultar = async (query, include = 1) => {
                             required: true,
                             attributes: ['descripcion']
                         }],
+                }],
+                order: [
+                    ['personaId', 'ASC']
+                ]
+            });
+        }
+    } else {
+        if (query) {
+            return await Persona.findAll({ where: query });
+        } else {
+            return await Persona.findAll();
+        }
+    }
+}
+*/
+
+const consultar = async (query, include = 1) => {
+    if (include == 1) {
+        if (query) {
+            return await Persona.findAll({
+                include: [{
+                    model: Estado,
+                    as: "Estado",
+                    required: true,
+                    attributes: ['descripcion']
+                }, {
+                    model: Genero,
+                    as: "Genero",
+                    required: true,
+                    attributes: ['descripcion']
+                }],
+                where: [query],
+                order: [
+                    ['personaId', 'ASC']
+                ]
+            });
+        } else {
+            return await Persona.findAll({
+                include: [{
+                    model: Estado,
+                    as: "Estado",
+                    required: true,
+                    attributes: ['descripcion']
+                }, {
+                    model: Genero,
+                    as: "Genero",
+                    required: true,
+                    attributes: ['descripcion']
                 }],
                 order: [
                     ['personaId', 'ASC']
