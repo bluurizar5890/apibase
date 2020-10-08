@@ -366,6 +366,42 @@ const Municipios = [
 
 const Menus = [
   {
+    menuId:24,
+    posicion: 0,
+    descripcion: "Inicio",
+    href: "/sample-page",
+    icono: "feather icon-sidebar",
+    classes:"nav-item",
+    type:"item",
+    visible:true,
+    usuario_crea: 1,
+    fecha_crea: Date.now()
+  },
+  {
+    menuId:23,
+    posicion: 23,
+    descripcion: "Seguridad",
+    href: "",
+    icono: "feather icon-sidebar",
+    classes:"",
+    type:"collapse",
+    visible:true,
+    usuario_crea: 1,
+    fecha_crea: Date.now()
+  },
+  {
+    menuId:22,
+    posicion: 22,
+    descripcion: "Catálogos",
+    href: "",
+    icono: "feather icon-sidebar",
+    classes:"",
+    type:"collapse",
+    visible:true,
+    usuario_crea: 1,
+    fecha_crea: Date.now()
+  },
+  {
     menuId:1,
     posicion: 1,
     descripcion: "Acceso",
@@ -634,33 +670,9 @@ const Menus = [
     visible:true,
     usuario_crea: 1,
     fecha_crea: Date.now()
-  },{
-    menuId:22,
-    posicion: 22,
-    descripcion: "Catálogos",
-    href: "",
-    icono: "",
-    classes:"",
-    type:"collapse",
-    menu_padreId: 0,
-    visible:true,
-    usuario_crea: 1,
-    fecha_crea: Date.now()
-  },
-  {
-    menuId:23,
-    posicion: 23,
-    descripcion: "Seguridad",
-    href: "",
-    icono: "",
-    classes:"",
-    type:"collapse",
-    menu_padreId: 0,
-    visible:true,
-    usuario_crea: 1,
-    fecha_crea: Date.now()
   }
 ];
+
 
 const MenuAccesos = [
   {
@@ -981,6 +993,11 @@ const MenuAccesos = [
   },
   {
     menuId: 23,
+    accesoId: 3,
+    usuario_crea: 1
+  },
+  {
+    menuId: 24,
     accesoId: 3,
     usuario_crea: 1
   }
@@ -1310,21 +1327,26 @@ const MenuAccesosRol = [
     rolId: 1,
     menu_accesoId: 65,
     usuario_crea: 1
+  },
+  {
+    rolId: 1,
+    menu_accesoId: 66,
+    usuario_crea: 1
   }
 ];
 
 const Estados = [
   {
     estadoId: 1,
-    descripcion: "Activo"
+    descripcion: "ACTIVO"
   },
   {
     estadoId: 2,
-    descripcion: "Inactivo"
+    descripcion: "INACTIVO"
   },
   {
     estadoId: 3,
-    descripcion: "Eliminado",
+    descripcion: "ELIMINADO",
     activo:false
   }
 ];
@@ -1332,19 +1354,19 @@ const Estados = [
 const Generos = [
   {
     generoId: 1,
-    descripcion: "Masculino"
+    descripcion: "MASCULINO"
   },
   {
     generoId: 2,
-    descripcion: "Femenino"
+    descripcion: "FEMENINO"
   }
 ];
 
 const Personas = [
   {
     personaId: 1,
-    nombre1: "Byron",
-    apellido1: "López",
+    nombre1: "BYRON",
+    apellido1: "LOPEZ",
     fecha_nacimiento: "1991-07-18",
     email: "blu.urizar@gmail.com",
     generoId: 1
@@ -1355,7 +1377,7 @@ const Usuarios = [
   {
     usuarioId: 1,
     personaId: 1,
-    user_name: "blopez",
+    user_name: "BLOPEZ",
     password: bcrypt.hashSync('blopez', 10)
   }
 ];
@@ -1392,22 +1414,22 @@ const TiposDocumentos = [
 const Accesos = [
   {
     accesoId: 1,
-    descripcion: "crear",
+    descripcion: "CREAR",
     usuario_crea: 1
   },
   {
     accesoId: 2,
-    descripcion: "Actualizar",
+    descripcion: "ACTUALIZAR",
     usuario_crea: 1
   },
   {
     accesoId: 3,
-    descripcion: "Visualizar",
+    descripcion: "VISUALIZAR",
     usuario_crea: 1
   },
   {
     accesoId: 4,
-    descripcion: "Eliminar",
+    descripcion: "ELIMINAR",
     usuario_crea: 1
   }
 ];
@@ -1415,14 +1437,14 @@ const Accesos = [
 const Roles = [
   {
     rolId: 1,
-    nombre: "Administrador",
-    descripcion: "Administrador del sistema",
+    nombre: "ADMINISTRADOR",
+    descripcion: "ADMINISTRADOR DEL SISTEMA",
     usuario_crea: 1
   },
   {
     rolId: 2,
-    nombre: "Operador",
-    descripcion: "Encargado de llevar el control en determinada bodega",
+    nombre: "OPERADOR",
+    descripcion: "ENCARGADO DE LLEVAR EL CONTROL BASICO",
     usuario_crea: 1
   }
 ];
@@ -1430,12 +1452,12 @@ const Roles = [
 const TiposTelefonos = [
   {
     tipo_telefonoId: 1,
-    descripcion: "Movil",
+    descripcion: "MOVIL",
     usuario_crea: 1
   },
   {
     tipo_telefonoId: 2,
-    descripcion: "Fijo",
+    descripcion: "FIJO",
     usuario_crea: 1
   }
 ];
@@ -1443,73 +1465,73 @@ const TiposTelefonos = [
 const EstadosCiviles = [
   {
     estado_civilId: 1,
-    descripcion: "Soltero/a",
+    descripcion: "SOLTERO/A",
     usuario_crea: 1
   },
   {
     estado_civilId: 2,
-    descripcion: "Comprometido/a",
+    descripcion: "COMPROMETIDO/A",
     usuario_crea: 1
   },
   {
     estado_civilId: 3,
-    descripcion: "En Relación",
+    descripcion: "EN RELACION",
     usuario_crea: 1
   },
   {
     estado_civilId: 4,
-    descripcion: "Unión libre o unión de hecho",
+    descripcion: "UNION LIBRE O UNION DE HECHO",
     usuario_crea: 1
   },
   {
     estado_civilId: 5,
-    descripcion: "Separado/a",
+    descripcion: "SEPARADO/A",
     usuario_crea: 1
   },
   {
     estado_civilId: 6,
-    descripcion: "Divorciado/a",
+    descripcion: "DIVORCIADO/A",
     usuario_crea: 1
   },
   {
     estado_civilId: 7,
-    descripcion: "Viudo/a",
+    descripcion: "VIUDO/A",
     usuario_crea: 1
   },
   {
     estado_civilId: 8,
-    descripcion: "Casado/a",
+    descripcion: "CASADO/A",
     usuario_crea: 1
   }
 ];
 
 const TiposSangre = [
   {
-    descripcion: "O Negativo",
+    descripcion: "O NEGATIVO",
     usuario_crea: 1
   },
   {
-    descripcion: "O Positivo",
+    descripcion: "O POSITIVO",
     usuario_crea: 1
   },
   {
-    descripcion: "A Negativo",
+    descripcion: "A NEGATIVO",
     usuario_crea: 1
   },
   {
-    descripcion: "A Positivo",
+    descripcion: "A POSITIVO",
     usuario_crea: 1
   },
   {
-    descripcion: "B Positivo",
+    descripcion: "B POSITIVO",
     usuario_crea: 1
   },
   {
-    descripcion: "AB Negativo",
+    descripcion: "AB NEGATIVO",
     usuario_crea: 1
   },
   {
-    descripcion: "AB Positivo",
+    descripcion: "AB POSITIVO",
     usuario_crea: 1
   }
 ];

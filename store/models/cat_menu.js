@@ -56,10 +56,10 @@ module.exports = (sequelize, type) => {
                 type: type.INTEGER,
                 allowNull: false,
                 defaultValue: 1,
-                // references: {
-                //     model: "cat_estado",
-                //     key: "estadoId",
-                // }
+                references: {
+                    model: "cat_estado",
+                    key: "estadoId",
+                }
             }
         },
         {
