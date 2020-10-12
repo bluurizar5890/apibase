@@ -231,10 +231,62 @@ const update = async (req) => {
         return response;
     }
 };
+const actualizarPassword = async (req) => {
+    let autorizado=await validarpermiso(req,MenuId,2);
+    if(autorizado!==true){
+        return autorizado;
+    }
+    const { usuarioId } = req.user;
+    const dataAnterior = await Modelo.findOne({
+        where: { usuarioId }
+    });
 
+
+    if (dataAnterior) {
+        const password=req.body.password;
+        let dataUpdate={};
+        if(password){
+            dataUpdate.password= bcrypt.hashSync(password, 10);
+        }
+        const resultado = await Modelo.update(dataUpdate, {
+            where: {
+                usuarioId
+            }
+        });
+        if (resultado > 0) {
+            let { usuarioId:usuarioIdReq } = req.user;
+            req.body.usuario_ult_mod = usuarioIdReq;
+            await registrarBitacora(tabla, usuarioId, dataAnterior.dataValues, req.body);
+            //Actualizar fecha de ultima modificacion
+            let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
+            const data = {
+                fecha_ult_mod,
+                usuario_ult_mod:usuarioIdReq
+            }
+            const resultadoUpdateFecha = await Modelo.update(data, {
+                where: {
+                    usuarioId
+                }
+            });
+
+            response.code = 1;
+            response.data = "Información Actualizado exitosamente";
+            return response;
+        } else {
+            response.code = 0;
+            response.data = "No existen cambios para aplicar";
+            return response;
+        }
+    } else {
+        response.code = -1;
+        response.data = "No existe información para actualizar con los parametros especificados";
+        return response;
+    }
+};
 module.exports = {
     list,
     insert,
     update,
-    eliminar
+    eliminar,
+    actualizarPassword
 }

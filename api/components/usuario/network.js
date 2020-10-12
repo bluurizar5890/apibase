@@ -27,6 +27,13 @@ const actualizar = (req, res, next) => {
         })
         .catch(next);
 }
+const actualizarPassword = (req, res, next) => {
+    controller.actualizarPassword(req)
+        .then((data) => {
+            response.success(req, res, data, 200);
+        })
+        .catch(next);
+}
 
 const eliminar = (req, res, next) => {
     controller.eliminar(req)
@@ -39,5 +46,6 @@ const eliminar = (req, res, next) => {
 router.post('/',registrar);
 router.get('/', listar);
 router.put('/',actualizar);
+router.put('/actualizarpassword',actualizarPassword);
 router.delete('/:id',eliminar);
 module.exports = router;
