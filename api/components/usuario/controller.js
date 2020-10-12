@@ -3,27 +3,28 @@ const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const bcrypt = require('bcrypt')
 const { validarpermiso } = require('../../../auth');
 const moment = require('moment');
-const MenuId=17;
+const usuario = require('../../../store/models/usuario');
+const MenuId = 17;
 const Modelo = Usuario;
 const tabla = 'usuario';
 let response = {};
 
 const insert = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,1);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 1);
+    if (autorizado !== true) {
         return autorizado;
     }
-    
-    const dataUsuario=req.body;
-    let { usuarioId} = req.user;
+
+    const dataUsuario = req.body;
+    let { usuarioId } = req.user;
 
     const { dias_cambio_password } = req.body;
-    if(dias_cambio_password===0){
+    if (dias_cambio_password === 0) {
         delete req.body.fecha_cambio_password;
     }
     dataUsuario.usuario_crea = usuarioId;
-    const password=dataUsuario.password;
-    dataUsuario.password= bcrypt.hashSync(password, 10);
+    const password = dataUsuario.password;
+    dataUsuario.password = bcrypt.hashSync(password, 10);
     const result = await Modelo.create(dataUsuario);
     response.code = 1;
     response.data = result;
@@ -36,21 +37,21 @@ const consultar = async (query, include = 1) => {
             return await Modelo.findAll({
                 include: [
                     {
-                    model: Persona,
-                    required: true,
-                    as: "Persona",
-                    attributes: ['nombre1','nombre2','nombre_otros','apellido1','apellido2','apellido_casada','email']
-                },{
-                    model: Estado,
-                    as: "Estado",
-                    required: true,
-                    attributes: ['descripcion']
-                }],
+                        model: Persona,
+                        required: true,
+                        as: "Persona",
+                        attributes: ['nombre1', 'nombre2', 'nombre_otros', 'apellido1', 'apellido2', 'apellido_casada', 'email']
+                    }, {
+                        model: Estado,
+                        as: "Estado",
+                        required: true,
+                        attributes: ['descripcion']
+                    }],
                 where: [query],
                 order: [
                     ['usuarioId', 'ASC']
                 ],
-                attributes: ['usuarioId','personaId','user_name','fecha_cambio_password','fecha_crea','estadoId','forzar_cambio_password','dias_cambio_password']
+                attributes: ['usuarioId', 'personaId', 'user_name', 'fecha_cambio_password', 'fecha_crea', 'estadoId', 'forzar_cambio_password', 'dias_cambio_password']
             });
         } else {
             return await Modelo.findAll({
@@ -58,8 +59,8 @@ const consultar = async (query, include = 1) => {
                     model: Persona,
                     required: true,
                     as: "Persona",
-                    attributes: ['nombre1','nombre2','nombre_otros','apellido1','apellido2','apellido_casada','email']
-                },{
+                    attributes: ['nombre1', 'nombre2', 'nombre_otros', 'apellido1', 'apellido2', 'apellido_casada', 'email']
+                }, {
                     model: Estado,
                     as: "Estado",
                     required: true,
@@ -68,7 +69,7 @@ const consultar = async (query, include = 1) => {
                 order: [
                     ['usuarioId', 'ASC']
                 ],
-                attributes: ['usuarioId','personaId','user_name','fecha_cambio_password','fecha_crea','estadoId','forzar_cambio_password','dias_cambio_password']
+                attributes: ['usuarioId', 'personaId', 'user_name', 'fecha_cambio_password', 'fecha_crea', 'estadoId', 'forzar_cambio_password', 'dias_cambio_password']
             });
         }
     } else {
@@ -80,21 +81,19 @@ const consultar = async (query, include = 1) => {
     }
 }
 
-
-
 list = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,3);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 3);
+    if (autorizado !== true) {
         return autorizado;
     }
-    const {include}=req.query;
+    const { include } = req.query;
     if (!req.query.id && !req.query.estadoId && !req.query.personaId) {
         response.code = 1;
-        response.data = await consultar(null,include);
+        response.data = await consultar(null, include);
         return response;
     }
 
-    const { id, estadoId,personaId} = req.query;
+    const { id, estadoId, personaId } = req.query;
     let query = {};
     if (estadoId) {
         let estados = estadoId.split(';');
@@ -105,20 +104,20 @@ list = async (req) => {
         query.estadoId = arrayEstado;
     }
 
-    if(personaId){
-        query.personaId=personaId;
+    if (personaId) {
+        query.personaId = personaId;
     }
 
 
     if (!id) {
         response.code = 1;
-        response.data =await consultar(query,include);
+        response.data = await consultar(query, include);
         return response;
     } else {
         if (Number(id) > 0) {
             query.usuarioId = Number(id);
             response.code = 1;
-            response.data =await consultar(query,include);
+            response.data = await consultar(query, include);
             return response;
         } else {
             response.code = -1;
@@ -148,7 +147,7 @@ const eliminar = async (req) => {
             }
         });
         if (resultado > 0) {
-            let { usuarioId:usuarioIdReq } = req.user;
+            let { usuarioId: usuarioIdReq } = req.user;
             dataEliminar.usuario_ult_mod = usuarioIdReq;
             await registrarBitacora(tabla, usuarioId, dataAnterior.dataValues, dataEliminar);
 
@@ -180,8 +179,8 @@ const eliminar = async (req) => {
 }
 
 const update = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,2);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 2);
+    if (autorizado !== true) {
         return autorizado;
     }
     const { usuarioId } = req.body;
@@ -192,9 +191,9 @@ const update = async (req) => {
 
     if (dataAnterior) {
         delete req.body.user_name;
-        const password=req.body.password;
-        if(password){
-        req.body.password= bcrypt.hashSync(password, 10);
+        const password = req.body.password;
+        if (password) {
+            req.body.password = bcrypt.hashSync(password, 10);
         }
         const resultado = await Modelo.update(req.body, {
             where: {
@@ -202,14 +201,14 @@ const update = async (req) => {
             }
         });
         if (resultado > 0) {
-            let { usuarioId:usuarioIdReq } = req.user;
+            let { usuarioId: usuarioIdReq } = req.user;
             req.body.usuario_ult_mod = usuarioIdReq;
             await registrarBitacora(tabla, usuarioId, dataAnterior.dataValues, req.body);
             //Actualizar fecha de ultima modificacion
             let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
             const data = {
                 fecha_ult_mod,
-                usuario_ult_mod:usuarioIdReq
+                usuario_ult_mod: usuarioIdReq
             }
             const resultadoUpdateFecha = await Modelo.update(data, {
                 where: {
@@ -232,8 +231,8 @@ const update = async (req) => {
     }
 };
 const actualizarPassword = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,2);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 2);
+    if (autorizado !== true) {
         return autorizado;
     }
     const { usuarioId } = req.user;
@@ -241,41 +240,71 @@ const actualizarPassword = async (req) => {
         where: { usuarioId }
     });
 
-
     if (dataAnterior) {
-        const password=req.body.password;
-        let dataUpdate={};
-        if(password){
-            dataUpdate.password= bcrypt.hashSync(password, 10);
-        }
-        const resultado = await Modelo.update(dataUpdate, {
-            where: {
-                usuarioId
-            }
-        });
-        if (resultado > 0) {
-            let { usuarioId:usuarioIdReq } = req.user;
-            req.body.usuario_ult_mod = usuarioIdReq;
-            await registrarBitacora(tabla, usuarioId, dataAnterior.dataValues, req.body);
-            //Actualizar fecha de ultima modificacion
-            let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
-            const data = {
-                fecha_ult_mod,
-                usuario_ult_mod:usuarioIdReq
-            }
-            const resultadoUpdateFecha = await Modelo.update(data, {
-                where: {
-                    usuarioId
-                }
-            });
-
-            response.code = 1;
-            response.data = "Información Actualizado exitosamente";
+        let dataUpdate = {};
+        let { usuarioId,dias_cambio_password } = req.user;
+        const user = await Usuario.findOne({ where: { usuarioId, estadoId: 1 } });
+        if (!user) {
+            response.code = -1;
+            response.data = "Credenciales inválidas";
             return response;
         } else {
-            response.code = 0;
-            response.data = "No existen cambios para aplicar";
-            return response;
+            const { password_actual, password_nuevo } = req.body;
+            if (password_actual !== password_nuevo) {
+
+                return bcrypt.compare(password_actual, user.password)
+                    .then(async (sonIguales) => {
+                        if (sonIguales === true) {
+                            dataUpdate.password = bcrypt.hashSync(password_nuevo, 10);
+                            dataUpdate.forzar_cambio_password=false;
+                            dataUpdate.fecha_cambio_password= moment(new Date(),'YYYY/MM/DD HH:mm').add("days",dias_cambio_password);
+                            const resultado = await Modelo.update(dataUpdate, {
+                                where: {
+                                    usuarioId
+                                }
+                            });
+                            if (resultado > 0) {
+                                dataUpdate.usuario_ult_mod = usuarioId;
+                                await registrarBitacora(tabla, usuarioId, dataAnterior.dataValues, dataUpdate);
+                                //Actualizar fecha de ultima modificacion
+                                let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
+                                const data = {
+                                    fecha_ult_mod,
+                                    usuario_ult_mod: usuarioId
+                                }
+                                const resultadoUpdateFecha = await Modelo.update(data, {
+                                    where: {
+                                        usuarioId
+                                    }
+                                });
+
+                                response.code = 1;
+                                response.data = "Contraseña actualizada exitosamente";
+                                return response;
+                            } else {
+                                response.code = 0;
+                                response.data = "No existen cambios para aplicar";
+                                return response;
+                            }
+
+                        }
+                        else {
+                            response.code = -1;
+                            response.data = 'Credenciales inválidas';
+                            return response;
+                        }
+                    })
+                    .catch((error) => {
+                        response.code = -1;
+                        response.data = "No fue posible realizar la actualización de contraseña " +error;
+                        return response;
+                    });
+
+            } else {
+                response.code = 0;
+                response.data = "La contraseña actual y la nueva son iguales, por favor verifique";
+                return response;
+            }
         }
     } else {
         response.code = -1;
