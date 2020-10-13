@@ -1,6 +1,5 @@
-const { Usuario, bd, Persona } = require('../../../store/db');
+const { Usuario, Persona } = require('../../../store/db');
 const bcrypt = require('bcrypt');
-const { QueryTypes } = require('sequelize');
 const moment = require('moment');
 const auth = require('../../../auth');
 let response = {};
@@ -66,20 +65,7 @@ const getUserInfo = async (user) => {
     }
     return userInfo;
 }
-const getAccesos = async (usuarioId) => {
-    return await bd.query(`select distinct b.menuId,b.accesoId from rol_menu_acceso a 
-    inner join menu_acceso b
-    on a.menu_accesoId=b.menu_accesoId and a.estadoId=1 and b.estadoId=1
-    inner join usuario_rol c
-    on a.rolId=c.rolId and c.estadoId=1
-    inner join cat_acceso d
-    on b.accesoId=d.accesoId and d.estadoId=1
-    where c.usuarioId=${usuarioId};`, {
-        type: QueryTypes.SELECT
-    });
-}
 const login = async (req, res) => {
-    const { accesos, userInfo } = req.body;
     const user = await Usuario.findOne({ where: { user_name: req.body.user_name, estadoId: 1 } });
     const { rememberMe } = false;
     if (!user) {
@@ -97,17 +83,14 @@ const login = async (req, res) => {
                 data.token = token;
                 data.userInfo = await getUserInfo(user);
 
-                if (accesos === true) {
-                    const accesos = await getAccesos(usuarioId);
-                    data.accesos = accesos;
-                }
-
                 response.code = 1;
                 response.data = data;
 
                 res.cookie("mitoken", token, {
                     httpOnly: true,
-                    maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC
+                    maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC,
+                     signed: true,
+                     domain:'localhost'
                 });
 
                 return response;

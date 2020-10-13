@@ -5,6 +5,7 @@ require("../store/db");
 const config = require('../config');
 const errors = require('../network/errors');
 const cors = require('cors');
+const secret = 'secret';
 
 
 const Estado = require('./components/estado/network');
@@ -34,12 +35,9 @@ const passport = require('passport');
 //Estratgia de json web token
 require('../auth/strategies/jwt');
 
-
-//Midelware para validar permisos
-const validacionPermisos = require('../auth/middleware/permisos');
 const app = express();
 app.use(bodyParser.json());
-app.use(cookieParser());
+app.use(cookieParser(secret));
 app.use(passport.initialize());
 app.use(cors());
 app.use('/api/estado', passport.authenticate('jwt', { session: false }), Estado);
@@ -72,10 +70,3 @@ app.use(errors);
 app.listen(config.api.port, () => {
     console.log('Api escuchando en el puerto ', config.api.port);
 });
-
-
-/*
-let response = {};
-response.code = 1; "0 registro exitoso"|"-1 Alerta"|"-2 Error"
-response.message ="";
-*/
