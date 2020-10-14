@@ -2,7 +2,6 @@ const { RolMenuAcceso, Rol, Menu, MenuAcceso,Acceso, Estado, bd } = require('../
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
-const { Accesos } = require('../../../store/data');
 const { QueryTypes } = require('sequelize');
 const MenuId = 20;
 const Modelo = RolMenuAcceso;

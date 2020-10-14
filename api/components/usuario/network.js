@@ -20,6 +20,13 @@ const listar=(req,res,next)=>{
     .catch(next);
 }
 
+const userInfo=(req,res,next)=>{
+    controller.userInfo(req)
+    .then((data) => {
+        response.success(req, res, data, 200);
+    })
+    .catch(next);
+}
 const actualizar = (req, res, next) => {
     controller.update(req)
         .then((data) => {
@@ -48,4 +55,5 @@ router.get('/', listar);
 router.put('/',actualizar);
 router.put('/actualizarpassword',actualizarPassword);
 router.delete('/:id',eliminar);
+router.get('/info',userInfo);
 module.exports = router;

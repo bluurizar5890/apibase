@@ -89,8 +89,8 @@ const login = async (req, res) => {
                 res.cookie("mitoken", token, {
                     httpOnly: true,
                     maxAge: rememberMe ? THIRTY_DAYS_IN_SEC : TWO_HOURS_IN_SEC,
-                     signed: true,
-                     domain:'localhost'
+                    signed: true,
+                    domain: 'localhost'
                 });
 
                 return response;

@@ -1,9 +1,9 @@
-const { Usuario, Estado, Persona } = require('../../../store/db');
+const { Usuario, Estado, Persona, bd } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const bcrypt = require('bcrypt')
 const { validarpermiso } = require('../../../auth');
 const moment = require('moment');
-const usuario = require('../../../store/models/usuario');
+const { QueryTypes } = require('sequelize');
 const MenuId = 17;
 const Modelo = Usuario;
 const tabla = 'usuario';
@@ -127,6 +127,144 @@ list = async (req) => {
     }
 }
 
+const listAccesos = async (usuarioId) => {
+    return await bd.query(`select distinct b.menuId,b.accesoId from rol_menu_acceso a 
+    inner join menu_acceso b
+    on a.menu_accesoId=b.menu_accesoId and a.estadoId=1 and b.estadoId=1
+    inner join usuario_rol c
+    on a.rolId=c.rolId and c.estadoId=1
+    inner join cat_acceso d
+    on b.accesoId=d.accesoId and d.estadoId=1
+    where c.usuarioId=${usuarioId};`, {
+        type: QueryTypes.SELECT
+    });
+}
+
+const listmenu = async (usuarioId) => {
+    const menuUsuario = await bd.query(`select distinct a.menuId as id,a.posicion,a.descripcion as title,a.href as url,a.icono as icon,a.menu_padreId,a.classes,a.type from cat_menu a
+                inner join menu_acceso b
+                on a.menuId=b.menuId and a.estadoId=1 and b.estadoId=1 and a.visible=1
+                inner join rol_menu_acceso c
+                on b.menu_accesoId=c.menu_accesoId and c.estadoId
+                inner join usuario_rol d
+                on c.rolId=d.rolId and d.estadoId=1
+                where d.usuarioId=${usuarioId} order by a.posicion;`, {
+        type: QueryTypes.SELECT
+    });
+
+    const getHijos = (id) => {
+        let itemsChildren = [];
+        let hijos = menuUsuario.filter(i => i.menu_padreId === id);
+        hijos.map(({ id, menu_padreId, posicion,url, title, icon, classes, type }) => {
+            itemsChildren.push({
+                id,
+                title,
+                type,
+                url,
+                classes,
+                icon,
+                children: getHijos(id)
+            });
+        });
+        return itemsChildren;
+    }
+    let menu = [];
+    menuUsuario.map(({ id, menu_padreId, posicion, url,title, icon, classes, type }) => {
+        if (menu_padreId === null || menu_padreId === 0) {
+            menu.push({
+                id,
+                title,
+                type,
+                url,
+                classes,
+                icon,
+                children: getHijos(id)
+            });
+        }
+    });
+
+
+
+
+    let menuResponse = [
+        {
+            "id": "support",
+            "title": "Navigation",
+            "type": "group",
+            "icon": "icon-support",
+            "children": menu
+        }
+    ];
+
+    return menuResponse;
+}
+
+const userInfo = async (req) => {
+    let { usuarioId, user_name, personaId, forzar_cambio_password, dias_cambio_password, fecha_cambio_password } = req.user;
+    const persona = await Persona.findOne({ where: { personaId } });
+    let diasUpdatePass = 0;
+    if (forzar_cambio_password === false && dias_cambio_password > 0) {
+        diasUpdatePass = moment.duration(moment(fecha_cambio_password).diff(moment(new Date()))).asDays();
+        diasUpdatePass = Math.round(diasUpdatePass);
+        if (diasUpdatePass <= 0) {
+            forzar_cambio_password = true;
+        }
+    }
+    const { nombre1,
+        nombre2,
+        nombre_otros,
+        apellido1,
+        apellido2,
+        apellido_casada,
+        fecha_nacimiento,
+        generoId,
+        email } = persona;
+    let nombre = nombre1;
+    if (nombre2 && nombre2 !== "") {
+        if (String(nombre2).trim().length > 0) {
+            nombre += " " + nombre2;
+        }
+    }
+    if (nombre_otros && nombre_otros !== "") {
+        if (String(nombre_otros).trim().length > 0) {
+            nombre += " " + nombre_otros;
+        }
+    }
+    nombre += " " + apellido1;
+
+    if (apellido2 && apellido2 !== "") {
+        if (String(apellido2).trim().length > 0) {
+            nombre += " " + apellido2;
+        }
+    }
+    if (apellido_casada && apellido_casada !== "") {
+        if (String(apellido_casada).trim().length > 0) {
+            nombre += " " + apellido_casada;
+        }
+    }
+    const userInfo = {
+        usuarioId,
+        user_name,
+        personaId,
+        forzar_cambio_password,
+        nombre,
+        fecha_nacimiento,
+        generoId,
+        email,
+        dias_cambio_password,
+        fecha_cambio_password,
+        diasUpdatePass
+    }
+
+    let dataUsuario = {};
+    dataUsuario.userInfo = userInfo;
+    dataUsuario.accesos=await listAccesos(usuarioId);
+    dataUsuario.menu=await listmenu(usuarioId);
+    response.code = 1;
+    response.data = dataUsuario;
+    return response;
+}
+
 const eliminar = async (req) => {
     let autorizado = await validarpermiso(req, MenuId, 4);
     if (autorizado !== true) {
@@ -242,7 +380,7 @@ const actualizarPassword = async (req) => {
 
     if (dataAnterior) {
         let dataUpdate = {};
-        let { usuarioId,dias_cambio_password } = req.user;
+        let { usuarioId, dias_cambio_password } = req.user;
         const user = await Usuario.findOne({ where: { usuarioId, estadoId: 1 } });
         if (!user) {
             response.code = -1;
@@ -256,8 +394,8 @@ const actualizarPassword = async (req) => {
                     .then(async (sonIguales) => {
                         if (sonIguales === true) {
                             dataUpdate.password = bcrypt.hashSync(password_nuevo, 10);
-                            dataUpdate.forzar_cambio_password=false;
-                            dataUpdate.fecha_cambio_password= moment(new Date(),'YYYY/MM/DD HH:mm').add("days",dias_cambio_password);
+                            dataUpdate.forzar_cambio_password = false;
+                            dataUpdate.fecha_cambio_password = moment(new Date(), 'YYYY/MM/DD HH:mm').add("days", dias_cambio_password);
                             const resultado = await Modelo.update(dataUpdate, {
                                 where: {
                                     usuarioId
@@ -296,7 +434,7 @@ const actualizarPassword = async (req) => {
                     })
                     .catch((error) => {
                         response.code = -1;
-                        response.data = "No fue posible realizar la actualización de contraseña " +error;
+                        response.data = "No fue posible realizar la actualización de contraseña " + error;
                         return response;
                     });
 
@@ -317,5 +455,6 @@ module.exports = {
     insert,
     update,
     eliminar,
-    actualizarPassword
+    actualizarPassword,
+    userInfo
 }
