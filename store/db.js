@@ -10,7 +10,8 @@ const confiBd = new Sequelize(
   {
     host: config.bd.host,
     dialect: config.bd.dialect,
-    port: config.bd.port
+    port: config.bd.port,
+    timezone: "-06:00",
   }
 );
 
@@ -39,8 +40,9 @@ const UsuarioModel = require('./models/usuario');
 const UsuarioRolModel = require('./models/usuario_rol');
 const FotoUsuarioModel = require('./models/foto_usuario');
 const TelefonoPersonaModel = require('./models/telefono_persona');
-const direccion_persona = require('./models/direccion_persona');
-const usuario = require('./models/usuario');
+const ResetPassWordModel = require('./models/reset_password');
+const ParametroModel = require('./models/cat_parametro');
+
 
 const Estado = EstadoModel(confiBd, Sequelize);
 const Genero = GeneroModel(confiBd, Sequelize);
@@ -66,6 +68,8 @@ const Usuario = UsuarioModel(confiBd, Sequelize);
 const UsuarioRol = UsuarioRolModel(confiBd, Sequelize);
 const FotoUsuario = FotoUsuarioModel(confiBd, Sequelize);
 const TelefonoPersona = TelefonoPersonaModel(confiBd, Sequelize);
+const ResetPassWord = ResetPassWordModel(confiBd, Sequelize);
+const Parametro = ParametroModel(confiBd, Sequelize);
 
 
 EstadoCivil.belongsTo(Estado,{
@@ -309,7 +313,7 @@ try {
     force: false,
     logging: false, //Evitamos que nos muestre lo que hace con la bd
   }).then(() => {
-    const { Estados, Generos, Personas, Usuarios, Paises, Departamentos, Municipios, Menus, Accesos, MenuAccesos, TiposDocumentos, Roles, MenuAccesosRol, TiposTelefonos, EstadosCiviles, TiposSangre, UsuarioRoles } = require('./data');
+    const { Estados, Generos, Personas, Usuarios, Paises, Departamentos, Municipios, Menus, Accesos, MenuAccesos, TiposDocumentos, Roles, MenuAccesosRol, TiposTelefonos, EstadosCiviles, TiposSangre, UsuarioRoles, Parametros } = require('./data');
     confiBd.query("select count(*) as total from cat_estado", {
       type: QueryTypes.SELECT
     }).then(async (resultado) => {
@@ -331,6 +335,7 @@ try {
         await EstadoCivil.bulkCreate(EstadosCiviles);
         await TipoSangre.bulkCreate(TiposSangre);
         await UsuarioRol.bulkCreate(UsuarioRoles);
+        await Parametro.bulkCreate(Parametros);
       }
     });
   });
@@ -363,6 +368,8 @@ module.exports = {
   UsuarioRol,
   FotoUsuario,
   TelefonoPersona,
+  ResetPassWord,
+  Parametro,
   bd: confiBd
 }
 

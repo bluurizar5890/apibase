@@ -1,37 +1,38 @@
 const nodemailer = require('nodemailer');
 
-var transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true, 
+
+
+// var mailOptions = {
+//   from: 'urizarcode@gmail.com',
+//   to: null,
+//   subject: null,
+//   text: null,
+//   html: null,
+// };
+
+const sendMail = async (config,destinatario, asunto, texto, html) => {
+  const transporter = nodemailer.createTransport({
+    host:config.host,
+    port: config.port,
+    secure: config.secure,
     auth: {
-      user: 'urizarcode@gmail.com',
-      pass: 'Blopez$1991'
+      user:config.user,
+      pass:config.pass
     }
   });
+  let mailOptions={};
+  mailOptions.from=config.user,
+  mailOptions.to = destinatario;
+  mailOptions.subject = asunto;
+  mailOptions.text = texto;
+  mailOptions.html = html;
 
-  var mailOptions = {
-    from: 'urizarcode@gmail.com',
-    to: null,
-    subject: null,
-    text: null,
-    html: null,
-  };
+  let resp = await transporter.sendMail(mailOptions);
+  console.log(resp);
+  return resp;
+}
 
- const sendMail = async (destinatario, asunto, texto, html) => {
-     console.log('entre');
-     mailOptions.to = destinatario;
-     mailOptions.subject = asunto;
-     mailOptions.text = texto;
-     mailOptions.html = html;
 
-     let resp= await transporter.sendMail(mailOptions);
-     console.log(resp);
-     return resp;
- } 
- 
-
- module.exports = {
-    sendMail
- }
-  
+module.exports = {
+  sendMail
+}

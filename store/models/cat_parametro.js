@@ -1,48 +1,42 @@
 module.exports = (sequelize, type) => {
     return sequelize.define(
-        "usuario",
+        "cat_parametro",
         {
-            usuarioId: {
+            parametroId: {
                 type: type.INTEGER,
                 primaryKey: true,
                 autoIncrement: true,
             },
-            personaId: {
-                type: type.INTEGER,
-                // references: {
-                //     model: "persona",
-                //     key: "personaId",
-                // }
-            },
-            user_name: {
-                type: type.STRING(50),
-                allowNull: false,
-                unique: true,
-                validate: {
-                    notEmpty: true
-                }
-            },
-            password: {
-                type: type.STRING(300),
+            nombreGrupo: {
+                type: type.STRING(100),
                 allowNull: false,
                 validate: {
                     notEmpty: true
                 }
             },
-            forzar_cambio_password:{
-                type: type.BOOLEAN,
+            tipoDato: {
+                type: type.STRING(20),
                 allowNull: false,
-                defaultValue: true,
+                validate: {
+                    notEmpty: true
+                }
             },
-            fecha_cambio_password: {
-                type: type.DATE
+            nombreVariable: {
+                type: type.STRING(100),
+                allowNull: false,
+                validate: {
+                    notEmpty: true
+                }
             },
-            dias_cambio_password:{
-                type: type.INTEGER
+            valor: {
+                type: type.STRING(500),
+                allowNull: false,
+                validate: {
+                    notEmpty: true
+                }
             },
-            intentos_fallidos:{
-                type: type.INTEGER,
-                defaultValue: 0
+            descripcion: {
+                type: type.STRING(300)
             },
             usuario_crea: {
                 type: type.INTEGER

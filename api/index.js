@@ -30,7 +30,7 @@ const Menu = require('./components/menu/network');
 const MenuAcceso = require('./components/menuacceso/network');
 const RolMenuAcceso = require('./components/rolmenuacceso/network');
 const Auth = require('./components/auth/network');
-const EnvioCorreo = require('./components/envioCorreo/network');
+const ResetPassword = require('./components/resetpassword/network');
 const passport = require('passport');
 
 //Estratgia de json web token
@@ -63,7 +63,7 @@ app.use('/api/menu', passport.authenticate('jwt', { session: false }), Menu);
 app.use('/api/menuacceso', passport.authenticate('jwt', { session: false }), MenuAcceso);
 app.use('/api/rolmenuacceso', passport.authenticate('jwt', { session: false }), RolMenuAcceso);
 app.use('/api/auth', Auth);
-app.use('/api/correo', EnvioCorreo);
+app.use('/api/resetpassword', ResetPassword);
 
 
 //Es muy importante que sea el ultimo middelware

@@ -1,50 +1,30 @@
 module.exports = (sequelize, type) => {
     return sequelize.define(
-        "usuario",
+        "reset_password",
         {
-            usuarioId: {
+            codigo: {
                 type: type.INTEGER,
                 primaryKey: true,
                 autoIncrement: true,
             },
-            personaId: {
-                type: type.INTEGER,
-                // references: {
-                //     model: "persona",
-                //     key: "personaId",
-                // }
+            messageId: {
+                type: type.STRING(300)
             },
-            user_name: {
-                type: type.STRING(50),
-                allowNull: false,
-                unique: true,
-                validate: {
-                    notEmpty: true
-                }
-            },
-            password: {
-                type: type.STRING(300),
+            emisor: {
+                type: type.STRING(100),
                 allowNull: false,
                 validate: {
                     notEmpty: true
                 }
             },
-            forzar_cambio_password:{
-                type: type.BOOLEAN,
+            receptor: {
+                type: type.STRING(100),
                 allowNull: false,
-                defaultValue: true,
+                validate: {
+                    notEmpty: true
+                }
             },
-            fecha_cambio_password: {
-                type: type.DATE
-            },
-            dias_cambio_password:{
-                type: type.INTEGER
-            },
-            intentos_fallidos:{
-                type: type.INTEGER,
-                defaultValue: 0
-            },
-            usuario_crea: {
+            usuarioId: {
                 type: type.INTEGER
             },
             fecha_crea: {
@@ -52,11 +32,9 @@ module.exports = (sequelize, type) => {
                 allowNull: false,
                 defaultValue: type.NOW
             },
-            usuario_ult_mod: {
-                type: type.INTEGER
-            },
-            fecha_ult_mod: {
-                type: type.DATE
+            fecha_vencimiento: {
+                type: type.DATE,
+                allowNull: false
             },
             estadoId: {
                 type: type.INTEGER,
