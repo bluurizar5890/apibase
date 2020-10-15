@@ -375,7 +375,8 @@ const actualizarPassword = async (req) => {
     }
     const { usuarioId } = req.user;
     const dataAnterior = await Modelo.findOne({
-        where: { usuarioId }
+        where: { usuarioId },
+        attributes:['password','forzar_cambio_password','fecha_cambio_password']
     });
 
     if (dataAnterior) {
@@ -395,7 +396,7 @@ const actualizarPassword = async (req) => {
                         if (sonIguales === true) {
                             dataUpdate.password = bcrypt.hashSync(password_nuevo, 10);
                             dataUpdate.forzar_cambio_password = false;
-                            dataUpdate.fecha_cambio_password = moment(new Date(), 'YYYY/MM/DD HH:mm').add("days", dias_cambio_password);
+                            dataUpdate.fecha_cambio_password = moment(new Date(), 'YYYY/MM/DD HH:mm').add(dias_cambio_password,"days");
                             const resultado = await Modelo.update(dataUpdate, {
                                 where: {
                                     usuarioId

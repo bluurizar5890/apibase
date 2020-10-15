@@ -1581,7 +1581,53 @@ const Parametros = [
     valor: "true",
     descripcion: "Indica si el envio es por medio seguro",
     usuario_crea: 1
+  },
+  {
+    parametroId: 6,
+    nombreGrupo: "CONFIG_EMISOR",
+    tipoDato: "N",
+    nombreVariable: "minutosVigenciaEnlace",
+    valor: "10",
+    descripcion: "Minutos de vigencia del enlace enviado por correo",
+    usuario_crea: 1
+  },
+  {
+    parametroId: 7,
+    nombreGrupo: "CONFIG_EMPRESA",
+    tipoDato: "S",
+    nombreVariable: "nombreEmpresa",
+    valor: "NOMBRE DE LA EMPRESA",
+    descripcion: "Nombre de la Empresa",
+    usuario_crea: 1
+  },
+  {
+    parametroId: 8,
+    nombreGrupo: "CONFIG_EMPRESA",
+    tipoDato: "S",
+    nombreVariable: "direccionEmpresa",
+    valor: "INDICAR LA DIRECCION DE LA EMPRESA",
+    descripcion: "Dirección de la empresa",
+    usuario_crea: 1
+  },
+  {
+    parametroId: 9,
+    nombreGrupo: "CONFIG_EMPRESA",
+    tipoDato: "S",
+    nombreVariable: "urlLogoEmpresa",
+    valor: "https://png.pngtree.com/png-clipart/20190516/original/pngtree-human-character-with-green-tree-logo.-png-image_3732560.jpg",
+    descripcion: "Url del logo de la empresa",
+    usuario_crea: 1
+  },
+  {
+    parametroId: 10,
+    nombreGrupo: "CONFIG_EMPRESA",
+    tipoDato: "S",
+    nombreVariable: "urlWebResetPassWord",
+    valor: "http://localhost:3001/app/auth/login/",
+    descripcion: "Url que resolvera el reseteo de la contraseña",
+    usuario_crea: 1
   }
+  
 ]
 module.exports = {
   Estados,

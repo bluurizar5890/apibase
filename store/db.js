@@ -11,7 +11,12 @@ const confiBd = new Sequelize(
     host: config.bd.host,
     dialect: config.bd.dialect,
     port: config.bd.port,
-    timezone: "-06:00",
+    dialectOptions: {
+      dateStrings: true,
+      typeCast: true,
+    },
+    logging: false, //Evitamos que nos muestre lo que hace con la bd
+     timezone: "-06:00",
   }
 );
 
@@ -70,7 +75,6 @@ const FotoUsuario = FotoUsuarioModel(confiBd, Sequelize);
 const TelefonoPersona = TelefonoPersonaModel(confiBd, Sequelize);
 const ResetPassWord = ResetPassWordModel(confiBd, Sequelize);
 const Parametro = ParametroModel(confiBd, Sequelize);
-
 
 EstadoCivil.belongsTo(Estado,{
   as: "Estado",
@@ -179,7 +183,6 @@ Persona.hasMany(DatoExtraPersona,{
   foreignKey: "personaId",
   onDelete: "CASCADE",
 });
-
 
 IdentificacionPersona.belongsTo(Estado,{
   as: "Estado",
@@ -295,7 +298,6 @@ RolMenuAcceso.belongsTo(MenuAcceso,{
   onDelete: "CASCADE",
 });
 
-
 Menu.belongsTo(Estado,{
   as: "Estado",
   foreignKey: "estadoId",
@@ -311,7 +313,6 @@ Menu.belongsTo(Menu,{
 try {
   confiBd.sync({
     force: false,
-    logging: false, //Evitamos que nos muestre lo que hace con la bd
   }).then(() => {
     const { Estados, Generos, Personas, Usuarios, Paises, Departamentos, Municipios, Menus, Accesos, MenuAccesos, TiposDocumentos, Roles, MenuAccesosRol, TiposTelefonos, EstadosCiviles, TiposSangre, UsuarioRoles, Parametros } = require('./data');
     confiBd.query("select count(*) as total from cat_estado", {

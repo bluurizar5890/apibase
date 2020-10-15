@@ -3,8 +3,16 @@ const response = require('../../../network/response');
 const controller = require('./controller');
 const router = express.Router();
 
-const prueba = (req, res, next) => {
-    controller.prueba(req)
+const enviarCorreo = (req, res, next) => {
+    controller.enviarCorreo(req)
+        .then((data) => {
+            response.success(req, res, data, 200);
+        })
+        .catch(next);
+}
+
+const updatePass = (req, res, next) => {
+    controller.updatePass(req)
         .then((data) => {
             response.success(req, res, data, 200);
         })
@@ -12,5 +20,7 @@ const prueba = (req, res, next) => {
 }
 
 
-router.post('/',prueba);
+
+router.post('/',enviarCorreo);
+router.put('/',updatePass);
 module.exports = router;
