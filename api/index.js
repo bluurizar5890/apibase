@@ -31,6 +31,8 @@ const MenuAcceso = require('./components/menuacceso/network');
 const RolMenuAcceso = require('./components/rolmenuacceso/network');
 const Auth = require('./components/auth/network');
 const ResetPassword = require('./components/resetpassword/network');
+const Bitacora = require('./components/bitacora/network');
+
 const passport = require('passport');
 
 //Estratgia de json web token
@@ -41,6 +43,7 @@ app.use(bodyParser.json());
 app.use(cookieParser(secret));
 app.use(passport.initialize());
 app.use(cors());
+app.use('/api/auth', Auth);
 app.use('/api/estado', passport.authenticate('jwt', { session: false }), Estado);
 app.use('/api/municipio', passport.authenticate('jwt', { session: false }), Municipio);
 app.use('/api/pais', passport.authenticate('jwt', { session: false }), Pais);
@@ -62,9 +65,8 @@ app.use('/api/acceso', passport.authenticate('jwt', { session: false }), Acceso)
 app.use('/api/menu', passport.authenticate('jwt', { session: false }), Menu);
 app.use('/api/menuacceso', passport.authenticate('jwt', { session: false }), MenuAcceso);
 app.use('/api/rolmenuacceso', passport.authenticate('jwt', { session: false }), RolMenuAcceso);
-app.use('/api/auth', Auth);
 app.use('/api/resetpassword', ResetPassword);
-
+app.use('/api/bitacora', passport.authenticate('jwt', { session: false }), Bitacora);
 
 //Es muy importante que sea el ultimo middelware
 app.use(errors);

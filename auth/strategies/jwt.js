@@ -31,7 +31,6 @@ passport.use(
             const userInfo=user.dataValues;
             userInfo.actions=permisos;
             delete user.password;
-            // console.log({userInfo});
             return cb(null, userInfo);
         } catch (error) {
             cb(error);

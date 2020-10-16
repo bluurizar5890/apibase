@@ -28,7 +28,9 @@ module.exports = {
 module.exports = {
   api: {
     port: process.env.API_PORT || 3000,
-    bitacora_cambios: process.env.BITACORA_CAMBIOS || true
+    bitacora_cambios: process.env.BITACORA_CAMBIOS || true,
+    bitacoraPeticion: process.env.BITACORA_PETICION || true,
+    bitacoraError: process.env.BITACORA_ERROR || true,
   },
   jwt: {
     secret: process.env.JWT_SECRET || "Yahk9Lev5lBdANo6UPQuIgCVHinXsm8M",

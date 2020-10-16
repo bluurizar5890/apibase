@@ -23,7 +23,6 @@ const insert = async (req) => {
 
 const consultar = async (query, include = 1) => {
     if (include == 1) {
-        console.log(query);
         if (query) {
             return await Modelo.findAll({
                 include: [{

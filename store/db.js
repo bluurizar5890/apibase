@@ -310,6 +310,18 @@ Menu.belongsTo(Menu,{
   onDelete: "CASCADE",
 });
 
+BitacoraCambios.belongsTo(Usuario,{
+  as: "Usuario",
+  foreignKey: "usuario_crea",
+  onDelete: "CASCADE",
+});
+
+BitacoraPeticion.belongsTo(Usuario,{
+  as: "Usuario",
+  foreignKey: "usuario_crea",
+  onDelete: "CASCADE",
+});
+
 try {
   confiBd.sync({
     force: false,

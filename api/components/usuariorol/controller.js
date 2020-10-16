@@ -280,7 +280,6 @@ const prueba=async(req,res)=>{
       return stream;
 
 
-console.log(a);
 
 }
 

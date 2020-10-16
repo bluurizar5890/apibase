@@ -7,11 +7,23 @@ module.exports = (sequelize, type) => {
                 primaryKey: true,
                 autoIncrement: true,
             },
+            baseUrl: {
+                type: type.STRING(200)
+            },
+            method: {
+                type: type.STRING(20)
+            },
             request: {
                 type: type.JSON
             },
             response: {
                 type: type.JSON
+            },
+            status: {
+                type: type.INTEGER
+            },
+            error: {
+                type: type.BOOLEAN
             },
             usuario_crea: {
                 type: type.INTEGER
@@ -22,7 +34,7 @@ module.exports = (sequelize, type) => {
                 defaultValue: type.NOW
             },
             ip_origen: {
-                type: type.INTEGER
+                type: type.STRING(50)
             }
         },
         {
