@@ -59,7 +59,8 @@ peticiones = async (req) => {
     }
 
     let query = '';
-    let { baseUrl, method, status = 0, error, usuarioId = 0, fechaInicial, fechaFinal, ip_origen } = req.body;
+    let { baseUrl, method, status = 0, error, usuarioId, fechaInicial, fechaFinal, ip_origen } = req.body;
+    console.log("body",req.body);
     if (baseUrl) {
         query = `bitacora_peticion.baseUrl='${baseUrl}'`;
         existenParametros = true;
@@ -83,7 +84,7 @@ peticiones = async (req) => {
         existenParametros = true;
     }
 
-    if (error !== undefined) {
+    if (error) {
         if (String(query).trim().length > 0) {
             query += ` and bitacora_peticion.error='${error}'`;
         } else {
@@ -92,7 +93,7 @@ peticiones = async (req) => {
         existenParametros = true;
     }
 
-    if (usuarioId !== undefined) {
+    if (usuarioId) {
         if (String(query).trim().length > 0) {
             query += ` and bitacora_peticion.usuario_crea=${usuarioId}`
         } else {
