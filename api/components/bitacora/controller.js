@@ -51,7 +51,7 @@ cambios = async (req) => {
 }
 
 peticiones = async (req) => {
-    const MenuId = 25;
+    const MenuId = 26;
     let existenParametros = false;
     let autorizado = await validarpermiso(req, MenuId, 3);
     if (autorizado !== true) {
@@ -124,8 +124,8 @@ peticiones = async (req) => {
     console.log({query});
 
     if (existenParametros === true) {
-        response.code = 1;
-        response.data = await BitacoraPeticion.findAll({
+        
+        const result= await BitacoraPeticion.findAll({
             include: [{
                 model: Usuario,
                 as: "Usuario",
@@ -138,6 +138,13 @@ peticiones = async (req) => {
                 ['bitacora_peticionId', 'ASC']
             ]
         });
+        if(result.length>0){
+            response.code = 1;
+            response.data=result;
+        }else{
+            response.code = 0;
+            response.data="No existen registros de peticiones con los parametros enviados.";
+        }
     } else {
         response.code = -1;
         response.data = "Los parametros enviados no son válidos.";
