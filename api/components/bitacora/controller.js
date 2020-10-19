@@ -1,8 +1,23 @@
 var sequelize = require("sequelize");
+const { QueryTypes } = require('sequelize');
 const moment = require('moment');
-const { BitacoraCambios, BitacoraPeticion, Usuario } = require('../../../store/db');
+const { BitacoraCambios, BitacoraPeticion, Usuario, bd } = require('../../../store/db');
 const { validarpermiso } = require('../../../auth');
+const config = require("../../../config");
 let response = {};
+
+tablas=async(req)=>{
+    const MenuId = 27;
+    let autorizado = await validarpermiso(req, MenuId, 3);
+    if (autorizado !== true) {
+        return autorizado;
+    }
+    response.code=1;
+    response.data=await bd.query(`SHOW TABLES FROM ${config.bd.database};`, {
+        type: QueryTypes.SELECT
+    });
+    return response;
+}
 
 cambios = async (req) => {
     const MenuId = 27;
@@ -49,7 +64,6 @@ cambios = async (req) => {
 
     return response;
 }
-
 peticiones = async (req) => {
     const MenuId = 26;
     let existenParametros = false;
@@ -94,11 +108,12 @@ peticiones = async (req) => {
     }
 
     if (usuarioId) {
+        if(Number(usuarioId)>0){
         if (String(query).trim().length > 0) {
             query += ` and bitacora_peticion.usuario_crea=${usuarioId}`
         } else {
             query += `bitacora_peticion.usuario_crea=${usuarioId}`
-        }
+        }}
         existenParametros = true;
     }
 
@@ -152,9 +167,8 @@ peticiones = async (req) => {
 
     return response;
 }
-
 peticionesRequest = async (req) => {
-    const MenuId = 25;
+    const MenuId = 26;
     let autorizado = await validarpermiso(req, MenuId, 3);
     if (autorizado !== true) {
         return autorizado;
@@ -174,7 +188,7 @@ peticionesRequest = async (req) => {
     return response;
 }
 peticionesResponse = async (req) => {
-    const MenuId = 25;
+    const MenuId = 26;
     let autorizado = await validarpermiso(req, MenuId, 3);
     if (autorizado !== true) {
         return autorizado;
@@ -195,6 +209,7 @@ peticionesResponse = async (req) => {
 }
 module.exports = {
     cambios,
+    tablas,
     peticiones,
     peticionesRequest,
     peticionesResponse

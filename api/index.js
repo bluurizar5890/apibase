@@ -32,6 +32,7 @@ const RolMenuAcceso = require('./components/rolmenuacceso/network');
 const Auth = require('./components/auth/network');
 const ResetPassword = require('./components/resetpassword/network');
 const Bitacora = require('./components/bitacora/network');
+const FotoUsuario = require('./components/fotousuario/network');
 
 const passport = require('passport');
 
@@ -61,6 +62,7 @@ app.use('/api/persona/identificacion', passport.authenticate('jwt', { session: f
 app.use('/api/persona/telefono', passport.authenticate('jwt', { session: false }), TelefonoPersona);
 app.use('/api/usuario', passport.authenticate('jwt', { session: false }), Usuario);
 app.use('/api/usuario/rol', passport.authenticate('jwt', { session: false }), UsuarioRol);
+app.use('/api/usuario/foto', passport.authenticate('jwt', { session: false }), FotoUsuario);
 app.use('/api/acceso', passport.authenticate('jwt', { session: false }), Acceso);
 app.use('/api/menu', passport.authenticate('jwt', { session: false }), Menu);
 app.use('/api/menuacceso', passport.authenticate('jwt', { session: false }), MenuAcceso);

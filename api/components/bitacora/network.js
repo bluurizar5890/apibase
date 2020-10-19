@@ -12,6 +12,14 @@ const cambios = (req, res, next) => {
         .catch(next);
 }
 
+const tablas = (req, res, next) => {
+    controller.tablas(req)
+        .then((data) => {
+            response.success(req, res, data, 200);
+        })
+        .catch(next);
+}
+
 const peticiones = (req, res, next) => {
     controller.peticiones(req)
         .then((data) => {
@@ -37,6 +45,7 @@ const peticionesResponse = (req, res, next) => {
 }
 
 router.post('/cambios', cambios);
+router.get('/cambios/tablas', tablas);
 router.post('/peticiones', peticiones);
 router.get('/peticiones/request/:bitacora_peticionId', peticionesRequest);
 router.get('/peticiones/response/:bitacora_peticionId', peticionesResponse);
