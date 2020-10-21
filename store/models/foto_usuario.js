@@ -15,8 +15,14 @@ module.exports = (sequelize, type) => {
                 }
             },
             foto: {
-                type: type.BLOB,
+                type: type.BLOB('long'),
                 allowNull: false
+            },
+            nombre: {
+                type: type.STRING(300)
+            },
+            mimetype: {
+                type: type.STRING(100)
             },
             descripcion: {
                 type: type.STRING(300)

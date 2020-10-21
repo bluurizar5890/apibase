@@ -2,6 +2,7 @@ const { Estado, FotoUsuario } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
+const data = require('../../../store/data');
 const MenuId=4;
 const Modelo = FotoUsuario;
 const tabla = 'foto_usuario';
@@ -9,15 +10,22 @@ let response = {};
 
 
 const insert = async (req) => {
-    console.log(req);
     let autorizado=await validarpermiso(req,MenuId,1);
     if(autorizado!==true){
         return autorizado;
     }
-    
-    let { usuarioId } = req.user;
-    req.body.usuario_crea = usuarioId;
-    const result = await Modelo.create(req.body);
+    const dataAux={};
+    let {usuarioId,descripcion}=req.body;
+    let {file}=req;
+    dataAux.descripcion=descripcion;
+    dataAux.usuarioId=usuarioId;
+    dataAux.foto=file.buffer;
+    dataAux.mimetype=file.mimetype;
+    dataAux.nombre=file.originalname;
+    let { usuarioId:usuarioCrea } = req.user;
+    dataAux.usuario_crea = usuarioCrea;
+    const result = await Modelo.create(dataAux);
+    delete result.dataValues.foto;
     response.code = 1;
     response.data = result;
     return response;

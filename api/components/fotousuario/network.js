@@ -35,7 +35,7 @@ const eliminar = (req, res, next) => {
         .catch(next);
 }
 
-router.post('/',upload.single('foto'),registrar);
+router.post('/',upload.single('file'),registrar);
 router.get('/', listar);
 router.put('/',actualizar);
 router.delete('/:id',eliminar);
