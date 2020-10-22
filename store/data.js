@@ -560,6 +560,7 @@ const Menus = [
     menuId: 13,
     posicion: 13,
     descripcion: "Identificacion Persona",
+    href: "",
     icono: "",
     classes: "nav-item",
     type: "item",
@@ -670,9 +671,59 @@ const Menus = [
     visible: true,
     usuario_crea: 1,
     fecha_crea: Date.now()
-  }
+  },
+  {
+    menuId: 25,
+    posicion: 24,
+    descripcion: "Bitácora",
+    href: "",
+    icono: "",
+    classes: "",
+    type: "collapse",
+    menu_padreId: 23,
+    visible: true,
+    usuario_crea: 1,
+    fecha_crea: Date.now()
+  },
+  {
+    menuId: 26,
+    posicion: 21,
+    descripcion: "Peticiones",
+    href: "/seguridad/bitacora/peticion",
+    icono: "",
+    classes: "nav-item",
+    type: "item",
+    menu_padreId: 25,
+    visible: true,
+    usuario_crea: 1,
+    fecha_crea: Date.now()
+  },
+  {
+    menuId: 27,
+    posicion: 21,
+    descripcion: "Cambios",
+    href: "/seguridad/bitacora-cambios",
+    icono: "",
+    classes: "nav-item",
+    type: "item",
+    menu_padreId: 25,
+    visible: true,
+    usuario_crea: 1,
+    fecha_crea: Date.now()
+  },
+  {
+    menuId: 28,
+    posicion: 0,
+    descripcion: "Foto Usuario",
+    href: "/infouser",
+    icono: "",
+    classes: "nav-item",
+    type: "item",
+    visible: true,
+    usuario_crea: 1,
+    fecha_crea: Date.now()
+  },
 ];
-
 
 const MenuAccesos = [
   {
@@ -999,6 +1050,26 @@ const MenuAccesos = [
   {
     menuId: 24,
     accesoId: 3,
+    usuario_crea: 1
+  },
+  {
+    menuId: 25,
+    accesoId: 3,
+    usuario_crea: 1
+  },
+  {
+    menuId: 26,
+    accesoId: 3,
+    usuario_crea: 1
+  },
+  {
+    menuId: 27,
+    accesoId: 3,
+    usuario_crea: 1
+  },
+  {
+    menuId: 28,
+    accesoId: 1,
     usuario_crea: 1
   }
 ];
@@ -1332,6 +1403,26 @@ const MenuAccesosRol = [
     rolId: 1,
     menu_accesoId: 66,
     usuario_crea: 1
+  },
+  {
+    rolId: 1,
+    menu_accesoId: 67,
+    usuario_crea: 1
+  },
+  {
+    rolId: 1,
+    menu_accesoId: 68,
+    usuario_crea: 1
+  },
+  {
+    rolId: 1,
+    menu_accesoId: 69,
+    usuario_crea: 1
+  },
+  {
+    rolId: 1,
+    menu_accesoId: 70,
+    usuario_crea: 1
   }
 ];
 
@@ -1627,8 +1718,7 @@ const Parametros = [
     descripcion: "Url que resolvera el reseteo de la contraseña",
     usuario_crea: 1
   }
-  
-]
+];
 module.exports = {
   Estados,
   Generos,

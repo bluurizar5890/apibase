@@ -21,11 +21,11 @@ exports.success = (req, res, message, status) => {
             ip_origen: ipCliente
         }
         registrarPeticion(data).then(() => {
-            console.log("Bitacora registrada exisotsamente");
+            //console.log("Bitacora registrada exisotsamente");
         })
-            .catch(erro => {
-                console.log("Error al registrar la peticion", erro);
-            });
+        .catch(erro => {
+           console.log("Error al registrar la peticion", erro);
+         });
     }
     let statusCode = status || 200;
     res.status(statusCode).send({
@@ -54,11 +54,11 @@ exports.error = (req, res, message, status) => {
             ip_origen: ipCliente
         }
         registrarPeticion(data).then(() => {
-            console.log("Bitacora registrada exisotsamente");
+           // console.log("Bitacora registrada exisotsamente");
         })
-            .catch(erro => {
-                console.log("Error al registrar la peticion", erro);
-            });
+        .catch(erro => {
+            console.log("Error al registrar la peticion", erro);
+        });
     }
     let statusCode = status || 500;
     res.status(statusCode).send({

@@ -142,9 +142,9 @@ const listAccesos = async (usuarioId) => {
 }
 
 const listmenu = async (usuarioId) => {
-    const menuUsuario = await bd.query(`select distinct a.menuId as id,a.posicion,a.descripcion as title,a.href as url,a.icono as icon,a.menu_padreId,a.classes,a.type from cat_menu a
+    const menuUsuario = await bd.query(`select distinct a.menuId as id,a.posicion,a.descripcion as title,a.href as url,a.icono as icon,a.menu_padreId,a.classes,a.type,a.visible from cat_menu a
                 inner join menu_acceso b
-                on a.menuId=b.menuId and a.estadoId=1 and b.estadoId=1 and a.visible=1
+                on a.menuId=b.menuId and a.estadoId=1 and b.estadoId=1
                 inner join rol_menu_acceso c
                 on b.menu_accesoId=c.menu_accesoId and c.estadoId
                 inner join usuario_rol d
@@ -156,7 +156,7 @@ const listmenu = async (usuarioId) => {
     const getHijos = (id) => {
         let itemsChildren = [];
         let hijos = menuUsuario.filter(i => i.menu_padreId === id);
-        hijos.map(({ id, menu_padreId, posicion,url, title, icon, classes, type }) => {
+        hijos.map(({ id, menu_padreId, posicion,url, title, icon, classes, type,visible }) => {
             itemsChildren.push({
                 id,
                 title,
@@ -164,13 +164,14 @@ const listmenu = async (usuarioId) => {
                 url,
                 classes,
                 icon,
+                visible,
                 children: getHijos(id)
             });
         });
         return itemsChildren;
     }
     let menu = [];
-    menuUsuario.map(({ id, menu_padreId, posicion, url,title, icon, classes, type }) => {
+    menuUsuario.map(({ id, menu_padreId, posicion, url,title, icon, classes, type,visible }) => {
         if (menu_padreId === null || menu_padreId === 0) {
             menu.push({
                 id,
@@ -179,6 +180,7 @@ const listmenu = async (usuarioId) => {
                 url,
                 classes,
                 icon,
+                visible,
                 children: getHijos(id)
             });
         }
@@ -206,7 +208,7 @@ const getImagen=async(usuarioId)=>{
         order: [
             ['foto_usuarioId', 'DESC']
         ],
-        attributes: ['foto','mimetype']
+        attributes: ['foto_usuarioId','foto','mimetype']
     });
 }
 const listPerfiles=async(usuarioId)=>{
