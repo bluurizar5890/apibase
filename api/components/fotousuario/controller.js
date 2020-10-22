@@ -1,8 +1,9 @@
 const { Estado, FotoUsuario } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
+const sharp = require("sharp");
+
 const { validarpermiso } = require('../../../auth');
-const data = require('../../../store/data');
 const MenuId=4;
 const Modelo = FotoUsuario;
 const tabla = 'foto_usuario';
@@ -17,17 +18,43 @@ const insert = async (req) => {
     const dataAux={};
     let {usuarioId,descripcion}=req.body;
     let {file}=req;
+    const {buffer,size,originalname,mimetype}=!!file && file;
     dataAux.descripcion=descripcion;
     dataAux.usuarioId=usuarioId;
-    dataAux.foto=file.buffer;
-    dataAux.mimetype=file.mimetype;
-    dataAux.nombre=file.originalname;
+    dataAux.nombre=originalname;
+    if(mimetype !== "image/png" && mimetype !== "image/jpg" && mimetype !== "image/jpeg"){
+        response.code=-1;
+        response.data="El formato de la imagen no es válido";
+    }
+    else{
+    if(size <= 1000000) {
     let { usuarioId:usuarioCrea } = req.user;
     dataAux.usuario_crea = usuarioCrea;
-    const result = await Modelo.create(dataAux);
-    delete result.dataValues.foto;
-    response.code = 1;
-    response.data = result;
+
+    const auxShparp=await sharp(buffer)
+            .resize(100, 100)
+            .toFormat("jpeg")
+            .jpeg({ quality: 90 })
+            .toBuffer(async(error,data,info)=>{
+                if(!error){
+                    dataAux.foto=data;
+                    dataAux.mimetype="image/jpeg";
+                    const result=await FotoUsuario.create(dataAux);
+                    response.code = 1;
+                    response.data = "";
+                    return result;
+                }else{
+                    response.code = -1;
+                    response.data = 'Ocurrió un error al cargar la imagen';
+                }
+            });
+
+
+    }else{
+        response.code=-1;
+        response.data="La imagen no debe pesar más de 1 MB";
+    }
+}
     return response;
 }
 

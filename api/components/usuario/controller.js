@@ -1,4 +1,5 @@
-const { Usuario, Estado, Persona, bd } = require('../../../store/db');
+var sequelize = require("sequelize");
+const { Usuario, Estado, Persona,Rol, bd, FotoUsuario } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const bcrypt = require('bcrypt')
 const { validarpermiso } = require('../../../auth');
@@ -199,8 +200,24 @@ const listmenu = async (usuarioId) => {
     return menuResponse;
 }
 
+const getImagen=async(usuarioId)=>{
+    return await FotoUsuario.findOne({
+        where: {usuarioId,estadoId:[1]},
+        order: [
+            ['foto_usuarioId', 'DESC']
+        ],
+        attributes: ['foto','mimetype']
+    });
+}
+const listPerfiles=async(usuarioId)=>{
+    return await Rol.findAll({
+        where: sequelize.literal(`rolId in (select rolId from usuario_rol where usuarioId=${usuarioId} and estadoId=1) and estadoId=1;`),
+        attributes: ['rolId', 'nombre', 'descripcion']
+    });
+}
+
 const userInfo = async (req) => {
-    let { usuarioId, user_name, personaId, forzar_cambio_password, dias_cambio_password, fecha_cambio_password } = req.user;
+    let { usuarioId, user_name, personaId, forzar_cambio_password, dias_cambio_password, fecha_cambio_password,fecha_crea } = req.user;
     const persona = await Persona.findOne({ where: { personaId } });
     let diasUpdatePass = 0;
     if (forzar_cambio_password === false && dias_cambio_password > 0) {
@@ -247,13 +264,16 @@ const userInfo = async (req) => {
         user_name,
         personaId,
         forzar_cambio_password,
+        fecha_crea,
         nombre,
         fecha_nacimiento,
         generoId,
         email,
         dias_cambio_password,
         fecha_cambio_password,
-        diasUpdatePass
+        diasUpdatePass,
+        perfiles:await listPerfiles(usuarioId),
+        imagen:await getImagen(usuarioId)
     }
 
     let dataUsuario = {};
