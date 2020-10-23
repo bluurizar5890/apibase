@@ -1,6 +1,6 @@
+const moment = require('moment');
 const { Rol, Estado} = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
-const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
 const MenuId = 11;
 const Modelo = Rol;
@@ -149,9 +149,59 @@ const update = async (req) => {
         return response;
     }
 };
+const eliminar = async (req) => {
+    let autorizado = await validarpermiso(req, MenuId, 4);
+    if (autorizado !== true) {
+        return autorizado;
+    }
+    let rolId = req.params.id;
+    const dataAnterior = await Modelo.findOne({
+        where: { rolId }
+    });
 
+    const dataEliminar = {
+        estadoId: 3
+    };
+    if (dataAnterior) {
+        const resultado = await Modelo.update(dataEliminar, {
+            where: {
+                rolId
+            }
+        });
+        if (resultado > 0) {
+            let { usuarioId } = req.user;
+            dataEliminar.usuario_ult_mod = usuarioId;
+            await registrarBitacora(tabla, rolId, dataAnterior.dataValues, dataEliminar);
+
+            //Actualizar fecha de ultima modificacion
+            let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
+            const data = {
+                fecha_ult_mod,
+                usuario_ult_mod: usuarioId
+            }
+            const resultadoUpdateFecha = await Modelo.update(data, {
+                where: {
+                    rolId
+                }
+            });
+
+            response.code = 1;
+            response.data = "Elemento eliminado exitosamente";
+            return response;
+        } else {
+            response.code = -1;
+            response.data = "No fue posible eliminar el elemento";
+            return response;
+        }
+    } else {
+        response.code = -1;
+        response.data = "No existe información para eliminar con los parametros especificados";
+        return response;
+    }
+}
 module.exports = {
     list,
     insert,
-    update
+    update,
+    eliminar
 }

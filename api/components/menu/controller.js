@@ -1,8 +1,8 @@
+const moment = require('moment');
+const { QueryTypes } = require('sequelize');
 const { Menu, Estado, bd } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
-const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
-const { QueryTypes } = require('sequelize');
 const MenuId = 21;
 const Modelo = Menu;
 const tabla = 'cat_menu';
@@ -111,7 +111,6 @@ list = async (req) => {
         }
     }
 }
-
 
 const update = async (req) => {
     let autorizado = await validarpermiso(req, MenuId, 2);

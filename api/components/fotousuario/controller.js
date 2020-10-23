@@ -1,10 +1,7 @@
-const { Estado, FotoUsuario } = require('../../../store/db');
-const { registrarBitacora } = require('../../../utils/bitacora_cambios');
-const moment = require('moment');
 const sharp = require("sharp");
+const { FotoUsuario } = require('../../../store/db');
 const { validarpermiso } = require('../../../auth');
 const MenuId = 28;
-const tabla = 'foto_usuario';
 let response = {};
 
 const RedimencionarImagen = (buffer) => {

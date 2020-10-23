@@ -1,7 +1,7 @@
+const moment = require('moment');
 var { Op } = require('sequelize');
 const { UsuarioRol, Rol, Estado, Usuario } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
-const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
 const MenuId=18;
 const Modelo = UsuarioRol;

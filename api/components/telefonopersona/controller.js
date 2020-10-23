@@ -1,13 +1,12 @@
+const moment = require('moment');
 var { Op } = require('sequelize');
 const { TelefonoPersona, TipoTelefono, Estado } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
-const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
 const MenuId=14;
 const Modelo = TelefonoPersona;
 const tabla = 'telefono_persona';
 let response = {};
-
 
 const insert = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,1);
@@ -71,7 +70,6 @@ const consultar = async (query) => {
         });
     }
 }
-
 
 list = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,3);

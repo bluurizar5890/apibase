@@ -1,6 +1,6 @@
 const express = require('express');
-const response = require('../../../network/response');
 const controller = require('./controller');
+const response = require('../../../network/response');
 const router = express.Router();
 
 const registrar = (req, res, next) => {
@@ -26,9 +26,15 @@ const actualizar = (req, res, next) => {
         })
         .catch(next);
 }
-
+const eliminar = (req, res, next) => {
+    controller.eliminar(req)
+        .then((data) => {
+            response.success(req, res, data, 200);
+        })
+        .catch(next);
+}
 router.post('/',registrar);
 router.get('/', listar);
 router.put('/',actualizar);
-
+router.delete('/:id',eliminar);
 module.exports = router;

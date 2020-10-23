@@ -1,6 +1,6 @@
+const moment = require('moment');
 const { Municipio, Estado, Departamento } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
-const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
 const MenuId=10;
 const Modelo = Municipio;

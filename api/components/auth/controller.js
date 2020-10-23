@@ -1,6 +1,6 @@
-const { Usuario, Persona } = require('../../../store/db');
-const bcrypt = require('bcrypt');
 const moment = require('moment');
+const bcrypt = require('bcrypt');
+const { Usuario, Persona } = require('../../../store/db');
 const auth = require('../../../auth');
 let response = {};
 
@@ -66,7 +66,9 @@ const getUserInfo = async (user) => {
     return userInfo;
 }
 const login = async (req, res) => {
-    const user = await Usuario.findOne({ where: { user_name: req.body.user_name, estadoId: 1 } });
+    const {user_name,password}=req.body;
+    req.body={};
+    const user = await Usuario.findOne({ where: { user_name, estadoId: 1 } });
     const { rememberMe } = false;
     if (!user) {
         response.code = -1;
@@ -74,7 +76,7 @@ const login = async (req, res) => {
         return response;
     }
 
-    return bcrypt.compare(req.body.password, user.password)
+    return bcrypt.compare(password, user.password)
         .then(async (sonIguales) => {
             if (sonIguales === true) {
                 const { usuarioId } = user;

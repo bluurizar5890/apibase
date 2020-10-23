@@ -1,8 +1,8 @@
+const moment = require('moment');
 const bcrypt = require('bcrypt')
+const Correo = require('../../../utils/EnviarCorreo');
 const { ResetPassWord, Parametro, Persona, Usuario } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
-const moment = require('moment');
-const Correo = require('../../../utils/EnviarCorreo');
 let { htmlResetPassword } = require('../../../utils/plantillasCorreo/ResetPassword');
 const tabla = 'reset_password';
 let response = {};
@@ -101,7 +101,7 @@ const enviarCorreo = async (req) => {
                 const resultEmail = await Correo.sendMail(configuracion, email, "Restablecer Contraseña", null, htmlResetPassword);
                 let messageId = resultEmail.messageId;
                 messageId = messageId.replace("<", "").replace(">", "");
-                const resultadoUpdateResetPass = await ResetPassWord.update({ messageId }, {
+                const resultadoUpdateResetPass = await ResetPassWord.update({ messageId,estadoId:1 }, {
                     where: {
                         codigo
                     }

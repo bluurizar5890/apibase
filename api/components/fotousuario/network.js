@@ -1,8 +1,9 @@
 const express = require('express');
-const response = require('../../../network/response');
 const controller = require('./controller');
-const router = express.Router();
+const response = require('../../../network/response');
 const upload=require('../../../utils/multer.config');
+const router = express.Router();
+
 const registrar = (req, res, next) => {
     controller.insert(req)
         .then((data) => {

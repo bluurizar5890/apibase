@@ -1,13 +1,12 @@
+const moment = require('moment');
 var { Op } = require('sequelize');
 const { IdentificacionPersona, TipoDocumento, Estado } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
-const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
 const MenuId = 13;
 const Modelo = IdentificacionPersona;
 const tabla = 'identificacion_persona';
 let response = {};
-
 
 const insert = async (req) => {
     let autorizado = await validarpermiso(req, MenuId, 1);

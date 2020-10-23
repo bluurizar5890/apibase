@@ -1,8 +1,7 @@
 const express = require('express');
-const response = require('../../../network/response');
 const controller = require('./controller');
+const response = require('../../../network/response');
 const router = express.Router();
-
 
 const registrar = (req, res, next) => {
     controller.insert(req)
@@ -27,6 +26,7 @@ const userInfo=(req,res,next)=>{
     })
     .catch(next);
 }
+
 const actualizar = (req, res, next) => {
     controller.update(req)
         .then((data) => {
@@ -34,6 +34,7 @@ const actualizar = (req, res, next) => {
         })
         .catch(next);
 }
+
 const actualizarPassword = (req, res, next) => {
     controller.actualizarPassword(req)
         .then((data) => {

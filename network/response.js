@@ -2,9 +2,8 @@ const config = require("../config");
 const { BitacoraPeticion } = require("../store/db");
 
 exports.success = (req, res, message, status) => {
-
     if (config.api.bitacoraPeticion === true) {
-        let { usuarioId = 0 } = !!req.user && req.user;
+        let { usuarioId = null } = !!req.user && req.user;
         var ipCliente = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         const data = {
             baseUrl: req.baseUrl || req.originalUrl,
@@ -24,7 +23,7 @@ exports.success = (req, res, message, status) => {
             //console.log("Bitacora registrada exisotsamente");
         })
         .catch(erro => {
-           console.log("Error al registrar la peticion", erro);
+        //    console.log("Error al registrar la peticion", erro);
          });
     }
     let statusCode = status || 200;
@@ -37,7 +36,7 @@ exports.success = (req, res, message, status) => {
 
 exports.error = (req, res, message, status) => {
     if (config.api.bitacoraError === true) {
-        let { usuarioId = 0 } = !!req.user && req.user;
+        let { usuarioId = null } = !!req.user && req.user;
         var ipCliente = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         const data = {
             baseUrl: req.baseUrl || req.originalUrl,
@@ -57,7 +56,7 @@ exports.error = (req, res, message, status) => {
            // console.log("Bitacora registrada exisotsamente");
         })
         .catch(erro => {
-            console.log("Error al registrar la peticion", erro);
+            // console.log("Error al registrar la peticion", erro);
         });
     }
     let statusCode = status || 500;

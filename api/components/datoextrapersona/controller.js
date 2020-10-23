@@ -1,14 +1,12 @@
-var { Op } = require('sequelize');
-const { DatoExtraPersona, TipoSangre, EstadoCivil, Estado } = require('../../../store/db');
-const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
+var { Op } = require('sequelize');
+const { registrarBitacora } = require('../../../utils/bitacora_cambios');
+const { DatoExtraPersona, TipoSangre, EstadoCivil, Estado } = require('../../../store/db');
 const { validarpermiso } = require('../../../auth');
-const { report } = require('./network');
 const MenuId=16;
 const Modelo = DatoExtraPersona;
 const tabla = 'dato_extra_persona';
 let response = {};
-
 
 const insert = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,1);
@@ -82,7 +80,7 @@ const consultar = async (query) => {
     }
 }
 
-list = async (req) => {
+const list = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,3);
     if(autorizado!==true){
         return autorizado;

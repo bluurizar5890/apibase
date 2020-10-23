@@ -1,12 +1,11 @@
-const { Acceso, Estado } = require('../../../store/db');
-const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
+const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const { validarpermiso } = require('../../../auth');
+const { Acceso, Estado } = require('../../../store/db');
 const MenuId=1;
 const Modelo = Acceso;
 const tabla = 'cat_acceso';
 let response = {};
-
 
 const insert = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,1);
@@ -59,7 +58,7 @@ const consultar = async (query, include = 1) => {
     }
 }
 
-list = async (req) => {
+const list = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,3);
     if(autorizado!==true){
         return autorizado;

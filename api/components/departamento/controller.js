@@ -1,6 +1,6 @@
 const { Departamento, Estado, Pais } = require('../../../store/db');
-const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
+const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const { validarpermiso } = require('../../../auth');
 const MenuId = 9;
 const Modelo = Departamento;

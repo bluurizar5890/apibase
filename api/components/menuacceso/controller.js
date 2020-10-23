@@ -1,12 +1,11 @@
+const moment = require('moment');
 const { MenuAcceso, Estado, Acceso, Menu } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
-const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
 const MenuId=19;
 const Modelo = MenuAcceso;
 const tabla = 'menu_acceso';
 let response = {};
-
 
 const insert = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,1);

@@ -719,6 +719,7 @@ const Menus = [
     icono: "",
     classes: "nav-item",
     type: "item",
+    menu_padreId: 23,
     visible: true,
     usuario_crea: 1,
     fecha_crea: Date.now()

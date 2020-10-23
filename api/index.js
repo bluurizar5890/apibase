@@ -1,12 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser=require('cookie-parser');
-require("../store/db");
+const passport = require('passport');
+const cors = require('cors');
 const config = require('../config');
 const errors = require('../network/errors');
-const cors = require('cors');
 const secret = 'secret';
-
+require("../store/db");
 
 const Estado = require('./components/estado/network');
 const Municipio = require('./components/municipio/network');
@@ -33,8 +33,6 @@ const Auth = require('./components/auth/network');
 const ResetPassword = require('./components/resetpassword/network');
 const Bitacora = require('./components/bitacora/network');
 const FotoUsuario = require('./components/fotousuario/network');
-
-const passport = require('passport');
 
 //Estratgia de json web token
 require('../auth/strategies/jwt');

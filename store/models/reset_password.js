@@ -39,7 +39,7 @@ module.exports = (sequelize, type) => {
             estadoId: {
                 type: type.INTEGER,
                 allowNull: false,
-                defaultValue: 1,
+                defaultValue: 2,
                 references: {
                     model: "cat_estado",
                     key: "estadoId",

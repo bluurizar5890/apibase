@@ -1,13 +1,12 @@
-const { RolMenuAcceso, Rol, Menu, MenuAcceso,Acceso, Estado, bd } = require('../../../store/db');
-const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const moment = require('moment');
-const { validarpermiso } = require('../../../auth');
 const { QueryTypes } = require('sequelize');
+const { RolMenuAcceso, Menu, MenuAcceso,Acceso, Estado, bd } = require('../../../store/db');
+const { registrarBitacora } = require('../../../utils/bitacora_cambios');
+const { validarpermiso } = require('../../../auth');
 const MenuId = 20;
 const Modelo = RolMenuAcceso;
 const tabla = 'rol_menu_acceso';
 let response = {};
-
 
 const insert = async (req) => {
     let autorizado = await validarpermiso(req, MenuId, 1);
@@ -31,7 +30,6 @@ const insert = async (req) => {
     }
     return response;
 }
-
 
 const consultar = async (query, include = 1) => {
     if (include == 1) {
@@ -107,7 +105,6 @@ const consultar = async (query, include = 1) => {
         }
     }
 }
-
 
 list = async (req) => {
     let autorizado = await validarpermiso(req, MenuId, 3);

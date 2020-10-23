@@ -1,10 +1,10 @@
+const moment = require('moment');
+const bcrypt = require('bcrypt')
 var sequelize = require("sequelize");
+const { QueryTypes } = require('sequelize');
 const { Usuario, Estado, Persona,Rol, bd, FotoUsuario } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
-const bcrypt = require('bcrypt')
 const { validarpermiso } = require('../../../auth');
-const moment = require('moment');
-const { QueryTypes } = require('sequelize');
 const MenuId = 17;
 const Modelo = Usuario;
 const tabla = 'usuario';
@@ -136,7 +136,9 @@ const listAccesos = async (usuarioId) => {
     on a.rolId=c.rolId and c.estadoId=1
     inner join cat_acceso d
     on b.accesoId=d.accesoId and d.estadoId=1
-    where c.usuarioId=${usuarioId};`, {
+    where c.usuarioId=${usuarioId} and a.rolId in(
+        select rolId from cat_rol where estadoId=1
+    )`, {
         type: QueryTypes.SELECT
     });
 }
@@ -149,7 +151,9 @@ const listmenu = async (usuarioId) => {
                 on b.menu_accesoId=c.menu_accesoId and c.estadoId
                 inner join usuario_rol d
                 on c.rolId=d.rolId and d.estadoId=1
-                where d.usuarioId=${usuarioId} order by a.posicion;`, {
+                where d.usuarioId=${usuarioId}  and c.rolId in(
+                    select rolId from cat_rol where estadoId=1
+                ) order by a.posicion;`, {
         type: QueryTypes.SELECT
     });
 
@@ -211,6 +215,7 @@ const getImagen=async(usuarioId)=>{
         attributes: ['foto_usuarioId','foto','mimetype']
     });
 }
+
 const listPerfiles=async(usuarioId)=>{
     return await Rol.findAll({
         where: sequelize.literal(`rolId in (select rolId from usuario_rol where usuarioId=${usuarioId} and estadoId=1) and estadoId=1;`),
@@ -390,6 +395,7 @@ const update = async (req) => {
         return response;
     }
 };
+
 const actualizarPassword = async (req) => {
     let autorizado = await validarpermiso(req, MenuId, 2);
     if (autorizado !== true) {
@@ -473,6 +479,7 @@ const actualizarPassword = async (req) => {
         return response;
     }
 };
+
 module.exports = {
     list,
     insert,

@@ -1,6 +1,6 @@
 const express = require('express');
-const response = require('../../../network/response');
 const controller = require('./controller');
+const response = require('../../../network/response');
 const router = express.Router();
 
 const registrar = (req, res, next) => {

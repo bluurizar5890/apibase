@@ -1,6 +1,6 @@
+const moment = require('moment');
 const { BitacoraCambios } = require('../store/db');
 const config = require('../config');
-const moment = require('moment');
 const registrarBitacora = async (tabla, modificadoId, dataAnterior, dataNueva) => {
     if (config.api.bitacora_cambios) {
         try {

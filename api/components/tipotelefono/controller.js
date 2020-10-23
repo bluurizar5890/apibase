@@ -1,12 +1,11 @@
+const moment = require('moment');
 const { TipoTelefono, Estado } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
-const moment = require('moment');
 const { validarpermiso } = require('../../../auth');
 const MenuId=7;
 const Modelo = TipoTelefono;
 const tabla = 'cat_tipo_telefono';
 let response = {};
-
 
 const insert = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,1);
@@ -58,7 +57,6 @@ const consultar = async (query, include = 1) => {
         }
     }
 }
-
 
 list = async (req) => {
     let autorizado=await validarpermiso(req,MenuId,3);

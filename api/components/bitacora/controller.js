@@ -1,6 +1,6 @@
-var sequelize = require("sequelize");
-const { QueryTypes } = require('sequelize');
 const moment = require('moment');
+const { QueryTypes } = require('sequelize');
+var sequelize = require("sequelize");
 const { BitacoraCambios, BitacoraPeticion, Usuario, bd } = require('../../../store/db');
 const { validarpermiso } = require('../../../auth');
 const config = require("../../../config");
@@ -18,7 +18,6 @@ tablas=async(req)=>{
     });
     return response;
 }
-
 cambios = async (req) => {
     const MenuId = 27;
     let autorizado = await validarpermiso(req, MenuId, 3);
@@ -74,7 +73,6 @@ peticiones = async (req) => {
 
     let query = '';
     let { baseUrl, method, status = 0, error, usuarioId, fechaInicial, fechaFinal, ip_origen } = req.body;
-    console.log("body",req.body);
     if (baseUrl) {
         query = `bitacora_peticion.baseUrl='${baseUrl}'`;
         existenParametros = true;
@@ -135,8 +133,6 @@ peticiones = async (req) => {
         }
         existenParametros = true;
     }
-
-    console.log({query});
 
     if (existenParametros === true) {
         
