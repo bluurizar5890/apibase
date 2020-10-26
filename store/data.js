@@ -702,7 +702,7 @@ const Menus = [
     menuId: 27,
     posicion: 21,
     descripcion: "Cambios",
-    href: "/base/seguridad/bitacora-cambios",
+    href: "/base/seguridad/bitacora/cambios",
     icono: "",
     classes: "nav-item",
     type: "item",
@@ -720,7 +720,7 @@ const Menus = [
     classes: "nav-item",
     type: "item",
     menu_padreId: 23,
-    visible: true,
+    visible: false,
     usuario_crea: 1,
     fecha_crea: Date.now()
   },
