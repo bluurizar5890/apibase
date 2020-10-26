@@ -1715,7 +1715,7 @@ const Parametros = [
     nombreGrupo: "CONFIG_EMPRESA",
     tipoDato: "S",
     nombreVariable: "urlWebResetPassWord",
-    valor: "http://localhost:3001/app/auth/login/",
+    valor: "http://localhost:3001/app/auth/update-password/",
     descripcion: "Url que resolvera el reseteo de la contraseña",
     usuario_crea: 1
   }
