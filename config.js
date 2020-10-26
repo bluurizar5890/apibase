@@ -36,7 +36,7 @@ module.exports = {
     secret: process.env.JWT_SECRET || "Yahk9Lev5lBdANo6UPQuIgCVHinXsm8M",
   },
   bd: {
-    database: "apibase2",
+    database: "apibase",
     username: "root",
     password: "Blopez$1991",
     host: "localhost",

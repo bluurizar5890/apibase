@@ -216,6 +216,7 @@ const getImagen=async(usuarioId)=>{
     });
 }
 
+
 const listPerfiles=async(usuarioId)=>{
     return await Rol.findAll({
         where: sequelize.literal(`rolId in (select rolId from usuario_rol where usuarioId=${usuarioId} and estadoId=1) and estadoId=1;`),
