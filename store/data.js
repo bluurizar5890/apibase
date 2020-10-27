@@ -369,7 +369,7 @@ const Menus = [
     menuId: 24,
     posicion: 0,
     descripcion: "Inicio",
-    href: "/sample-page",
+    href: "/base/home",
     icono: "feather icon-sidebar",
     classes: "nav-item",
     type: "item",
