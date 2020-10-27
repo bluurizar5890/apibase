@@ -714,8 +714,8 @@ const Menus = [
   {
     menuId: 28,
     posicion: 0,
-    descripcion: "Foto Usuario",
-    href: "/infouser",
+    descripcion: "Información Usuario",
+    href: "/base/infouser",
     icono: "",
     classes: "nav-item",
     type: "item",
