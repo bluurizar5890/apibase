@@ -38,7 +38,8 @@ module.exports = (sequelize, type) => {
                 type: type.DATE
             },
             dias_cambio_password:{
-                type: type.INTEGER
+                type: type.INTEGER,
+                defaultValue:90
             },
             intentos_fallidos:{
                 type: type.INTEGER,
