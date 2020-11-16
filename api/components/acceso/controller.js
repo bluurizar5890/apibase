@@ -2,22 +2,32 @@ const moment = require('moment');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const { validarpermiso } = require('../../../auth');
 const { Acceso, Estado } = require('../../../store/db');
-const MenuId=1;
+const MenuId = 1;
 const Modelo = Acceso;
 const tabla = 'cat_acceso';
 let response = {};
 
 const insert = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,1);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 1);
+    if (autorizado !== true) {
         return autorizado;
     }
-    
-    let { usuarioId } = req.user;
-    req.body.usuario_crea = usuarioId;
-    const result = await Modelo.create(req.body);
-    response.code = 1;
-    response.data = result;
+    let transaction;
+    try {
+        let { usuarioId } = req.user;
+        req.body.usuario_crea = usuarioId;
+        transaction = await Modelo.sequelize.transaction()
+        const result = await Modelo.create(req.body, { transaction });
+        await transaction.commit();
+
+        response.code = 1;
+        response.data = result;
+    } catch (error) {
+        response.code=-1;
+        response.data = error;
+        await transaction.rollback();
+    }
+
     return response;
 }
 
@@ -59,14 +69,14 @@ const consultar = async (query, include = 1) => {
 }
 
 const list = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,3);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 3);
+    if (autorizado !== true) {
         return autorizado;
     }
     const { include } = req.query;
     if (!req.query.id && !req.query.estadoId) {
         response.code = 1;
-        response.data = await consultar(null,include);
+        response.data = await consultar(null, include);
         return response;
     }
 
@@ -83,13 +93,13 @@ const list = async (req) => {
 
     if (!id) {
         response.code = 1;
-        response.data = await consultar(query,include);
+        response.data = await consultar(query, include);
         return response;
     } else {
         if (Number(id) > 0) {
             query.accesoId = Number(id);
             response.code = 1;
-            response.data = await consultar(query,include);
+            response.data = await consultar(query, include);
             return response;
         } else {
             response.code = -1;
@@ -100,8 +110,8 @@ const list = async (req) => {
 }
 
 const update = async (req) => {
-    let autorizado=await validarpermiso(req,MenuId,2);
-    if(autorizado!==true){
+    let autorizado = await validarpermiso(req, MenuId, 2);
+    if (autorizado !== true) {
         return autorizado;
     }
     const { accesoId } = req.body;
@@ -125,7 +135,7 @@ const update = async (req) => {
             let fecha_ult_mod = moment(new Date()).format('YYYY/MM/DD HH:mm');
             const data = {
                 fecha_ult_mod,
-                usuario_ult_mod:usuarioId
+                usuario_ult_mod: usuarioId
             }
             const resultadoUpdateFecha = await Modelo.update(data, {
                 where: {
