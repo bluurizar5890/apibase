@@ -1,5 +1,6 @@
 const moment = require('moment');
 const { QueryTypes } = require('sequelize');
+const sequelize = require('sequelize');
 const { RolMenuAcceso, Menu, MenuAcceso,Acceso, Estado, bd } = require('../../../store/db');
 const { registrarBitacora } = require('../../../utils/bitacora_cambios');
 const { validarpermiso } = require('../../../auth');
@@ -113,13 +114,16 @@ list = async (req) => {
     }
   
     const { include } = req.query;
-    if (!req.query.id && !req.query.estadoId && !req.query.rolId && !req.query.menu_accesoId) {
+    if (!req.query.id && !req.query.estadoId && !req.query.rolId && !req.query.menu_accesoId && !req.query.menuId) {
         response.code = 1;
         response.data = await consultar(null,include);
         return response;
     }
 
-    const { id, estadoId,rolId,menu_accesoId } = req.query;
+    const { id, estadoId,rolId,menu_accesoId,menuId } = req.query;
+    if(menuId){
+        return await listAccesoMenuId(menuId);
+    }
     let query = {};
     if (estadoId) {
         let estados = estadoId.split(';');
@@ -154,6 +158,14 @@ list = async (req) => {
             return response;
         }
     }
+}
+
+const listAccesoMenuId=async(menuId)=>{
+response.code=1;
+response.data=await RolMenuAcceso.findAll({
+    where:sequelize.literal(`rol_menu_acceso.menu_accesoId in(select menu_accesoId from menu_acceso where menuId=${menuId});`)
+});
+return response;
 }
 
 const listAccesos = async (req) => {

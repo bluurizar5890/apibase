@@ -148,7 +148,7 @@ const listmenu = async (usuarioId) => {
                 inner join menu_acceso b
                 on a.menuId=b.menuId and a.estadoId=1 and b.estadoId=1
                 inner join rol_menu_acceso c
-                on b.menu_accesoId=c.menu_accesoId and c.estadoId
+                on b.menu_accesoId=c.menu_accesoId and c.estadoId=1
                 inner join usuario_rol d
                 on c.rolId=d.rolId and d.estadoId=1
                 where d.usuarioId=${usuarioId}  and c.rolId in(
