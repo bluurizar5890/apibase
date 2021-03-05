@@ -25,11 +25,12 @@ const insert = async (req) => {
         return autorizado;
     }
     const dataAux = {};
-    let { usuarioId, descripcion } = req.body;
+	let { usuarioId: usuarioCrea } = req.user;
+    let { descripcion } = req.body;
     let { file } = req;
     const { buffer, size, originalname, mimetype } = !!file && file;
     dataAux.descripcion = descripcion;
-    dataAux.usuarioId = usuarioId;
+    dataAux.usuarioId = usuarioCrea;
     dataAux.nombre = originalname;
     if (mimetype !== "image/png" && mimetype !== "image/jpg" && mimetype !== "image/jpeg") {
         response.code = -1;
@@ -37,7 +38,7 @@ const insert = async (req) => {
     }
     else {
         if (size <= 1000000) {
-            let { usuarioId: usuarioCrea } = req.user;
+            
             dataAux.usuario_crea = usuarioCrea;
 
             return RedimencionarImagen(buffer)
