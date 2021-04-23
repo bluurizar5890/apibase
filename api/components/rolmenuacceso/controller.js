@@ -121,8 +121,8 @@ list = async (req) => {
     }
 
     const { id, estadoId,rolId,menu_accesoId,menuId } = req.query;
-    if(menuId){
-        return await listAccesoMenuId(menuId);
+    if(menuId && rolId){
+        return await listAccesoMenuId(menuId,rolId);
     }
     let query = {};
     if (estadoId) {
@@ -160,10 +160,10 @@ list = async (req) => {
     }
 }
 
-const listAccesoMenuId=async(menuId)=>{
+const listAccesoMenuId=async(menuId,rolId)=>{
 response.code=1;
 response.data=await RolMenuAcceso.findAll({
-    where:sequelize.literal(`rol_menu_acceso.menu_accesoId in(select menu_accesoId from menu_acceso where menuId=${menuId});`)
+    where:sequelize.literal(`rol_menu_acceso.menu_accesoId in(select menu_accesoId from menu_acceso where menuId=${menuId}) and rol_menu_acceso.rolId=${rolId};`)
 });
 return response;
 }
