@@ -138,6 +138,8 @@ const listAccesos = async (usuarioId) => {
     on b.accesoId=d.accesoId and d.estadoId=1
     where c.usuarioId=${usuarioId} and a.rolId in(
         select rolId from cat_rol where estadoId=1
+    )  and b.menuId in (
+        select menuId from cat_menu where estadoId=1
     )`, {
         type: QueryTypes.SELECT
     });
